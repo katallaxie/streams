@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"fmt"
 	"log"
 	"sync"
 )
@@ -15,10 +16,16 @@ type Message struct {
 }
 
 // Mark ...
-func (m *Message) Mark() bool {
+func (m *Message) Mark() {
 	m.markOnce.Do(func() {
 		m.marked = true
 	})
+}
+
+// Marked ...
+func (m *Message) Marked() bool {
+	m.Lock()
+	defer m.Unlock()
 
 	return m.marked
 }
@@ -26,7 +33,7 @@ func (m *Message) Mark() bool {
 // Source ...
 type Source interface {
 	Messages() chan *Message
-	Commit() error
+	Commit(...*Message) error
 }
 
 // Sink ...
@@ -205,7 +212,7 @@ loop:
 }
 
 // NewStream ...
-func NewStream(src Source, size int) *Stream {
+func NewStream(src Source, buffer int) *Stream {
 	stream := new(Stream)
 	stream.in = src.Messages()
 	stream.mark = make(chan *Message)
@@ -215,18 +222,24 @@ func NewStream(src Source, size int) *Stream {
 		var buf []*Message
 
 		for m := range stream.mark {
-			if m.Mark() {
+			if m.Marked() {
 				continue
 			}
+
+			m.Mark()
 
 			buf = append(buf, m)
 			count++
 
-			if len(stream.buf) <= size {
+			fmt.Println(count, buffer)
+
+			if count <= buffer {
 				continue
 			}
 
-			err := src.Commit()
+			fmt.Println(buf)
+
+			err := src.Commit(buf...)
 			if err != nil {
 				stream.Fail(err)
 				return
