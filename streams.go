@@ -4,6 +4,12 @@ type Message struct {
 	Name string
 }
 
+// Source ...
+type Source interface {
+	Messages() chan *Message
+	Commit() error
+}
+
 // Sink ...
 type Sink interface {
 	Write(m *Message) error
@@ -12,6 +18,8 @@ type Sink interface {
 // Stream ...
 type Stream struct {
 	in    chan *Message
+	mark  chan *Message
+	buf   chan *Message
 	close chan bool
 	err   chan error
 }
@@ -23,8 +31,13 @@ func (s *Stream) Close() {
 
 // Drain ...
 func (s *Stream) Drain() {
-	for _ = range s.in {
+	for range s.in {
 	}
+}
+
+// Commit ...
+func (s *Stream) Mark(m *Message) {
+	s.mark <- m
 }
 
 // Fail ...
@@ -54,7 +67,7 @@ func (s *Stream) Filter(fn func(*Message) (bool, error)) *Stream {
 		close(out)
 	}()
 
-	return &Stream{out, s.close, s.err}
+	return &Stream{out, s.mark, s.buf, s.close, s.err}
 }
 
 // Map ...
@@ -74,7 +87,7 @@ func (s *Stream) Map(fn func(*Message) (*Message, error)) *Stream {
 		close(out)
 	}()
 
-	return &Stream{out, s.close, s.err}
+	return &Stream{out, s.mark, s.buf, s.close, s.err}
 }
 
 // Branch ...
@@ -82,7 +95,7 @@ func (s *Stream) Branch(fns ...func(*Message) (bool, error)) []*Stream {
 	streams := make([]*Stream, len(fns))
 
 	for i := range fns {
-		streams[i] = &Stream{make(chan *Message), s.close, s.err}
+		streams[i] = &Stream{make(chan *Message), s.mark, s.buf, s.close, s.err}
 	}
 
 	go func() {
@@ -109,20 +122,58 @@ func (s *Stream) Branch(fns ...func(*Message) (bool, error)) []*Stream {
 }
 
 // Sink ...
-func (s *Stream) Sink(sink Sink) {
-	for x := range s.in {
-		err := sink.Write(x)
-		if err != nil {
-			s.Fail(err)
-			return
+func (s *Stream) Sink(sink Sink) error {
+	var err error
+
+loop:
+	for {
+		select {
+		case x, ok := <-s.in:
+			if !ok {
+				break loop
+			}
+
+			err := sink.Write(x)
+			if err != nil {
+				s.Fail(err)
+			}
+
+			s.mark <- x
+		case err = <-s.err:
 		}
 	}
+
+	return err
 }
 
 // NewStream ...
-func NewStream(in chan *Message) *Stream {
+func NewStream(src Source, size int) *Stream {
 	stream := new(Stream)
-	stream.in = in
+	stream.in = src.Messages()
+	stream.mark = make(chan *Message)
+
+	go func() {
+		var count int
+		var buf []*Message
+
+		for m := range stream.mark {
+			buf = append(buf, m)
+			count++
+
+			if len(stream.buf) <= size {
+				continue
+			}
+
+			err := src.Commit()
+			if err != nil {
+				stream.Fail(err)
+				return
+			}
+
+			buf = buf[:0]
+			count = 0
+		}
+	}()
 
 	return stream
 }

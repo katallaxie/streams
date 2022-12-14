@@ -6,11 +6,6 @@ GO_TEST = go run gotest.tools/gotestsum --format pkgname
 generate:
 	go generate ./...
 
-.PHONY: build ## Build the binary file.
-build: generate fmt vet lint test
-	GOPRIVATE=github.com/ionos-cloud go mod tidy
-	goreleaser build --snapshot --rm-dist
-
 .PHONY: fmt
 fmt: ## Run go fmt against code.
 	go run mvdan.cc/gofumpt -w .
