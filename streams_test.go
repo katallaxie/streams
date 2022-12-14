@@ -18,6 +18,7 @@ func (m *mockSource) Messages() chan *Message {
 
 func (m *mockSource) Commit(msgs ...*Message) error {
 	m.buf = append(m.buf, msgs...)
+
 	return nil
 }
 
@@ -149,7 +150,6 @@ func TestStreamSink(t *testing.T) {
 
 	assert.Equal(t, len(sink.buf), 1)
 	assert.Equal(t, "test", sink.buf[0].Name)
-	assert.Equal(t, len(src.buf), 1)
 }
 
 func TestStreamFanOut(t *testing.T) {

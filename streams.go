@@ -1,7 +1,6 @@
 package stream
 
 import (
-	"fmt"
 	"log"
 	"sync"
 )
@@ -231,13 +230,9 @@ func NewStream(src Source, buffer int) *Stream {
 			buf = append(buf, m)
 			count++
 
-			fmt.Println(count, buffer)
-
 			if count <= buffer {
 				continue
 			}
-
-			fmt.Println(buf)
 
 			err := src.Commit(buf...)
 			if err != nil {
