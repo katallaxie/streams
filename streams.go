@@ -210,17 +210,13 @@ loop:
 	return err
 }
 
-// NewStream ...
-func NewStream(src Source, buffer int) *Stream {
-	stream := new(Stream)
-	stream.in = src.Messages()
-	stream.mark = make(chan *Message)
-
+// Source ...
+func (s *Stream) Source(src Source, buffer int) *Stream {
 	go func() {
 		var count int
 		var buf []*Message
 
-		for m := range stream.mark {
+		for m := range s.mark {
 			if m.Marked() {
 				continue
 			}
@@ -236,7 +232,7 @@ func NewStream(src Source, buffer int) *Stream {
 
 			err := src.Commit(buf...)
 			if err != nil {
-				stream.Fail(err)
+				s.Fail(err)
 				return
 			}
 
@@ -244,6 +240,14 @@ func NewStream(src Source, buffer int) *Stream {
 			count = 0
 		}
 	}()
+
+	return &Stream{src.Messages(), s.mark, s.buf, s.close, s.err}
+}
+
+// NewStream ...
+func NewStream() *Stream {
+	stream := new(Stream)
+	stream.mark = make(chan *Message)
 
 	return stream
 }

@@ -48,7 +48,7 @@ func newMockSink() *mockSink {
 func TestStreamMap(t *testing.T) {
 	src := newMockSource()
 
-	s := NewStream(src, 0)
+	s := NewStream().Source(src, 0)
 	assert.NotNil(t, s)
 
 	out := s.Map(func(m *Message) (*Message, error) {
@@ -68,7 +68,7 @@ func TestStreamMap(t *testing.T) {
 func TestStreamMapError(t *testing.T) {
 	src := newMockSource()
 
-	err := NewStream(src, 0).Map(func(m *Message) (*Message, error) {
+	err := NewStream().Source(src, 0).Map(func(m *Message) (*Message, error) {
 		return nil, fmt.Errorf("error")
 	})
 
@@ -78,7 +78,7 @@ func TestStreamMapError(t *testing.T) {
 func TestStreamFilter(t *testing.T) {
 	src := newMockSource()
 
-	s := NewStream(src, 0)
+	s := NewStream().Source(src, 0)
 	assert.NotNil(t, s)
 
 	out := s.Filter(func(m *Message) (bool, error) {
@@ -96,7 +96,7 @@ func TestStreamFilter(t *testing.T) {
 func TestStreamFilterError(t *testing.T) {
 	src := newMockSource()
 
-	err := NewStream(src, 0).Filter(func(m *Message) (bool, error) {
+	err := NewStream().Source(src, 0).Filter(func(m *Message) (bool, error) {
 		return true, fmt.Errorf("error")
 	})
 
@@ -106,7 +106,7 @@ func TestStreamFilterError(t *testing.T) {
 func TestStreamBranch(t *testing.T) {
 	src := newMockSource()
 
-	s := NewStream(src, 0)
+	s := NewStream().Source(src, 0)
 	assert.NotNil(t, s)
 
 	outs := s.Branch(func(m *Message) (bool, error) {
@@ -126,7 +126,7 @@ func TestStreamBranch(t *testing.T) {
 func TestStreamError(t *testing.T) {
 	src := newMockSource()
 
-	err := NewStream(src, 0).Branch(func(m *Message) (bool, error) {
+	err := NewStream().Source(src, 0).Branch(func(m *Message) (bool, error) {
 		return true, fmt.Errorf("error")
 	})
 
@@ -137,7 +137,7 @@ func TestStreamSink(t *testing.T) {
 	src := newMockSource()
 	sink := newMockSink()
 
-	s := NewStream(src, 0)
+	s := NewStream().Source(src, 0)
 	assert.NotNil(t, s)
 
 	go func() {
@@ -155,7 +155,7 @@ func TestStreamSink(t *testing.T) {
 func TestStreamFanOut(t *testing.T) {
 	src := newMockSource()
 
-	s := NewStream(src, 0)
+	s := NewStream().Source(src, 0)
 	assert.NotNil(t, s)
 
 	outs := s.FanOut(2)
