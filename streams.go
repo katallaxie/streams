@@ -185,6 +185,26 @@ func (s *Stream) Print() *Stream {
 	return &Stream{out, s.mark, s.buf, s.close, s.err}
 }
 
+// Merge ...
+func (s *Stream) Merge(streams ...*Stream) *Stream {
+	out := make(chan *Message)
+	var closeOnce sync.Once
+
+	for _, s := range streams {
+		go func(c <-chan *Message) {
+			for x := range c {
+				out <- x
+			}
+
+			closeOnce.Do(func() {
+				close(out)
+			})
+		}(s.in)
+	}
+
+	return &Stream{out, s.mark, s.buf, s.close, s.err}
+}
+
 // Sink ...
 func (s *Stream) Sink(sink Sink) error {
 	var err error
