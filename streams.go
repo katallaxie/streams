@@ -41,11 +41,11 @@ func (s *Stream) Mark(m *Message) {
 }
 
 // Fail ...
-func (s *Stream) Fail(err error) error {
+func (s *Stream) Fail(err error) {
 	s.Close()
 	s.Drain()
 
-	return err
+	s.err <- err
 }
 
 // Filter ...
