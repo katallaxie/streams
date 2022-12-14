@@ -1,6 +1,13 @@
 package stream
 
-type Message struct{}
+type Message struct {
+	Name string
+}
+
+// Sink ...
+type Sink interface {
+	Write(m *Message) error
+}
 
 // Stream ...
 type Stream struct {
@@ -28,7 +35,29 @@ func (s *Stream) Fail(err error) error {
 	return err
 }
 
-// Fail ...
+// Filter ...
+func (s *Stream) Filter(fn func(*Message) (bool, error)) *Stream {
+	out := make(chan *Message)
+
+	go func() {
+		for x := range s.in {
+			ok, err := fn(x)
+			if err != nil {
+				s.Fail(err)
+				return
+			}
+
+			if ok {
+				out <- x
+			}
+		}
+		close(out)
+	}()
+
+	return &Stream{out, s.close, s.err}
+}
+
+// Map ...
 func (s *Stream) Map(fn func(*Message) (*Message, error)) *Stream {
 	out := make(chan *Message)
 
@@ -42,9 +71,52 @@ func (s *Stream) Map(fn func(*Message) (*Message, error)) *Stream {
 
 			out <- x
 		}
+		close(out)
 	}()
 
 	return &Stream{out, s.close, s.err}
+}
+
+// Branch ...
+func (s *Stream) Branch(fns ...func(*Message) (bool, error)) []*Stream {
+	streams := make([]*Stream, len(fns))
+
+	for i := range fns {
+		streams[i] = &Stream{make(chan *Message), s.close, s.err}
+	}
+
+	go func() {
+		for x := range s.in {
+			for i, fn := range fns {
+				ok, err := fn(x)
+				if err != nil {
+					s.Fail(err)
+					return
+				}
+
+				if ok {
+					streams[i].in <- x
+				}
+			}
+		}
+
+		for _, stream := range streams {
+			close(stream.in)
+		}
+	}()
+
+	return streams
+}
+
+// Sink ...
+func (s *Stream) Sink(sink Sink) {
+	for x := range s.in {
+		err := sink.Write(x)
+		if err != nil {
+			s.Fail(err)
+			return
+		}
+	}
 }
 
 // NewStream ...
@@ -54,29 +126,3 @@ func NewStream(in chan *Message) *Stream {
 
 	return stream
 }
-
-// // Map ...
-// func (in Stream) Map(fn func(*Message) *Message) Stream {
-// 	out := make(Stream)
-
-// 	go func() {
-// 		for x := range in {
-// 			out <- fn(x)
-// 		}
-// 	}()
-
-// 	return out
-// }
-
-// // Do ...
-// func (in Stream) Do(fn func(*Message)) Stream {
-// 	out := make(Stream)
-
-// 	for x := range in {
-// 		fn(x)
-
-// 		out <- x
-// 	}
-
-// 	return out
-// }
