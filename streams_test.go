@@ -149,3 +149,23 @@ func TestStreamSink(t *testing.T) {
 	assert.Equal(t, len(sink.buf), 1)
 	assert.Equal(t, "test", sink.buf[0].Name)
 }
+
+func TestStreamFanOut(t *testing.T) {
+	src := newMockSource()
+
+	s := NewStream(src, 0)
+	assert.NotNil(t, s)
+
+	outs := s.FanOut(2)
+
+	go func() {
+		src.in <- &Message{Name: "test"}
+		close(src.in)
+	}()
+
+	m := <-outs[0].in
+	assert.Equal(t, "test", m.Name)
+
+	m = <-outs[1].in
+	assert.Equal(t, "test", m.Name)
+}

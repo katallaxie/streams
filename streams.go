@@ -1,7 +1,26 @@
 package stream
 
+import (
+	"log"
+	"sync"
+)
+
+// Message ...
 type Message struct {
-	Name string
+	Name     string
+	marked   bool
+	markOnce sync.Once
+
+	sync.Mutex
+}
+
+// Mark ...
+func (m *Message) Mark() bool {
+	m.markOnce.Do(func() {
+		m.marked = true
+	})
+
+	return m.marked
 }
 
 // Source ...
@@ -121,6 +140,45 @@ func (s *Stream) Branch(fns ...func(*Message) (bool, error)) []*Stream {
 	return streams
 }
 
+// FanOut ...
+func (s *Stream) FanOut(num int) []*Stream {
+	streams := make([]*Stream, num)
+
+	for i := range streams {
+		streams[i] = &Stream{make(chan *Message), s.mark, s.buf, s.close, s.err}
+	}
+
+	go func() {
+		for x := range s.in {
+			for i := range streams {
+				streams[i].in <- x
+			}
+		}
+
+		for _, stream := range streams {
+			close(stream.in)
+		}
+	}()
+
+	return streams
+}
+
+// Print ...
+func (s *Stream) Print() *Stream {
+	out := make(chan *Message)
+
+	go func() {
+		for x := range s.in {
+			log.Printf(x.Name)
+
+			out <- x
+		}
+		close(out)
+	}()
+
+	return &Stream{out, s.mark, s.buf, s.close, s.err}
+}
+
 // Sink ...
 func (s *Stream) Sink(sink Sink) error {
 	var err error
@@ -157,6 +215,10 @@ func NewStream(src Source, size int) *Stream {
 		var buf []*Message
 
 		for m := range stream.mark {
+			if m.Mark() {
+				continue
+			}
+
 			buf = append(buf, m)
 			count++
 
