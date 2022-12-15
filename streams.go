@@ -98,6 +98,21 @@ func (s *Stream) Map(fn func(*msg.Message) (*msg.Message, error)) *Stream {
 	return &Stream{out, s.mark, s.close, s.err}
 }
 
+// Do ...
+func (s *Stream) Do(fn func(*msg.Message)) *Stream {
+	out := make(chan *msg.Message)
+
+	go func() {
+		for x := range s.in {
+			fn(x)
+
+			out <- x
+		}
+	}()
+
+	return &Stream{out, s.mark, s.close, s.err}
+}
+
 // Branch ...
 func (s *Stream) Branch(fns ...func(*msg.Message) (bool, error)) []*Stream {
 	streams := make([]*Stream, len(fns))
