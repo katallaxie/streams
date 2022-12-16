@@ -1,3 +1,3 @@
-package stream
+package streams
 
 //go:generate echo "Generating..."
