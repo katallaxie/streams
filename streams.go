@@ -9,36 +9,42 @@ import (
 
 // Source ...
 type Source interface {
-	Messages() chan *msg.Message
-	Commit(...*msg.Message) error
+	Messages() chan msg.Message
+	Commit(...msg.Message) error
 }
 
 // Sink ...
 type Sink interface {
-	Write(...*msg.Message) error
+	Write(...msg.Message) error
 }
 
-// Stream ...
-type Stream struct {
-	in    chan *msg.Message
-	mark  chan *msg.Message
-	close chan bool
-	err   chan error
+// Stream is a stream of messages
+type Stream interface {
+	Close()
+	Do(fn func(msg.Message)) Stream
+	Drain()
+	Fail(err error)
+	FanOut(num int) []Stream
+	Filter(fn func(msg.Message) (bool, error)) Stream
+	Map(fn func(msg.Message) (msg.Message, error)) Stream
+	Mark()
+	Print() Stream
+	Sink(sink Sink) error
 }
 
 // Close ...
-func (s *Stream) Close() {
+func (s *StreamImpl) Close() {
 	close(s.in)
 }
 
 // Drain ...
-func (s *Stream) Drain() {
+func (s *StreamImpl) Drain() {
 	for range s.in {
 	}
 }
 
 // Mark ...
-func (s *Stream) Mark(m *msg.Message) {
+func (s *StreamImpl) Mark(m msg.Message) {
 	if s.mark == nil {
 		return
 	}
@@ -47,7 +53,7 @@ func (s *Stream) Mark(m *msg.Message) {
 }
 
 // Fail ...
-func (s *Stream) Fail(err error) {
+func (s *StreamImpl) Fail(err error) {
 	s.Close()
 	s.Drain()
 
@@ -55,8 +61,8 @@ func (s *Stream) Fail(err error) {
 }
 
 // Filter ...
-func (s *Stream) Filter(fn func(*msg.Message) (bool, error)) *Stream {
-	out := make(chan *msg.Message)
+func (s *StreamImpl) Filter(fn func(msg.Message) (bool, error)) *StreamImpl {
+	out := make(chan msg.Message)
 
 	go func() {
 		for x := range s.in {
@@ -75,12 +81,12 @@ func (s *Stream) Filter(fn func(*msg.Message) (bool, error)) *Stream {
 		close(out)
 	}()
 
-	return &Stream{out, s.mark, s.close, s.err}
+	return &StreamImpl{out, s.mark, s.close, s.err, s.opts}
 }
 
 // Map ...
-func (s *Stream) Map(fn func(*msg.Message) (*msg.Message, error)) *Stream {
-	out := make(chan *msg.Message)
+func (s *StreamImpl) Map(fn func(msg.Message) (msg.Message, error)) *StreamImpl {
+	out := make(chan msg.Message)
 
 	go func() {
 		for x := range s.in {
@@ -95,12 +101,12 @@ func (s *Stream) Map(fn func(*msg.Message) (*msg.Message, error)) *Stream {
 		close(out)
 	}()
 
-	return &Stream{out, s.mark, s.close, s.err}
+	return &StreamImpl{out, s.mark, s.close, s.err, s.opts}
 }
 
 // Do ...
-func (s *Stream) Do(fn func(*msg.Message)) *Stream {
-	out := make(chan *msg.Message)
+func (s *StreamImpl) Do(fn func(msg.Message)) *StreamImpl {
+	out := make(chan msg.Message)
 
 	go func() {
 		for x := range s.in {
@@ -110,15 +116,15 @@ func (s *Stream) Do(fn func(*msg.Message)) *Stream {
 		}
 	}()
 
-	return &Stream{out, s.mark, s.close, s.err}
+	return &StreamImpl{out, s.mark, s.close, s.err, s.opts}
 }
 
 // Branch ...
-func (s *Stream) Branch(fns ...func(*msg.Message) (bool, error)) []*Stream {
-	streams := make([]*Stream, len(fns))
+func (s *StreamImpl) Branch(fns ...func(msg.Message) (bool, error)) []*StreamImpl {
+	streams := make([]*StreamImpl, len(fns))
 
 	for i := range fns {
-		streams[i] = &Stream{make(chan *msg.Message), s.mark, s.close, s.err}
+		streams[i] = &StreamImpl{make(chan msg.Message), s.mark, s.close, s.err, s.opts}
 	}
 
 	go func() {
@@ -145,11 +151,11 @@ func (s *Stream) Branch(fns ...func(*msg.Message) (bool, error)) []*Stream {
 }
 
 // FanOut ...
-func (s *Stream) FanOut(num int) []*Stream {
-	streams := make([]*Stream, num)
+func (s *StreamImpl) FanOut(num int) []*StreamImpl {
+	streams := make([]*StreamImpl, num)
 
 	for i := range streams {
-		streams[i] = &Stream{make(chan *msg.Message), s.mark, s.close, s.err}
+		streams[i] = &StreamImpl{make(chan msg.Message), s.mark, s.close, s.err, s.opts}
 	}
 
 	go func() {
@@ -168,28 +174,28 @@ func (s *Stream) FanOut(num int) []*Stream {
 }
 
 // Print ...
-func (s *Stream) Print() *Stream {
-	out := make(chan *msg.Message)
+func (s *StreamImpl) Print() *StreamImpl {
+	out := make(chan msg.Message)
 
 	go func() {
 		for x := range s.in {
-			log.Printf(x.Name)
+			log.Printf(x.Key())
 
 			out <- x
 		}
 		close(out)
 	}()
 
-	return &Stream{out, s.mark, s.close, s.err}
+	return &StreamImpl{out, s.mark, s.close, s.err, s.opts}
 }
 
 // Merge ...
-func (s *Stream) Merge(streams ...*Stream) *Stream {
-	out := make(chan *msg.Message)
+func (s *StreamImpl) Merge(streams ...StreamImpl) *StreamImpl {
+	out := make(chan msg.Message)
 	var closeOnce sync.Once
 
 	for _, s := range streams {
-		go func(c <-chan *msg.Message) {
+		go func(c <-chan msg.Message) {
 			for x := range c {
 				out <- x
 			}
@@ -200,11 +206,11 @@ func (s *Stream) Merge(streams ...*Stream) *Stream {
 		}(s.in)
 	}
 
-	return &Stream{out, s.mark, s.close, s.err}
+	return &StreamImpl{out, s.mark, s.close, s.err, s.opts}
 }
 
 // Sink ...
-func (s *Stream) Sink(sink Sink) error {
+func (s *StreamImpl) Sink(sink Sink) error {
 	var err error
 
 loop:
@@ -226,42 +232,4 @@ loop:
 	}
 
 	return err
-}
-
-// NewStream ...
-func NewStream(src Source, buffer int) *Stream {
-	stream := new(Stream)
-	stream.mark = make(chan *msg.Message)
-	stream.in = src.Messages()
-
-	go func() {
-		var count int
-		var buf []*msg.Message
-
-		for m := range stream.mark {
-			if m.Marked() {
-				continue
-			}
-
-			buf = append(buf, m)
-			count++
-
-			m.Mark()
-
-			if count <= buffer {
-				continue
-			}
-
-			err := src.Commit(buf...)
-			if err != nil {
-				stream.Fail(err)
-				return
-			}
-
-			buf = buf[:0]
-			count = 0
-		}
-	}()
-
-	return stream
 }

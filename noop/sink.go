@@ -5,7 +5,7 @@ import (
 )
 
 type noopSink struct {
-	buf []*msg.Message
+	buf []msg.Message
 }
 
 // NewSink ...
@@ -16,7 +16,7 @@ func NewSink() *noopSink {
 }
 
 // Write ...
-func (n *noopSink) Write(messages ...*msg.Message) error {
+func (n *noopSink) Write(messages ...msg.Message) error {
 	n.buf = append(n.buf, messages...)
 
 	return nil

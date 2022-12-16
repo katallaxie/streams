@@ -20,13 +20,13 @@ func New(r *kgo.Reader) *kafka {
 }
 
 // Commit ...
-func (k *kafka) Commit(mm ...*msg.Message) error {
+func (k *kafka) Commit(mm ...msg.Message) error {
 	return k.reader.CommitMessages(context.Background())
 }
 
 // Message ...
-func (k *kafka) Messages() chan *msg.Message {
-	out := make(chan *msg.Message)
+func (k *kafka) Messages() chan msg.Message {
+	out := make(chan msg.Message)
 
 	go func() {
 		for {
@@ -35,9 +35,7 @@ func (k *kafka) Messages() chan *msg.Message {
 				break
 			}
 
-			out <- &msg.Message{
-				Name: string(m.Key),
-			}
+			out <- msg.NewMessage(string(m.Key))
 		}
 		close(out)
 	}()

@@ -9,15 +9,15 @@ import (
 )
 
 type mockSource struct {
-	in  chan *msg.Message
-	buf []*msg.Message
+	in  chan msg.Message
+	buf []msg.Message
 }
 
-func (m *mockSource) Messages() chan *msg.Message {
+func (m *mockSource) Messages() chan msg.Message {
 	return m.in
 }
 
-func (m *mockSource) Commit(msgs ...*msg.Message) error {
+func (m *mockSource) Commit(msgs ...msg.Message) error {
 	m.buf = append(m.buf, msgs...)
 
 	return nil
@@ -25,16 +25,16 @@ func (m *mockSource) Commit(msgs ...*msg.Message) error {
 
 func newMockSource() *mockSource {
 	return &mockSource{
-		make(chan *msg.Message),
-		make([]*msg.Message, 0),
+		make(chan msg.Message),
+		make([]msg.Message, 0),
 	}
 }
 
 type mockSink struct {
-	buf []*msg.Message
+	buf []msg.Message
 }
 
-func (m *mockSink) Write(msg ...*msg.Message) error {
+func (m *mockSink) Write(msg ...msg.Message) error {
 	m.buf = append(m.buf, msg...)
 
 	return nil
@@ -42,34 +42,34 @@ func (m *mockSink) Write(msg ...*msg.Message) error {
 
 func newMockSink() *mockSink {
 	return &mockSink{
-		make([]*msg.Message, 0),
+		make([]msg.Message, 0),
 	}
 }
 
 func TestStreamMap(t *testing.T) {
 	src := newMockSource()
 
-	s := NewStream(src, 0)
+	s := NewStream(src)
 	assert.NotNil(t, s)
 
-	out := s.Map(func(m *msg.Message) (*msg.Message, error) {
-		m.Name = "foobar"
+	out := s.Map(func(m msg.Message) (msg.Message, error) {
+		m.SetKey("foobar")
 
 		return m, nil
 	})
 
 	go func() {
-		src.in <- &msg.Message{Name: "test"}
+		src.in <- msg.NewMessage("test")
 	}()
 
 	m := <-out.in
-	assert.Equal(t, "foobar", m.Name)
+	assert.Equal(t, "foobar", m.Key())
 }
 
 func TestStreamMapError(t *testing.T) {
 	src := newMockSource()
 
-	err := NewStream(src, 0).Map(func(m *msg.Message) (*msg.Message, error) {
+	err := NewStream(src).Map(func(m msg.Message) (msg.Message, error) {
 		return nil, fmt.Errorf("error")
 	})
 
@@ -79,25 +79,25 @@ func TestStreamMapError(t *testing.T) {
 func TestStreamFilter(t *testing.T) {
 	src := newMockSource()
 
-	s := NewStream(src, 0)
+	s := NewStream(src)
 	assert.NotNil(t, s)
 
-	out := s.Filter(func(m *msg.Message) (bool, error) {
+	out := s.Filter(func(m msg.Message) (bool, error) {
 		return true, nil
 	})
 
 	go func() {
-		src.in <- &msg.Message{Name: "test"}
+		src.in <- msg.NewMessage("test")
 	}()
 
 	m := <-out.in
-	assert.Equal(t, "test", m.Name)
+	assert.Equal(t, "test", m.Key())
 }
 
 func TestStreamFilterError(t *testing.T) {
 	src := newMockSource()
 
-	err := NewStream(src, 0).Filter(func(m *msg.Message) (bool, error) {
+	err := NewStream(src).Filter(func(m msg.Message) (bool, error) {
 		return true, fmt.Errorf("error")
 	})
 
@@ -107,27 +107,27 @@ func TestStreamFilterError(t *testing.T) {
 func TestStreamBranch(t *testing.T) {
 	src := newMockSource()
 
-	s := NewStream(src, 0)
+	s := NewStream(src)
 	assert.NotNil(t, s)
 
-	outs := s.Branch(func(m *msg.Message) (bool, error) {
+	outs := s.Branch(func(m msg.Message) (bool, error) {
 		return true, nil
-	}, func(m *msg.Message) (bool, error) {
+	}, func(m msg.Message) (bool, error) {
 		return false, nil
 	})
 
 	go func() {
-		src.in <- &msg.Message{Name: "test"}
+		src.in <- msg.NewMessage("test")
 	}()
 
 	m := <-outs[0].in
-	assert.Equal(t, "test", m.Name)
+	assert.Equal(t, "test", m.Key())
 }
 
 func TestStreamError(t *testing.T) {
 	src := newMockSource()
 
-	err := NewStream(src, 0).Branch(func(m *msg.Message) (bool, error) {
+	err := NewStream(src).Branch(func(m msg.Message) (bool, error) {
 		return true, fmt.Errorf("error")
 	})
 
@@ -138,12 +138,12 @@ func TestStreamSink(t *testing.T) {
 	src := newMockSource()
 	sink := newMockSink()
 
-	s := NewStream(src, 0)
+	s := NewStream(src)
 	assert.NotNil(t, s)
 
 	go func() {
-		src.in <- &msg.Message{Name: "test"}
-		src.in <- &msg.Message{Name: "test2"}
+		src.in <- msg.NewMessage("test")
+		src.in <- msg.NewMessage("test2")
 		close(src.in)
 	}()
 
@@ -151,26 +151,26 @@ func TestStreamSink(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, len(sink.buf), 2)
-	assert.Equal(t, "test", sink.buf[0].Name)
-	assert.Equal(t, "test2", sink.buf[1].Name)
+	assert.Equal(t, "test", sink.buf[0].Key())
+	assert.Equal(t, "test2", sink.buf[1].Key())
 }
 
 func TestStreamFanOut(t *testing.T) {
 	src := newMockSource()
 
-	s := NewStream(src, 0)
+	s := NewStream(src)
 	assert.NotNil(t, s)
 
 	outs := s.FanOut(2)
 
 	go func() {
-		src.in <- &msg.Message{Name: "test"}
+		src.in <- msg.NewMessage("test")
 		close(src.in)
 	}()
 
 	m := <-outs[0].in
-	assert.Equal(t, "test", m.Name)
+	assert.Equal(t, "test", m.Key())
 
 	m = <-outs[1].in
-	assert.Equal(t, "test", m.Name)
+	assert.Equal(t, "test", m.Key())
 }
