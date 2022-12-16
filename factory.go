@@ -24,7 +24,7 @@ func WithBuffer(size int) Opt {
 	}
 }
 
-// StreamImpl implements Stream
+// StreamImpl implements Stream.
 type StreamImpl struct {
 	in    chan msg.Message
 	mark  chan msg.Message
@@ -33,7 +33,7 @@ type StreamImpl struct {
 	opts  *Opts
 }
 
-// NewStream ...
+// NewStream from a source of messages.
 func NewStream(src Source, opts ...Opt) *StreamImpl {
 	options := new(Opts)
 	options.Configure(opts...)

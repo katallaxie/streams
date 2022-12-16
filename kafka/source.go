@@ -9,19 +9,25 @@ import (
 
 type kafka struct {
 	reader *kgo.Reader
+	ctx    context.Context
 }
 
-// New ...
-func New(r *kgo.Reader) *kafka {
+// WithContext is a constructor for a kafka source with a cancellation context.
+func WithContext(ctx context.Context) *kafka {
 	k := new(kafka)
-	k.reader = r
+	k.ctx = ctx
 
 	return k
 }
 
 // Commit ...
-func (k *kafka) Commit(mm ...msg.Message) error {
-	return k.reader.CommitMessages(context.Background())
+func (k *kafka) Commit(msgs ...msg.Message) error {
+	mm := make([]kgo.Message, len(msgs))
+	for i, m := range msgs {
+		mm[i] = kgo.Message{Key: []byte(m.Key())}
+	}
+
+	return k.reader.CommitMessages(k.ctx, mm...)
 }
 
 // Message ...
@@ -30,7 +36,7 @@ func (k *kafka) Messages() chan msg.Message {
 
 	go func() {
 		for {
-			m, err := k.reader.FetchMessage(context.Background())
+			m, err := k.reader.FetchMessage(k.ctx)
 			if err != nil {
 				break
 			}

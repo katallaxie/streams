@@ -62,7 +62,7 @@ func WithBalancer(b kafka.Balancer) Opt {
 // NewWriter creates a new Kafka writer.
 func NewWriter(opts ...Opt) *kafka.Writer {
 	w := &kafka.Writer{
-		AllowAutoTopicCreation: false,
+		AllowAutoTopicCreation: true,
 	}
 
 	for _, opt := range opts {
