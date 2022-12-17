@@ -7,43 +7,46 @@ import (
 	"github.com/ionos-cloud/streams/msg"
 )
 
-// Source ...
+// Source is a source of messages.
 type Source interface {
 	Messages() chan msg.Message
 	Commit(...msg.Message) error
 }
 
-// Sink ...
+// Sink is a sink of messages.
 type Sink interface {
 	Write(...msg.Message) error
 }
 
-// Stream is a stream of messages
+// Predicate is a function that returns true or false.
+type Predicate func(msg.Message) (bool, error)
+
+// Stream is a stream of messages.
 type Stream interface {
 	Close()
 	Do(fn func(msg.Message)) Stream
 	Drain()
 	Fail(err error)
-	FanOut(num int) []Stream
+	FanOut(predicates ...Predicate) []Stream
 	Filter(fn func(msg.Message) (bool, error)) Stream
 	Map(fn func(msg.Message) (msg.Message, error)) Stream
 	Mark()
-	Print() Stream
+	Log() Stream
 	Sink(sink Sink) error
 }
 
-// Close ...
+// Close is a function that closes a stream.
 func (s *StreamImpl) Close() {
 	close(s.in)
 }
 
-// Drain ...
+// Drain is a function that drains a stream.
 func (s *StreamImpl) Drain() {
 	for range s.in {
 	}
 }
 
-// Mark ...
+// Mark is a function that marks a message.
 func (s *StreamImpl) Mark(m msg.Message) {
 	if s.mark == nil {
 		return
@@ -52,7 +55,7 @@ func (s *StreamImpl) Mark(m msg.Message) {
 	s.mark <- m
 }
 
-// Fail ...
+// Fail is a function that fails a stream
 func (s *StreamImpl) Fail(err error) {
 	s.Close()
 	s.Drain()
@@ -60,7 +63,7 @@ func (s *StreamImpl) Fail(err error) {
 	s.err <- err
 }
 
-// Filter ...
+// Filter is a function that filters a stream.
 func (s *StreamImpl) Filter(fn func(msg.Message) (bool, error)) *StreamImpl {
 	out := make(chan msg.Message)
 
@@ -104,7 +107,7 @@ func (s *StreamImpl) Map(fn func(msg.Message) (msg.Message, error)) *StreamImpl 
 	return &StreamImpl{out, s.mark, s.close, s.err, s.opts}
 }
 
-// Do ...
+// Do is a function that executes a function on a stream.
 func (s *StreamImpl) Do(fn func(msg.Message)) *StreamImpl {
 	out := make(chan msg.Message)
 
@@ -119,7 +122,7 @@ func (s *StreamImpl) Do(fn func(msg.Message)) *StreamImpl {
 	return &StreamImpl{out, s.mark, s.close, s.err, s.opts}
 }
 
-// Branch ...
+// Branch is branch a stream to multiple streams.
 func (s *StreamImpl) Branch(fns ...func(msg.Message) (bool, error)) []*StreamImpl {
 	streams := make([]*StreamImpl, len(fns))
 
@@ -150,7 +153,7 @@ func (s *StreamImpl) Branch(fns ...func(msg.Message) (bool, error)) []*StreamImp
 	return streams
 }
 
-// FanOut ...
+// FanOut is fan out a stream to multiple streams.
 func (s *StreamImpl) FanOut(num int) []*StreamImpl {
 	streams := make([]*StreamImpl, num)
 
@@ -173,13 +176,13 @@ func (s *StreamImpl) FanOut(num int) []*StreamImpl {
 	return streams
 }
 
-// Print ...
-func (s *StreamImpl) Print() *StreamImpl {
+// Log is logging the content of a stream.
+func (s *StreamImpl) Log() *StreamImpl {
 	out := make(chan msg.Message)
 
 	go func() {
 		for x := range s.in {
-			log.Print(x.Key())
+			log.Print(x)
 
 			out <- x
 		}
@@ -209,7 +212,7 @@ func (s *StreamImpl) Merge(streams ...StreamImpl) *StreamImpl {
 	return &StreamImpl{out, s.mark, s.close, s.err, s.opts}
 }
 
-// Sink ...
+// Sink is wire up a stream to a sink.
 func (s *StreamImpl) Sink(sink Sink) error {
 	var err error
 
