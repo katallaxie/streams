@@ -28,7 +28,7 @@ type Stream interface {
 	Drain()
 	Fail(err error)
 	FanOut(predicates ...Predicate) []Stream
-	Filter(fn func(msg.Message) (bool, error)) Stream
+	Filter(predicate Predicate) Stream
 	Map(fn func(msg.Message) (msg.Message, error)) Stream
 	Mark()
 	Log() Stream
@@ -64,7 +64,7 @@ func (s *StreamImpl) Fail(err error) {
 }
 
 // Filter is a function that filters a stream.
-func (s *StreamImpl) Filter(fn func(msg.Message) (bool, error)) *StreamImpl {
+func (s *StreamImpl) Filter(fn Predicate) *StreamImpl {
 	out := make(chan msg.Message)
 
 	go func() {
@@ -123,7 +123,7 @@ func (s *StreamImpl) Do(fn func(msg.Message)) *StreamImpl {
 }
 
 // Branch is branch a stream to multiple streams.
-func (s *StreamImpl) Branch(fns ...func(msg.Message) (bool, error)) []*StreamImpl {
+func (s *StreamImpl) Branch(fns ...Predicate) []*StreamImpl {
 	streams := make([]*StreamImpl, len(fns))
 
 	for i := range fns {
