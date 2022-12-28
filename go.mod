@@ -7,7 +7,7 @@ require (
 	github.com/golangci/golangci-lint v1.50.1
 	github.com/prometheus/client_golang v1.12.1
 	github.com/segmentio/kafka-go v0.4.38
-	github.com/spf13/cobra v1.6.0
+	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.0
 	gotest.tools/gotestsum v1.8.2
 	mvdan.cc/gofumpt v0.4.0
