@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/golang/mock v1.6.0
 	github.com/golangci/golangci-lint v1.50.1
+	github.com/prometheus/client_golang v1.12.1
 	github.com/segmentio/kafka-go v0.4.38
 	github.com/spf13/cobra v1.6.0
 	github.com/stretchr/testify v1.8.0
@@ -122,7 +123,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/polyfloyd/go-errorlint v1.0.5 // indirect
-	github.com/prometheus/client_golang v1.12.1 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
