@@ -7,6 +7,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/ionos-cloud/streams"
+	"github.com/ionos-cloud/streams/kafka"
+	"github.com/ionos-cloud/streams/kafka/reader"
+	"github.com/ionos-cloud/streams/msg"
+	"github.com/ionos-cloud/streams/noop"
+
+	kgo "github.com/segmentio/kafka-go"
 	"github.com/spf13/cobra"
 )
 
@@ -32,6 +39,30 @@ func main() {
 func run(ctx context.Context) error {
 	log.SetFlags(0)
 	log.SetOutput(os.Stderr)
+
+	dialer := &kgo.Dialer{
+		Timeout:   10 * time.Second,
+		DualStack: true,
+	}
+
+	r := reader.NewReader(
+		reader.WithDialer(dialer),
+		reader.WithBrokers("localhost:9092"),
+		reader.WithGroupID("demo12345"),
+		reader.WithTopic("demo12345"),
+	)
+
+	src := kafka.WithContext(ctx, r)
+
+	s := streams.NewStream(src)
+	s.Map(func(m msg.Message) (msg.Message, error) {
+		m.SetKey("foo")
+
+		return m, nil
+	})
+	s.Sink(noop.NewSink())
+
+	<-ctx.Done()
 
 	return nil
 }

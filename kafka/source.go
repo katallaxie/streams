@@ -13,9 +13,10 @@ type kafka struct {
 }
 
 // WithContext is a constructor for a kafka source with a cancellation context.
-func WithContext(ctx context.Context) *kafka {
+func WithContext(ctx context.Context, r *kgo.Reader) *kafka {
 	k := new(kafka)
 	k.ctx = ctx
+	k.reader = r
 
 	return k
 }
