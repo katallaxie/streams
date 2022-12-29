@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/kafka"
 	"github.com/ionos-cloud/streams/kafka/reader"
-	"github.com/ionos-cloud/streams/msg"
 	"github.com/ionos-cloud/streams/noop"
 
 	kgo "github.com/segmentio/kafka-go"
@@ -55,12 +54,7 @@ func run(ctx context.Context) error {
 	src := kafka.WithContext(ctx, r)
 
 	s := streams.NewStream(src)
-	s.Map(func(m msg.Message) (msg.Message, error) {
-		m.SetKey("foo")
-
-		return m, nil
-	})
-	s.Sink(noop.NewSink())
+	s.Log().Sink(noop.NewSink())
 
 	<-ctx.Done()
 

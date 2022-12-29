@@ -44,6 +44,7 @@ func (k *kafka) Messages() chan msg.Message {
 
 			out <- msg.NewMessage(string(m.Key))
 		}
+
 		close(out)
 	}()
 

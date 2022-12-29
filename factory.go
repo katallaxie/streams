@@ -1,6 +1,8 @@
 package streams
 
-import "github.com/ionos-cloud/streams/msg"
+import (
+	"github.com/ionos-cloud/streams/msg"
+)
 
 // Opts is a set of options for a stream.
 type Opts struct {

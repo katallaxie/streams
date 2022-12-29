@@ -182,7 +182,7 @@ func (s *StreamImpl) Log() *StreamImpl {
 
 	go func() {
 		for x := range s.in {
-			log.Print(x)
+			log.Printf("%s", x.Key())
 
 			out <- x
 		}
