@@ -27,27 +27,27 @@ func WithBuffer(size int) Opt {
 }
 
 // StreamImpl implements Stream.
-type StreamImpl struct {
-	in    chan msg.Message
-	mark  chan msg.Message
+type StreamImpl[K, V any] struct {
+	in    chan msg.Message[K, V]
+	mark  chan msg.Message[K, V]
 	close chan bool
 	err   chan error
 	opts  *Opts
 }
 
 // NewStream from a source of messages.
-func NewStream(src Source, opts ...Opt) *StreamImpl {
+func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 	options := new(Opts)
 	options.Configure(opts...)
 
-	stream := new(StreamImpl)
+	stream := new(StreamImpl[K, V])
 	stream.opts = options
-	stream.mark = make(chan msg.Message)
+	stream.mark = make(chan msg.Message[K, V])
 	stream.in = src.Messages()
 
 	go func() {
 		var count int
-		var buf []msg.Message
+		var buf []msg.Message[K, V]
 
 		for m := range stream.mark {
 			if m.Marked() {

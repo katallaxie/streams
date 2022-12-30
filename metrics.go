@@ -38,14 +38,11 @@ func (r *Registry) Handler() http.Handler {
 	return promhttp.InstrumentMetricHandler(r, promhttp.HandlerFor(r, promhttp.HandlerOpts{}))
 }
 
-var (
-	// DefaultMetrics ...
-	DefaultMetrics = NewMetrics()
-)
+// DefaultMetrics ...
+var DefaultMetrics = NewMetrics()
 
 // Metrics ...
-type Metrics struct {
-}
+type Metrics struct{}
 
 // NewMetrics ...
 func NewMetrics() *Metrics {
@@ -56,12 +53,10 @@ func NewMetrics() *Metrics {
 
 // Collect ...
 func (m *Metrics) Collect(ch chan<- prometheus.Metric) {
-
 }
 
 // Describe ...
 func (m *Metrics) Describe(ch chan<- *prometheus.Desc) {
-
 }
 
 // Monitor ...

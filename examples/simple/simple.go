@@ -51,10 +51,10 @@ func run(ctx context.Context) error {
 		reader.WithTopic("demo12345"),
 	)
 
-	src := kafka.WithContext[string](ctx, r)
+	src := kafka.WithContext[string, string](ctx, r)
 
-	s := streams.NewStream(src)
-	s.Log().Sink(noop.NewSink())
+	s := streams.NewStream[string, string](src)
+	s.Log().Sink(noop.NewSink[string, string]())
 
 	<-ctx.Done()
 

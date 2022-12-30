@@ -8,58 +8,58 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type mockSource struct {
-	in  chan msg.Message
-	buf []msg.Message
+type mockSource[K, V any] struct {
+	in  chan msg.Message[K, V]
+	buf []msg.Message[K, V]
 }
 
-func (m *mockSource) Messages() chan msg.Message {
+func (m *mockSource[K, V]) Messages() chan msg.Message[K, V] {
 	return m.in
 }
 
-func (m *mockSource) Commit(msgs ...msg.Message) error {
+func (m *mockSource[K, V]) Commit(msgs ...msg.Message[K, V]) error {
 	m.buf = append(m.buf, msgs...)
 
 	return nil
 }
 
-func newMockSource() *mockSource {
-	return &mockSource{
-		make(chan msg.Message),
-		make([]msg.Message, 0),
+func newMockSource[K, V any]() *mockSource[K, V] {
+	return &mockSource[K, V]{
+		make(chan msg.Message[K, V]),
+		make([]msg.Message[K, V], 0),
 	}
 }
 
-type mockSink struct {
-	buf []msg.Message
+type mockSink[K, V any] struct {
+	buf []msg.Message[K, V]
 }
 
-func (m *mockSink) Write(msg ...msg.Message) error {
+func (m *mockSink[K, V]) Write(msg ...msg.Message[K, V]) error {
 	m.buf = append(m.buf, msg...)
 
 	return nil
 }
 
-func newMockSink() *mockSink {
-	return &mockSink{
-		make([]msg.Message, 0),
+func newMockSink[K, V any]() *mockSink[K, V] {
+	return &mockSink[K, V]{
+		make([]msg.Message[K, V], 0),
 	}
 }
 
 func TestStreamMap(t *testing.T) {
-	src := newMockSource()
+	src := newMockSource[string, string]()
 
-	s := NewStream(src)
+	s := NewStream[string, string](src)
 	assert.NotNil(t, s)
 
-	out := s.Map(func(m msg.Message) (msg.Message, error) {
+	out := s.Map(func(m msg.Message[string, string]) (msg.Message[string, string], error) {
 		m.SetKey("foobar")
 
 		return m, nil
 	})
 
 	go func() {
-		src.in <- msg.NewMessage("test")
+		src.in <- msg.NewMessage("test", "test")
 	}()
 
 	m := <-out.in
@@ -67,9 +67,9 @@ func TestStreamMap(t *testing.T) {
 }
 
 func TestStreamMapError(t *testing.T) {
-	src := newMockSource()
+	src := newMockSource[string, string]()
 
-	err := NewStream(src).Map(func(m msg.Message) (msg.Message, error) {
+	err := NewStream[string, string](src).Map(func(m msg.Message[string, string]) (msg.Message[string, string], error) {
 		return nil, fmt.Errorf("error")
 	})
 
@@ -77,17 +77,17 @@ func TestStreamMapError(t *testing.T) {
 }
 
 func TestStreamFilter(t *testing.T) {
-	src := newMockSource()
+	src := newMockSource[string, string]()
 
-	s := NewStream(src)
+	s := NewStream[string, string](src)
 	assert.NotNil(t, s)
 
-	out := s.Filter(func(m msg.Message) (bool, error) {
+	out := s.Filter(func(m msg.Message[string, string]) (bool, error) {
 		return true, nil
 	})
 
 	go func() {
-		src.in <- msg.NewMessage("test")
+		src.in <- msg.NewMessage("test", "test")
 	}()
 
 	m := <-out.in
@@ -95,9 +95,9 @@ func TestStreamFilter(t *testing.T) {
 }
 
 func TestStreamFilterError(t *testing.T) {
-	src := newMockSource()
+	src := newMockSource[string, string]()
 
-	err := NewStream(src).Filter(func(m msg.Message) (bool, error) {
+	err := NewStream[string, string](src).Filter(func(m msg.Message[string, string]) (bool, error) {
 		return true, fmt.Errorf("error")
 	})
 
@@ -105,19 +105,19 @@ func TestStreamFilterError(t *testing.T) {
 }
 
 func TestStreamBranch(t *testing.T) {
-	src := newMockSource()
+	src := newMockSource[string, string]()
 
-	s := NewStream(src)
+	s := NewStream[string, string](src)
 	assert.NotNil(t, s)
 
-	outs := s.Branch(func(m msg.Message) (bool, error) {
+	outs := s.Branch(func(m msg.Message[string, string]) (bool, error) {
 		return true, nil
-	}, func(m msg.Message) (bool, error) {
+	}, func(m msg.Message[string, string]) (bool, error) {
 		return false, nil
 	})
 
 	go func() {
-		src.in <- msg.NewMessage("test")
+		src.in <- msg.NewMessage("test", "test")
 	}()
 
 	m := <-outs[0].in
@@ -125,9 +125,9 @@ func TestStreamBranch(t *testing.T) {
 }
 
 func TestStreamError(t *testing.T) {
-	src := newMockSource()
+	src := newMockSource[string, string]()
 
-	err := NewStream(src).Branch(func(m msg.Message) (bool, error) {
+	err := NewStream[string, string](src).Branch(func(m msg.Message[string, string]) (bool, error) {
 		return true, fmt.Errorf("error")
 	})
 
@@ -135,15 +135,15 @@ func TestStreamError(t *testing.T) {
 }
 
 func TestStreamSink(t *testing.T) {
-	src := newMockSource()
-	sink := newMockSink()
+	src := newMockSource[string, string]()
+	sink := newMockSink[string, string]()
 
-	s := NewStream(src)
+	s := NewStream[string, string](src)
 	assert.NotNil(t, s)
 
 	go func() {
-		src.in <- msg.NewMessage("test")
-		src.in <- msg.NewMessage("test2")
+		src.in <- msg.NewMessage("test", "test")
+		src.in <- msg.NewMessage("test2", "test")
 		close(src.in)
 	}()
 
@@ -156,15 +156,15 @@ func TestStreamSink(t *testing.T) {
 }
 
 func TestStreamFanOut(t *testing.T) {
-	src := newMockSource()
+	src := newMockSource[string, string]()
 
-	s := NewStream(src)
+	s := NewStream[string, string](src)
 	assert.NotNil(t, s)
 
 	outs := s.FanOut(2)
 
 	go func() {
-		src.in <- msg.NewMessage("test")
+		src.in <- msg.NewMessage("test", "test")
 		close(src.in)
 	}()
 
