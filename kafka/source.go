@@ -7,14 +7,16 @@ import (
 	kgo "github.com/segmentio/kafka-go"
 )
 
-type kafka struct {
-	reader *kgo.Reader
-	ctx    context.Context
+type kafka[T any] struct {
+	reader       *kgo.Reader
+	ctx          context.Context
+	keyDecoder   Decoder[T]
+	valueDecoder Decoder[T]
 }
 
 // WithContext is a constructor for a kafka source with a cancellation context.
-func WithContext(ctx context.Context, r *kgo.Reader) *kafka {
-	k := new(kafka)
+func WithContext[T any](ctx context.Context, r *kgo.Reader) *kafka[T] {
+	k := new(kafka[T])
 	k.ctx = ctx
 	k.reader = r
 
@@ -22,7 +24,7 @@ func WithContext(ctx context.Context, r *kgo.Reader) *kafka {
 }
 
 // Commit ...
-func (k *kafka) Commit(msgs ...msg.Message) error {
+func (k *kafka[T]) Commit(msgs ...msg.Message) error {
 	mm := make([]kgo.Message, len(msgs))
 	for i, m := range msgs {
 		mm[i] = kgo.Message{Key: []byte(m.Key())}
@@ -32,7 +34,7 @@ func (k *kafka) Commit(msgs ...msg.Message) error {
 }
 
 // Message ...
-func (k *kafka) Messages() chan msg.Message {
+func (k *kafka[T]) Messages() chan msg.Message {
 	out := make(chan msg.Message)
 
 	go func() {
