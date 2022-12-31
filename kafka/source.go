@@ -12,13 +12,17 @@ type kafka[K, V any] struct {
 	ctx          context.Context
 	keyDecoder   Decoder[K]
 	valueDecoder Decoder[V]
+	keyEncoder   Encoder[K]
 }
 
 // WithContext is a constructor for a kafka source with a cancellation context.
-func WithContext[K, V any](ctx context.Context, r *kgo.Reader) *kafka[K, V] {
+func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key Decoder[K], value Decoder[V], keyEncoder Encoder[K]) *kafka[K, V] {
 	k := new(kafka[K, V])
 	k.ctx = ctx
 	k.reader = r
+	k.keyDecoder = key
+	k.valueDecoder = value
+	k.keyEncoder = keyEncoder
 
 	return k
 }
@@ -26,8 +30,8 @@ func WithContext[K, V any](ctx context.Context, r *kgo.Reader) *kafka[K, V] {
 // Commit ...
 func (k *kafka[K, V]) Commit(msgs ...msg.Message[K, V]) error {
 	mm := make([]kgo.Message, len(msgs))
-	for i := range msgs {
-		mm[i] = kgo.Message{Key: []byte("help")}
+	for i, m := range msgs {
+		mm[i] = kgo.Message{Topic: m.Topic(), Partition: m.Partition(), Offset: int64(m.Offset())}
 	}
 
 	return k.reader.CommitMessages(k.ctx, mm...)
@@ -54,7 +58,7 @@ func (k *kafka[K, V]) Messages() chan msg.Message[K, V] {
 				break
 			}
 
-			out <- msg.NewMessage(key, val)
+			out <- msg.NewMessage(key, val, int(m.Offset), m.Partition, m.Topic)
 		}
 
 		close(out)

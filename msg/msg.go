@@ -1,6 +1,8 @@
 package msg
 
-import "sync"
+import (
+	"sync"
+)
 
 // Message represents a message in a Stream
 type Message[K, V any] interface {
@@ -9,12 +11,18 @@ type Message[K, V any] interface {
 	Key() K
 	Value() V
 	SetKey(key K)
+	Topic() string
+	Offset() int
+	Partition() int
 }
 
 // MessageImpl is the default implementation of Message
 type MessageImpl[K, V any] struct {
 	key        K
 	val        V
+	partition  int
+	offset     int
+	topic      string
 	marked     bool
 	markedOnce sync.Once
 
@@ -22,9 +30,13 @@ type MessageImpl[K, V any] struct {
 }
 
 // NewMessage creates a new Message.
-func NewMessage[K, V any](key K, val V) Message[K, V] {
+func NewMessage[K, V any](key K, val V, offset int, partition int, topic string) Message[K, V] {
 	return &MessageImpl[K, V]{
-		key: key,
+		key:       key,
+		val:       val,
+		offset:    offset,
+		partition: partition,
+		topic:     topic,
 	}
 }
 
@@ -56,4 +68,19 @@ func (m *MessageImpl[K, V]) Marked() bool {
 	defer m.Unlock()
 
 	return m.marked
+}
+
+// Topic ...
+func (m *MessageImpl[K, V]) Topic() string {
+	return m.topic
+}
+
+// Offset ...
+func (m *MessageImpl[K, V]) Offset() int {
+	return m.offset
+}
+
+// Partition ...
+func (m *MessageImpl[K, V]) Partition() int {
+	return m.partition
 }

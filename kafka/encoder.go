@@ -55,7 +55,7 @@ func (e ByteEncoder) Encode(v interface{}) ([]byte, error) {
 type StringDecoder struct{}
 
 // Decode transforms byte data to a string.
-func (d StringDecoder) Decode(b []byte) (interface{}, error) {
+func (d StringDecoder) Decode(b []byte) (string, error) {
 	return string(b), nil
 }
 
@@ -63,10 +63,6 @@ func (d StringDecoder) Decode(b []byte) (interface{}, error) {
 type StringEncoder struct{}
 
 // Encode transforms the string data to bytes.
-func (e StringEncoder) Encode(v interface{}) ([]byte, error) {
-	if v == nil {
-		return nil, nil
-	}
-
-	return []byte(v.(string)), nil
+func (e StringEncoder) Encode(v string) ([]byte, error) {
+	return []byte(v), nil
 }
