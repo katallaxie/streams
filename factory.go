@@ -6,7 +6,8 @@ import (
 
 // Opts is a set of options for a stream.
 type Opts struct {
-	buffer int
+	buffer  int
+	monitor *Monitor
 }
 
 // Comfigure is a function that configures a stream.
@@ -23,6 +24,13 @@ type Opt func(*Opts)
 func WithBuffer(size int) Opt {
 	return func(o *Opts) {
 		o.buffer = size
+	}
+}
+
+// WithMonitor configures a statistics monitor.
+func WithMonitor(m *Monitor) Opt {
+	return func(o *Opts) {
+		o.monitor = m
 	}
 }
 
