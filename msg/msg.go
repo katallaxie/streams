@@ -6,14 +6,15 @@ import (
 
 // Message represents a message in a Stream
 type Message[K, V any] interface {
+	Key() K
 	Mark()
 	Marked() bool
-	Key() K
-	Value() V
-	SetKey(key K)
-	Topic() string
 	Offset() int
 	Partition() int
+	SetKey(key K)
+	SetValue(val V)
+	Topic() string
+	Value() V
 }
 
 // MessageImpl is the default implementation of Message
@@ -33,10 +34,10 @@ type MessageImpl[K, V any] struct {
 func NewMessage[K, V any](key K, val V, offset int, partition int, topic string) Message[K, V] {
 	return &MessageImpl[K, V]{
 		key:       key,
-		val:       val,
 		offset:    offset,
 		partition: partition,
 		topic:     topic,
+		val:       val,
 	}
 }
 
@@ -53,6 +54,11 @@ func (m *MessageImpl[K, V]) Value() V {
 // SetKey is used to set the key of a message.
 func (m *MessageImpl[K, V]) SetKey(key K) {
 	m.key = key
+}
+
+// SetValue is used to set the value of a message.
+func (m *MessageImpl[K, V]) SetValue(val V) {
+	m.val = val
 }
 
 // Mark is used to mark a message as processed

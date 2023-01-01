@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/ionos-cloud/streams/msg"
+
 	"github.com/stretchr/testify/assert"
 )
 
