@@ -14,3 +14,7 @@ A teeny-tiny package to create stream processing workloads. It is intended to be
 ## Docs
 
 You can find the documentation hosted on [godoc.org](https://godoc.org/github.com/ionos-cloud/streams).
+
+## License
+
+[Apache 2.0](/LICENSE)
