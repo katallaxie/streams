@@ -1,6 +1,7 @@
 package streams
 
 import (
+	"sync"
 	"time"
 
 	"github.com/ionos-cloud/streams/msg"
@@ -111,7 +112,9 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 
 			stream.metrics.latency.stop()
 
-			stream.opts.monitor.Gather(stream)
+			if stream.opts.monitor != nil {
+				stream.opts.monitor.Gather(stream)
+			}
 
 			buf = buf[:0]
 			count = 0
@@ -129,6 +132,8 @@ type latencyMetric struct {
 
 	Metric
 	Collector
+
+	sync.Mutex
 }
 
 // Collect is collecting metrics.
@@ -144,10 +149,16 @@ func (m *latencyMetric) Write(monitor *Monitor) error {
 }
 
 func (m *latencyMetric) start() {
+	m.Lock()
+	defer m.Unlock()
+
 	m.now = time.Now()
 }
 
 func (m *latencyMetric) stop() {
+	m.Lock()
+	defer m.Unlock()
+
 	m.value = float64(time.Since(m.now).Microseconds())
 }
 
