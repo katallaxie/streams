@@ -15,7 +15,7 @@ type Metric interface {
 }
 
 // Probe ...
-type Probe interface {
+type Probe[K, V any] interface {
 	// Do ...
 	Do(ctx context.Context, monitor Monitor) error
 

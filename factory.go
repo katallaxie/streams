@@ -41,6 +41,8 @@ type StreamImpl[K, V any] struct {
 	close chan bool
 	err   chan error
 	opts  *Opts
+
+	Collector
 }
 
 // NewStream from a source of messages.
@@ -76,6 +78,8 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 				stream.Fail(err)
 				return
 			}
+
+			stream.opts.monitor.Gather(stream)
 
 			buf = buf[:0]
 			count = 0

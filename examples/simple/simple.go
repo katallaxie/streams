@@ -53,7 +53,14 @@ func run(ctx context.Context) error {
 
 	src := kafka.WithContext[string, string](ctx, r, kafka.StringDecoder{}, kafka.StringDecoder{}, kafka.StringEncoder{})
 
-	s := streams.NewStream[string, string](src)
+	err := streams.DefaultRegisterer.Register(streams.DefaultMetrics)
+	if err != nil {
+		return err
+	}
+
+	m := streams.NewMonitor(streams.DefaultMetrics)
+
+	s := streams.NewStream[string, string](src, streams.WithMonitor(m))
 	s.Log().Sink(noop.NewSink[string, string]())
 
 	<-ctx.Done()
