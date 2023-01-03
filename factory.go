@@ -1,6 +1,7 @@
 package streams
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -59,6 +60,7 @@ type StreamImpl[K, V any] struct {
 
 type metrics struct {
 	latency *latencyMetric
+	count   *countMetric
 }
 
 // NewStream from a source of messages.
@@ -76,6 +78,7 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 
 	stream.metrics = new(metrics)
 	stream.metrics.latency = newLatencyMetric(stream.opts.nodeName)
+	stream.metrics.count = newCountMetric(stream.opts.nodeName)
 
 	go func() {
 		for x := range src.Messages() {
@@ -113,6 +116,9 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 			}
 
 			stream.metrics.latency.stop()
+			stream.metrics.count.inc(len(buf))
+
+			fmt.Println(stream.metrics.count.value)
 
 			if stream.opts.monitor != nil {
 				stream.opts.monitor.Gather(stream)
@@ -124,6 +130,49 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 	}()
 
 	return stream
+}
+
+type countMetric struct {
+	value    float64
+	nodeName string
+
+	Metric
+	Collector
+
+	sync.Mutex
+}
+
+// Collect is collecting metrics.
+func (m *countMetric) Collect(ch chan<- Metric) {
+	ch <- m
+}
+
+// Write is writing metrics to a channel.
+func (m *countMetric) Write(monitor *Monitor) error {
+	monitor.SetCount(m.nodeName, m.value)
+	m.reset()
+
+	return nil
+}
+
+func (m *countMetric) inc(count int) {
+	m.Lock()
+	defer m.Unlock()
+
+	m.value += float64(int64(count))
+}
+
+func (m *countMetric) reset() {
+	m.Lock()
+	defer m.Unlock()
+
+	m.value = 0
+}
+
+func newCountMetric(nodeName string) *countMetric {
+	return &countMetric{
+		nodeName: nodeName,
+	}
 }
 
 type latencyMetric struct {

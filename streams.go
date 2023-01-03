@@ -235,4 +235,5 @@ func (s *StreamImpl[K, V]) Sink(sink Sink[K, V]) {
 // Collect is collect the content of a stream.
 func (s *StreamImpl[K, V]) Collect(ch chan<- Metric) {
 	s.metrics.latency.Collect(ch)
+	s.metrics.count.Collect(ch)
 }
