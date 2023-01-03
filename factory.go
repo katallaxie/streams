@@ -50,11 +50,9 @@ type StreamImpl[K, V any] struct {
 	in      chan msg.Message[K, V]
 	mark    chan msg.Message[K, V]
 	close   chan bool
-	err     error
+	err     chan error
 	metrics *metrics
 	opts    *Opts
-
-	errOnce sync.Once
 
 	Collector
 }
@@ -74,6 +72,7 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 	stream.opts = options
 	stream.mark = make(chan msg.Message[K, V])
 	stream.in = out
+	stream.err = make(chan error, 1)
 
 	stream.metrics = new(metrics)
 	stream.metrics.latency = newLatencyMetric(stream.opts.nodeName)
@@ -86,6 +85,7 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 		}
 
 		close(out)
+		close(stream.err)
 	}()
 
 	go func() {

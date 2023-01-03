@@ -61,14 +61,12 @@ func (s *StreamImpl[K, V]) Fail(err error) {
 	s.Drain()
 	s.Close()
 
-	s.errOnce.Do(func() {
-		s.err = err
-	})
+	s.err <- err
 }
 
 // Error is a function that returns the error of a stream.
 func (s *StreamImpl[K, V]) Error() error {
-	return s.err
+	return <-s.err
 }
 
 // Filter is a function that filters a stream.
@@ -92,7 +90,7 @@ func (s *StreamImpl[K, V]) Filter(fn Predicate[K, V]) *StreamImpl[K, V] {
 		close(out)
 	}()
 
-	return &StreamImpl[K, V]{out, s.mark, s.close, s.err, s.metrics, s.opts, s.errOnce, s.Collector}
+	return &StreamImpl[K, V]{out, s.mark, s.close, s.err, s.metrics, s.opts, s.Collector}
 }
 
 // Map is a function that maps a stream.
@@ -112,7 +110,7 @@ func (s *StreamImpl[K, V]) Map(fn func(msg.Message[K, V]) (msg.Message[K, V], er
 		close(out)
 	}()
 
-	return &StreamImpl[K, V]{out, s.mark, s.close, s.err, s.metrics, s.opts, s.errOnce, s.Collector}
+	return &StreamImpl[K, V]{out, s.mark, s.close, s.err, s.metrics, s.opts, s.Collector}
 }
 
 // Do is a function that executes a function on a stream.
@@ -127,7 +125,7 @@ func (s *StreamImpl[K, V]) Do(fn func(msg.Message[K, V])) *StreamImpl[K, V] {
 		}
 	}()
 
-	return &StreamImpl[K, V]{out, s.mark, s.close, s.err, s.metrics, s.opts, s.errOnce, s.Collector}
+	return &StreamImpl[K, V]{out, s.mark, s.close, s.err, s.metrics, s.opts, s.Collector}
 }
 
 // Branch is branch a stream to multiple streams.
@@ -135,7 +133,7 @@ func (s *StreamImpl[K, V]) Branch(fns ...Predicate[K, V]) []*StreamImpl[K, V] {
 	streams := make([]*StreamImpl[K, V], len(fns))
 
 	for i := range fns {
-		streams[i] = &StreamImpl[K, V]{make(chan msg.Message[K, V]), s.mark, s.close, s.err, s.metrics, s.opts, s.errOnce, s.Collector}
+		streams[i] = &StreamImpl[K, V]{make(chan msg.Message[K, V]), s.mark, s.close, s.err, s.metrics, s.opts, s.Collector}
 	}
 
 	go func() {
@@ -166,7 +164,7 @@ func (s *StreamImpl[K, V]) FanOut(num int) []*StreamImpl[K, V] {
 	streams := make([]*StreamImpl[K, V], num)
 
 	for i := range streams {
-		streams[i] = &StreamImpl[K, V]{make(chan msg.Message[K, V]), s.mark, s.close, s.err, s.metrics, s.opts, s.errOnce, s.Collector}
+		streams[i] = &StreamImpl[K, V]{make(chan msg.Message[K, V]), s.mark, s.close, s.err, s.metrics, s.opts, s.Collector}
 	}
 
 	go func() {
@@ -194,10 +192,11 @@ func (s *StreamImpl[K, V]) Log() *StreamImpl[K, V] {
 
 			out <- x
 		}
+
 		close(out)
 	}()
 
-	return &StreamImpl[K, V]{out, s.mark, s.close, s.err, s.metrics, s.opts, s.errOnce, s.Collector}
+	return &StreamImpl[K, V]{out, s.mark, s.close, s.err, s.metrics, s.opts, s.Collector}
 }
 
 // Merge is merge multiple streams into one.
@@ -217,7 +216,7 @@ func (s *StreamImpl[K, V]) Merge(streams ...StreamImpl[K, V]) *StreamImpl[K, V] 
 		}(s.in)
 	}
 
-	return &StreamImpl[K, V]{out, s.mark, s.close, s.err, s.metrics, s.opts, s.errOnce, s.Collector}
+	return &StreamImpl[K, V]{out, s.mark, s.close, s.err, s.metrics, s.opts, s.Collector}
 }
 
 // Sink is wire up a stream to a sink.
