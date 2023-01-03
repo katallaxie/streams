@@ -62,6 +62,9 @@ func run(ctx context.Context) error {
 
 	s := streams.NewStream[string, string](src, streams.WithMonitor(m))
 	s.Log().Sink(noop.NewSink[string, string]())
+	if s.Error() != nil {
+		return err
+	}
 
 	return nil
 }

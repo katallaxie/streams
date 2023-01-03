@@ -50,9 +50,11 @@ type StreamImpl[K, V any] struct {
 	in      chan msg.Message[K, V]
 	mark    chan msg.Message[K, V]
 	close   chan bool
-	err     chan error
+	err     error
 	metrics *metrics
 	opts    *Opts
+
+	errOnce sync.Once
 
 	Collector
 }

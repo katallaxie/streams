@@ -148,8 +148,8 @@ func TestStreamSink(t *testing.T) {
 		close(src.in)
 	}()
 
-	err := s.Sink(sink)
-	assert.NoError(t, err)
+	s.Sink(sink)
+	assert.NoError(t, s.Error())
 
 	assert.Equal(t, len(sink.buf), 2)
 	assert.Equal(t, "test", sink.buf[0].Key())
