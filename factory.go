@@ -1,7 +1,6 @@
 package streams
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -117,8 +116,6 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 
 			stream.metrics.latency.stop()
 			stream.metrics.count.inc(len(buf))
-
-			fmt.Println(stream.metrics.count.value)
 
 			if stream.opts.monitor != nil {
 				stream.opts.monitor.Gather(stream)

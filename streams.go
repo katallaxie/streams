@@ -188,7 +188,7 @@ func (s *StreamImpl[K, V]) Log() *StreamImpl[K, V] {
 
 	go func() {
 		for x := range s.in {
-			log.Print(x.Key(), x.Value())
+			log.Printf("%v:%v\n", x.Key(), x.Value())
 
 			out <- x
 		}
