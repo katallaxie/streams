@@ -7,9 +7,29 @@
 
 A teeny-tiny package to create stream processing workloads. It is intended to be used with [Apache Kafka](https://kafka.apache.org/).  
 
-## Get Started
+:warning: This is experimental. APIs may change. :warning:
 
-:warning: this is experimental!
+## Getting Started
+
+There are only a few packages that help Gophers to create stream processing workloads. This package is one of them. It is intended to be used with [Apache Kafka](https://kafka.apache.org/).
+
+```bash
+go get github.com/ionos-cloud/streams
+```
+
+It features a channel based API to consume messages from a Kafka topic and a channel based API to produce messages to a Kafka topic. It assumes the use of a [consumer group](https://docs.confluent.io/platform/current/clients/consumer.html#:~:text=A%20consumer%20group%20is%20a,proportional%20share%20of%20the%20partitions.) for the consumption of messages.
+
+The package connects a `source` with a sink via small functional operatios.
+
+* `Map`
+* `Filter`
+* `Log`
+* `FanOut`
+* `Do`
+* `Merge`
+* `Branch`
+
+There is support for [Prometheus](https://prometheus.io/) metrics.
 
 ## Docs
 
