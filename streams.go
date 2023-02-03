@@ -245,17 +245,15 @@ func (s *StreamImpl[K, V]) Sink(sink Sink[K, V]) {
 	node := NewNode("sink")
 	s.node.AddChild(node)
 
-	go func() {
-		for x := range s.in {
-			err := sink.Write(x)
-			if err != nil {
-				s.Fail(err)
-				return
-			}
-
-			s.Mark(x)
+	for x := range s.in {
+		err := sink.Write(x)
+		if err != nil {
+			s.Fail(err)
+			return
 		}
-	}()
+
+		s.Mark(x)
+	}
 }
 
 // Collect is collect the content of a stream.

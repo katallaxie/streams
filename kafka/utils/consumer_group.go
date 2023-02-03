@@ -43,7 +43,6 @@ func ResetFirstOffsetConsumerGroup(ctx context.Context, brokers []string, topic 
 		Topics:  []string{topic},
 		ID:      gid,
 	})
-
 	if err != nil {
 		return err
 	}
@@ -56,7 +55,6 @@ func ResetFirstOffsetConsumerGroup(ctx context.Context, brokers []string, topic 
 	err = gen.CommitOffsets(map[string]map[int]int64{topic: offsets})
 	if err != nil {
 		return err
-
 	}
 	return nil
 }
@@ -96,7 +94,6 @@ func ResetTimestampOffsetConsumerGroup(ctx context.Context, brokers []string, to
 		Topics:  []string{topic},
 		ID:      gid,
 	})
-
 	if err != nil {
 		return err
 	}
@@ -109,7 +106,6 @@ func ResetTimestampOffsetConsumerGroup(ctx context.Context, brokers []string, to
 	err = gen.CommitOffsets(map[string]map[int]int64{topic: offsets})
 	if err != nil {
 		return err
-
 	}
 	return nil
 }
