@@ -14,7 +14,7 @@ type Opts struct {
 	monitor  *Monitor
 }
 
-// Comfigure is a function that configures a stream.
+// Configure is a function that configures a stream.
 func (o *Opts) Configure(opts ...Opt) {
 	for _, opt := range opts {
 		opt(o)

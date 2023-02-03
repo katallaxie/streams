@@ -53,7 +53,7 @@ func TestStreamMap(t *testing.T) {
 	s := NewStream[string, string](src)
 	assert.NotNil(t, s)
 
-	out := s.Map(func(m msg.Message[string, string]) (msg.Message[string, string], error) {
+	out := s.Map("foo", func(m msg.Message[string, string]) (msg.Message[string, string], error) {
 		m.SetKey("foobar")
 
 		return m, nil
@@ -70,7 +70,7 @@ func TestStreamMap(t *testing.T) {
 func TestStreamMapError(t *testing.T) {
 	src := newMockSource[string, string]()
 
-	err := NewStream[string, string](src).Map(func(m msg.Message[string, string]) (msg.Message[string, string], error) {
+	err := NewStream[string, string](src).Map("foo", func(m msg.Message[string, string]) (msg.Message[string, string], error) {
 		return nil, fmt.Errorf("error")
 	})
 
@@ -83,7 +83,7 @@ func TestStreamFilter(t *testing.T) {
 	s := NewStream[string, string](src)
 	assert.NotNil(t, s)
 
-	out := s.Filter(func(m msg.Message[string, string]) (bool, error) {
+	out := s.Filter("foo", func(m msg.Message[string, string]) (bool, error) {
 		return true, nil
 	})
 
@@ -98,7 +98,7 @@ func TestStreamFilter(t *testing.T) {
 func TestStreamFilterError(t *testing.T) {
 	src := newMockSource[string, string]()
 
-	err := NewStream[string, string](src).Filter(func(m msg.Message[string, string]) (bool, error) {
+	err := NewStream[string, string](src).Filter("foo", func(m msg.Message[string, string]) (bool, error) {
 		return true, fmt.Errorf("error")
 	})
 
@@ -111,7 +111,7 @@ func TestStreamBranch(t *testing.T) {
 	s := NewStream[string, string](src)
 	assert.NotNil(t, s)
 
-	outs := s.Branch(func(m msg.Message[string, string]) (bool, error) {
+	outs := s.Branch("foo", func(m msg.Message[string, string]) (bool, error) {
 		return true, nil
 	}, func(m msg.Message[string, string]) (bool, error) {
 		return false, nil
@@ -128,7 +128,7 @@ func TestStreamBranch(t *testing.T) {
 func TestStreamError(t *testing.T) {
 	src := newMockSource[string, string]()
 
-	err := NewStream[string, string](src).Branch(func(m msg.Message[string, string]) (bool, error) {
+	err := NewStream[string, string](src).Branch("foo", func(m msg.Message[string, string]) (bool, error) {
 		return true, fmt.Errorf("error")
 	})
 
@@ -148,7 +148,7 @@ func TestStreamSink(t *testing.T) {
 		close(src.in)
 	}()
 
-	s.Sink(sink)
+	s.Sink("foo", sink)
 	assert.NoError(t, s.Error())
 
 	assert.Equal(t, len(sink.buf), 2)
@@ -162,7 +162,7 @@ func TestStreamFanOut(t *testing.T) {
 	s := NewStream[string, string](src)
 	assert.NotNil(t, s)
 
-	outs := s.FanOut(2)
+	outs := s.FanOut("foo", 2)
 
 	go func() {
 		src.in <- msg.NewMessage("test", "test", 0, 0, "")
