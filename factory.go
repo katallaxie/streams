@@ -54,6 +54,9 @@ type StreamImpl[K, V any] struct {
 	metrics *metrics
 	opts    *Opts
 
+	topology Topology
+	node     Node
+
 	Collector
 }
 
@@ -74,6 +77,10 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 	stream.mark = make(chan msg.Message[K, V])
 	stream.in = out
 	stream.err = make(chan error, 1)
+
+	node := NewNode("root")
+	stream.node = node
+	stream.topology = NewTopology(node)
 
 	stream.metrics = new(metrics)
 	stream.metrics.latency = newLatencyMetric(stream.opts.nodeName)
