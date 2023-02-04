@@ -1,6 +1,20 @@
 package view
 
-import "github.com/ionos-cloud/streams/store"
+import (
+	"github.com/ionos-cloud/streams/store"
+	"github.com/katallaxie/pkg/server"
+)
+
+const (
+	// Pure ...
+	Pure = iota
+
+	// Initializing ...
+	Initializing
+
+	// Running ...
+	Running
+)
 
 // Table ...
 type Table string
@@ -14,11 +28,14 @@ func GroupTable(group Group) Table {
 }
 
 // View ...
-type View interface{}
+type View interface {
+}
 
 type view struct {
 	store store.Storage
 	table Table
+
+	server.Unimplemented
 }
 
 // New ..
