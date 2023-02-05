@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/store"
 	"github.com/katallaxie/pkg/server"
 )
@@ -45,26 +46,66 @@ func (u *Unimplemented) Next() (string, string) {
 }
 
 // View ...
-type View interface{}
+type View[V any] interface {
+	// Get ...
+	Get(key string) (V, error)
 
-type view struct {
+	// Set ...
+	Set(key string, value V) error
+
+	// Delete ...
+	Delete(key string) error
+}
+
+type view[V any] struct {
 	store store.Storage
 	table Table
+
+	encoder streams.Encoder[V]
+	decoder streams.Decoder[V]
 
 	server.Listener
 }
 
 // New ..
-func New[K, V any](table Table, store store.Storage) View {
-	v := new(view)
+func New[V any](table Table, encoder streams.Encoder[V], decoder streams.Decoder[V], store store.Storage) View[V] {
+	v := new(view[V])
 	v.table = table
 	v.store = store
+
+	v.encoder = encoder
+	v.decoder = decoder
 
 	return v
 }
 
+// Get ...
+func (v *view[V]) Get(key string) (V, error) {
+	b, err := v.store.Get(key)
+	if err != nil {
+		return Zero[V](), err
+	}
+
+	value, err := v.decoder.Decode(b)
+	if err != nil {
+		return Zero[V](), err
+	}
+
+	return value, nil
+}
+
+// Set ...
+func (v *view[V]) Set(key string, value V) error {
+	return nil
+}
+
+// Delete ...
+func (v *view[V]) Delete(key string) error {
+	return nil
+}
+
 // Start ...
-func (v *view) Start(ctx context.Context, ready server.ReadyFunc, run server.RunFunc) func() error {
+func (v *view[V]) Start(ctx context.Context, ready server.ReadyFunc, run server.RunFunc) func() error {
 	return func() error {
 		ready()
 
@@ -85,4 +126,9 @@ func (v *view) Start(ctx context.Context, ready server.ReadyFunc, run server.Run
 			}
 		}
 	}
+}
+
+// Zero ..
+func Zero[T any]() T {
+	return *new(T)
 }
