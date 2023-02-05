@@ -51,7 +51,7 @@ func run(ctx context.Context) error {
 		reader.WithTopic("demo12345"),
 	)
 
-	src := kafka.WithContext[string, string](ctx, r, kafka.StringDecoder{}, kafka.StringDecoder{}, kafka.StringEncoder{})
+	src := kafka.WithContext[string, string](ctx, r, streams.StringDecoder{}, streams.StringDecoder{}, streams.StringEncoder{})
 
 	err := streams.DefaultRegisterer.Register(streams.DefaultMetrics)
 	if err != nil {

@@ -319,6 +319,8 @@ github.com/junk1tm/musttag v0.4.3 h1:I8UHQkDj2u/MClcGU8PbMoYwhykiSQFEbXKKMjixPyk
 github.com/junk1tm/musttag v0.4.3/go.mod h1:XkcL/9O6RmD88JBXb+I15nYRl9W4ExhgQeCBEhfMC8U=
 github.com/katallaxie/pkg v0.0.0-20230204192105-a97212dd0bcb h1:uHoFiJ3fyKinafzjkNnf9jqI3T0NGjuGIAhQXWvC3Ew=
 github.com/katallaxie/pkg v0.0.0-20230204192105-a97212dd0bcb/go.mod h1:Zb2ImG1UfH8tOySGPmG3b3eFA1E/nDnUpzuYkQtKuXE=
+github.com/katallaxie/pkg v0.0.0-20230205192526-91a74df61f43 h1:QnSwmTuIRS9OE8yHyEFBlpwQmS3C8lK6CshK6fVrj78=
+github.com/katallaxie/pkg v0.0.0-20230205192526-91a74df61f43/go.mod h1:Zb2ImG1UfH8tOySGPmG3b3eFA1E/nDnUpzuYkQtKuXE=
 github.com/kisielk/errcheck v1.6.3 h1:dEKh+GLHcWm2oN34nMvDzn1sqI0i0WxPvrgiJA5JuM8=
 github.com/kisielk/errcheck v1.6.3/go.mod h1:nXw/i/MfnvRHqXa7XXmQMUB0oNFGuBrNI8d8NLy0LPw=
 github.com/kisielk/gotool v1.0.0 h1:AV2c/EiW3KqPNT9ZKl07ehoAGi4C5/01Cfbblndcapg=

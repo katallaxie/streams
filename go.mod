@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/golang/mock v1.6.0
 	github.com/golangci/golangci-lint v1.51.0
-	github.com/katallaxie/pkg v0.0.0-20230204192105-a97212dd0bcb
+	github.com/katallaxie/pkg v0.0.0-20230205192526-91a74df61f43
 	github.com/prometheus/client_golang v1.12.1
 	github.com/segmentio/kafka-go v0.4.38
 	github.com/spf13/cobra v1.6.1

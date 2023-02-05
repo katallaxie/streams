@@ -6,7 +6,9 @@ import (
 
 	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/store"
+
 	"github.com/katallaxie/pkg/server"
+	"github.com/katallaxie/pkg/utils"
 )
 
 const (
@@ -83,12 +85,12 @@ func New[V any](table Table, encoder streams.Encoder[V], decoder streams.Decoder
 func (v *view[V]) Get(key string) (V, error) {
 	b, err := v.store.Get(key)
 	if err != nil {
-		return Zero[V](), err
+		return utils.Zero[V](), err
 	}
 
 	value, err := v.decoder.Decode(b)
 	if err != nil {
-		return Zero[V](), err
+		return utils.Zero[V](), err
 	}
 
 	return value, nil
@@ -126,9 +128,4 @@ func (v *view[V]) Start(ctx context.Context, ready server.ReadyFunc, run server.
 			}
 		}
 	}
-}
-
-// Zero ..
-func Zero[T any]() T {
-	return *new(T)
 }
