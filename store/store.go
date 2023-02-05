@@ -32,8 +32,7 @@ var (
 )
 
 // StorageUnimplemented ...
-type StorageUnimplemented struct {
-}
+type StorageUnimplemented struct{}
 
 // Open ...
 func (s *StorageUnimplemented) Open() error {

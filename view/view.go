@@ -36,6 +36,12 @@ type Iterator interface {
 
 // Table ...
 type Table interface {
+	// Set ...
+	Set(key string, value []byte) error
+
+	// Delete ...
+	Delete(key string) error
+
 	Iterator
 }
 
@@ -98,11 +104,27 @@ func (v *view[V]) Get(key string) (V, error) {
 
 // Set ...
 func (v *view[V]) Set(key string, value V) error {
+	b, err := v.encoder.Encode(value)
+	if err != nil {
+		return nil
+	}
+
+	// TODO: this is non optimistic, the update is published to the table and then synced to storage
+	err = v.table.Set(key, b)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // Delete ...
 func (v *view[V]) Delete(key string) error {
+	err := v.table.Delete(key) // Tombstone message
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -119,6 +141,24 @@ func (v *view[V]) Start(ctx context.Context, ready server.ReadyFunc, run server.
 			case <-ctx.Done():
 				return nil
 			case c := <-v.table.Next():
+				if c.Value == nil {
+					ok, err := v.store.Has(c.Key)
+					if err != nil {
+						return err
+					}
+
+					if !ok {
+						continue
+					}
+
+					err = v.store.Delete(c.Key)
+					if err != nil {
+						return err
+					}
+
+					continue
+				}
+
 				err := v.store.Set(c.Key, c.Value)
 				if err != nil {
 					return err
