@@ -45,14 +45,6 @@ type Table interface {
 	Iterator
 }
 
-// Unimplemented ...
-type Unimplemented struct{}
-
-// Next ...
-func (u *Unimplemented) Next() (string, string) {
-	return "", ""
-}
-
 // View ...
 type View[V any] interface {
 	// Get ...
@@ -63,6 +55,8 @@ type View[V any] interface {
 
 	// Delete ...
 	Delete(key string) error
+
+	server.Listener
 }
 
 type view[V any] struct {
@@ -71,8 +65,6 @@ type view[V any] struct {
 
 	encoder streams.Encoder[V]
 	decoder streams.Decoder[V]
-
-	server.Listener
 }
 
 // New ..
