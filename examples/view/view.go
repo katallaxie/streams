@@ -39,6 +39,15 @@ func (s *service) Start(ctx context.Context, ready server.ReadyFunc, run server.
 			return c.SendString(v)
 		})
 
+		app.Post("/:key", func(c *fiber.Ctx) error {
+			err := s.view.Set(c.Params("key"), string(c.Body()))
+			if err != nil {
+				return c.SendStatus(fiber.StatusInternalServerError)
+			}
+
+			return c.SendStatus(fiber.StatusOK)
+		})
+
 		app.Listen(":3000")
 
 		return nil

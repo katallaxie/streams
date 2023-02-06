@@ -2,7 +2,6 @@ package view
 
 import (
 	"context"
-	"time"
 
 	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/store"
@@ -123,41 +122,31 @@ func (v *view[V]) Delete(key string) error {
 // Start ...
 func (v *view[V]) Start(ctx context.Context, ready server.ReadyFunc, run server.RunFunc) func() error {
 	return func() error {
-		ready()
+		for c := range v.table.Next() {
+			if c.Value == nil {
+				ok, err := v.store.Has(c.Key)
+				if err != nil {
+					return err
+				}
 
-		ticker := time.NewTicker(1 * time.Second)
-
-		for {
-			select {
-			case <-ticker.C:
-			case <-ctx.Done():
-				return nil
-			case c := <-v.table.Next():
-				if c.Value == nil {
-					ok, err := v.store.Has(c.Key)
-					if err != nil {
-						return err
-					}
-
-					if !ok {
-						continue
-					}
-
-					err = v.store.Delete(c.Key)
-					if err != nil {
-						return err
-					}
-
+				if !ok {
 					continue
 				}
 
-				err := v.store.Set(c.Key, c.Value)
+				err = v.store.Delete(c.Key)
 				if err != nil {
 					return err
 				}
 
 				continue
 			}
+
+			err := v.store.Set(c.Key, c.Value)
+			if err != nil {
+				return err
+			}
 		}
+
+		return nil
 	}
 }
