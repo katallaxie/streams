@@ -11,7 +11,6 @@ type memory struct {
 	keys    []string
 	storage map[string][]byte
 
-	store.StorageUnimplemented
 	sync.RWMutex
 }
 
@@ -39,7 +38,10 @@ func (m *memory) Get(key string) ([]byte, error) {
 	m.RLock()
 	defer m.RUnlock()
 
-	v := m.storage[key]
+	v, ok := m.storage[key]
+	if !ok {
+		return nil, store.ErrNotExists
+	}
 
 	return v, nil
 }

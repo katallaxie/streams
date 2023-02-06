@@ -29,6 +29,9 @@ var (
 
 	// ErrNoNilValue ...
 	ErrNoNilValue = errors.New("no nil value")
+
+	// ErrNotExists ...
+	ErrNotExists = errors.New("not exists")
 )
 
 // StorageUnimplemented ...

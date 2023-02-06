@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"math/rand"
 	"os"
@@ -13,8 +14,36 @@ import (
 	"github.com/ionos-cloud/streams/view"
 	"github.com/katallaxie/pkg/server"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/spf13/cobra"
 )
+
+type service struct {
+	view view.View[string]
+
+	server.Listener
+}
+
+func (s *service) Start(ctx context.Context, ready server.ReadyFunc, run server.RunFunc) func() error {
+	return func() error {
+		app := fiber.New()
+		app.Use(logger.New())
+
+		app.Get("/:key", func(c *fiber.Ctx) error {
+			v, err := s.view.Get(c.Params("key"))
+			if err != nil {
+				return c.SendStatus(fiber.StatusNotFound)
+			}
+
+			return c.SendString(v)
+		})
+
+		app.Listen(":3000")
+
+		return nil
+	}
+}
 
 var rootCmd = &cobra.Command{
 	Use: "view",
@@ -44,8 +73,17 @@ func run(ctx context.Context) error {
 
 	v := view.New[string](table, streams.StringEncoder{}, streams.StringDecoder{}, store)
 
+	srv := &service{
+		view: v,
+	}
+
 	s, _ := server.WithContext(ctx)
 	s.Listen(v, false)
+	s.Listen(srv, false)
+
+	if err := s.Wait(); errors.Is(&server.Error{}, err) {
+		return err
+	}
 
 	return nil
 }
