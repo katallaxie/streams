@@ -112,6 +112,11 @@ func (t *table) Set(key string, value []byte) error {
 	return nil
 }
 
+// Setup ...
+func (t *table) Setup() error {
+	return nil
+}
+
 // Delete ...
 func (t *table) Delete(key string) error {
 	err := t.writer.WriteMessages(t.ctx, kgo.Message{

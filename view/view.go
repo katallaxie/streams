@@ -41,6 +41,9 @@ type Table interface {
 	// Delete ...
 	Delete(key string) error
 
+	// Setup ...
+	Setup() error
+
 	// Error ...
 	Error() error
 
