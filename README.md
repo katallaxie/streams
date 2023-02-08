@@ -27,9 +27,11 @@ The package connects a `source` with a sink via small functional operatios.
 * `FanOut`
 * `Do`
 * `Merge`
-* `Branch`
+* `Branch
 
 There is support for [Prometheus](https://prometheus.io/) metrics.
+
+The `view` package provides the ability to create views with data from the stream processing workload.
 
 ## Docs
 

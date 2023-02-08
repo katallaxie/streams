@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/streams"
-	"github.com/ionos-cloud/streams/kafka"
+	"github.com/ionos-cloud/streams/kafka/table"
 	"github.com/ionos-cloud/streams/store/memory"
 	"github.com/ionos-cloud/streams/view"
-	"github.com/katallaxie/pkg/server"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/katallaxie/pkg/server"
 	"github.com/spf13/cobra"
 )
 
@@ -78,7 +78,7 @@ func run(ctx context.Context) error {
 	log.SetOutput(os.Stderr)
 
 	store := memory.New()
-	table := kafka.NewTable()
+	table := table.WithContext(ctx, table.WithTopic(table.NewTopic("test")), table.WithBrokers("localhost:9092"))
 
 	v := view.New[string](table, streams.StringEncoder{}, streams.StringDecoder{}, store)
 
