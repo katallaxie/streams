@@ -32,6 +32,10 @@ func (s *service) Start(ctx context.Context, ready server.ReadyFunc, run server.
 
 		app.Get("/:key", func(c *fiber.Ctx) error {
 			v, err := s.view.Get(c.Params("key"))
+			if errors.Is(err, view.ErrCatchup) {
+				return c.SendStatus(fiber.StatusServiceUnavailable)
+			}
+
 			if err != nil {
 				return c.SendStatus(fiber.StatusNotFound)
 			}

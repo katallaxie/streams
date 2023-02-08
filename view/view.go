@@ -2,6 +2,8 @@ package view
 
 import (
 	"context"
+	"errors"
+	"sync"
 
 	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/store"
@@ -21,10 +23,16 @@ const (
 	Running
 )
 
+var (
+	// ErrCatchup ...
+	ErrCatchup = errors.New("catching up with the latest changes")
+)
+
 // NextCursor ...
 type NextCursor struct {
-	Key   string
-	Value []byte
+	Key    string
+	Value  []byte
+	Latest bool
 }
 
 // Iterator ...
@@ -70,6 +78,9 @@ type view[V any] struct {
 
 	encoder streams.Encoder[V]
 	decoder streams.Decoder[V]
+
+	catchUpOnce sync.Once
+	catchUp     bool
 }
 
 // New ..
@@ -86,6 +97,10 @@ func New[V any](table Table, encoder streams.Encoder[V], decoder streams.Decoder
 
 // Get ...
 func (v *view[V]) Get(key string) (V, error) {
+	if !v.catchUp {
+		return utils.Zero[V](), ErrCatchup
+	}
+
 	b, err := v.store.Get(key)
 	if err != nil {
 		return utils.Zero[V](), err
@@ -150,6 +165,12 @@ func (v *view[V]) Start(ctx context.Context, ready server.ReadyFunc, run server.
 			err := v.store.Set(c.Key, c.Value)
 			if err != nil {
 				return err
+			}
+
+			if c.Latest {
+				v.catchUpOnce.Do(func() {
+					v.catchUp = true
+				})
 			}
 		}
 

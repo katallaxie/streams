@@ -146,7 +146,9 @@ func (t *table) Next() <-chan view.NextCursor {
 				break
 			}
 
-			out <- view.NextCursor{Key: string(m.Key), Value: m.Value}
+			latest := t.reader.Lag() == 0
+
+			out <- view.NextCursor{Key: string(m.Key), Value: m.Value, Latest: latest}
 		}
 
 		close(out)
