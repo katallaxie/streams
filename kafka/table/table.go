@@ -3,6 +3,7 @@ package table
 import (
 	"context"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ionos-cloud/streams/kafka/reader"
@@ -24,6 +25,11 @@ type table struct {
 	brokers []string
 	topic   Topic
 	ctx     context.Context
+
+	err     error
+	errOnce sync.Once
+
+	view.Table
 }
 
 const (
@@ -108,6 +114,15 @@ func (t *table) Set(key string, value []byte) error {
 
 // Delete ...
 func (t *table) Delete(key string) error {
+	err := t.writer.WriteMessages(t.ctx, kgo.Message{
+		Key:   []byte(key),
+		Value: nil, // Tombstone record
+	})
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -119,6 +134,10 @@ func (t *table) Next() <-chan view.NextCursor {
 		for {
 			m, err := t.reader.ReadMessage(t.ctx)
 			if err != nil {
+				t.errOnce.Do(func() {
+					t.err = err
+				})
+
 				break
 			}
 

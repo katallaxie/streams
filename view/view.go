@@ -41,6 +41,9 @@ type Table interface {
 	// Delete ...
 	Delete(key string) error
 
+	// Error ...
+	Error() error
+
 	Iterator
 }
 
