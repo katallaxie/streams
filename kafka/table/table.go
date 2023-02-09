@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/kafka/reader"
 	"github.com/ionos-cloud/streams/kafka/writer"
-	"github.com/ionos-cloud/streams/view"
 
 	kgo "github.com/segmentio/kafka-go"
 )
@@ -29,7 +29,7 @@ type table struct {
 	err     error
 	errOnce sync.Once
 
-	view.Table
+	streams.Table
 }
 
 const (
@@ -67,7 +67,7 @@ func WithDialer(dialer *kgo.Dialer) Opt {
 }
 
 // WithContext ...
-func WithContext(ctx context.Context, opts ...Opt) view.Table {
+func WithContext(ctx context.Context, opts ...Opt) streams.Table {
 	t := new(table)
 	t.ctx = ctx
 
@@ -132,8 +132,8 @@ func (t *table) Delete(key string) error {
 }
 
 // Next ...
-func (t *table) Next() <-chan view.NextCursor {
-	out := make(chan view.NextCursor)
+func (t *table) Next() <-chan streams.NextCursor {
+	out := make(chan streams.NextCursor)
 
 	go func() {
 		for {
@@ -148,7 +148,7 @@ func (t *table) Next() <-chan view.NextCursor {
 
 			latest := t.reader.Lag() == 0
 
-			out <- view.NextCursor{Key: string(m.Key), Value: m.Value, Latest: latest}
+			out <- streams.NextCursor{Key: string(m.Key), Value: m.Value, Latest: latest}
 		}
 
 		close(out)
