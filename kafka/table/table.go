@@ -2,6 +2,9 @@ package table
 
 import (
 	"context"
+	"errors"
+	"net"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -114,6 +117,45 @@ func (t *table) Set(key string, value []byte) error {
 
 // Setup ...
 func (t *table) Setup() error {
+	topic := string(t.topic)
+
+	conn, err := t.dialer.Dial("tcp", t.brokers[0])
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	controller, err := conn.Controller()
+	if err != nil {
+		return err
+	}
+
+	var controllerConn *kgo.Conn
+	controllerConn, err = kgo.Dial("tcp", net.JoinHostPort(controller.Host, strconv.Itoa(controller.Port)))
+	if err != nil {
+		return err
+	}
+	defer controllerConn.Close()
+
+	topicConfig := []kgo.TopicConfig{
+		{
+			Topic:             topic,
+			NumPartitions:     1,
+			ReplicationFactor: 1,
+			ConfigEntries: []kgo.ConfigEntry{
+				{
+					ConfigName:  "log.cleanup.policy",
+					ConfigValue: "compact",
+				},
+			},
+		},
+	}
+
+	err = controllerConn.CreateTopics(topicConfig...)
+	if err != nil && !errors.Is(err, kgo.TopicAlreadyExists) {
+		return err
+	}
+
 	return nil
 }
 
