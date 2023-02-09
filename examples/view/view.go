@@ -91,10 +91,10 @@ func run(ctx context.Context) error {
 	}
 
 	s, _ := server.WithContext(ctx)
-	s.Listen(v, false)
+	s.Listen(v, true)
 	s.Listen(srv, false)
 
-	if err := s.Wait(); errors.Is(&server.Error{}, err) {
+	if err := s.Wait(); err != nil {
 		return err
 	}
 

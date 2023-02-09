@@ -113,6 +113,13 @@ func (v *view[V]) Delete(key string) error {
 // Start ...
 func (v *view[V]) Start(ctx context.Context, ready server.ReadyFunc, run server.RunFunc) func() error {
 	return func() error {
+		err := v.table.Setup()
+		if err != nil {
+			return err
+		}
+
+		ready()
+
 		for c := range v.table.Next() {
 			if c.Value == nil {
 				ok, err := v.store.Has(c.Key)

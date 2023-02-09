@@ -119,7 +119,7 @@ func (t *table) Set(key string, value []byte) error {
 func (t *table) Setup() error {
 	topic := string(t.topic)
 
-	conn, err := t.dialer.Dial("tcp", t.brokers[0])
+	conn, err := t.dialer.DialContext(t.ctx, "tcp", t.brokers[0])
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func (t *table) Setup() error {
 	}
 
 	var controllerConn *kgo.Conn
-	controllerConn, err = kgo.Dial("tcp", net.JoinHostPort(controller.Host, strconv.Itoa(controller.Port)))
+	controllerConn, err = kgo.DialContext(t.ctx, "tcp", net.JoinHostPort(controller.Host, strconv.Itoa(controller.Port)))
 	if err != nil {
 		return err
 	}
@@ -144,7 +144,7 @@ func (t *table) Setup() error {
 			ReplicationFactor: 1,
 			ConfigEntries: []kgo.ConfigEntry{
 				{
-					ConfigName:  "log.cleanup.policy",
+					ConfigName:  "cleanup.policy",
 					ConfigValue: "compact",
 				},
 			},
