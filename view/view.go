@@ -28,36 +28,6 @@ var (
 	ErrCatchup = errors.New("catching up with the latest changes")
 )
 
-// NextCursor ...
-type NextCursor struct {
-	Key    string
-	Value  []byte
-	Latest bool
-}
-
-// Iterator ...
-type Iterator interface {
-	// Next ...
-	Next() <-chan NextCursor
-}
-
-// Table ...
-type Table interface {
-	// Set ...
-	Set(key string, value []byte) error
-
-	// Delete ...
-	Delete(key string) error
-
-	// Setup ...
-	Setup() error
-
-	// Error ...
-	Error() error
-
-	Iterator
-}
-
 // View ...
 type View[V any] interface {
 	// Get ...
@@ -74,7 +44,7 @@ type View[V any] interface {
 
 type view[V any] struct {
 	store store.Storage
-	table Table
+	table streams.Table
 
 	encoder streams.Encoder[V]
 	decoder streams.Decoder[V]
@@ -84,7 +54,7 @@ type view[V any] struct {
 }
 
 // New ..
-func New[V any](table Table, encoder streams.Encoder[V], decoder streams.Decoder[V], store store.Storage) View[V] {
+func New[V any](table streams.Table, encoder streams.Encoder[V], decoder streams.Decoder[V], store store.Storage) View[V] {
 	v := new(view[V])
 	v.table = table
 	v.store = store
