@@ -6,11 +6,12 @@ require (
 	github.com/gofiber/fiber/v2 v2.42.0
 	github.com/golang/mock v1.6.0
 	github.com/golangci/golangci-lint v1.51.0
-	github.com/katallaxie/pkg v0.0.0-20230205192526-91a74df61f43
+	github.com/katallaxie/pkg v0.0.0-20230210185923-5820e507735a
 	github.com/prometheus/client_golang v1.12.1
 	github.com/segmentio/kafka-go v0.4.38
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.1
+	github.com/syndtr/goleveldb v1.0.0
 	gotest.tools/gotestsum v1.9.0
 	mvdan.cc/gofumpt v0.4.0
 )
@@ -65,6 +66,7 @@ require (
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/golangci/check v0.0.0-20180506172741-cfe4005ccda2 // indirect
 	github.com/golangci/dupl v0.0.0-20180902072040-3e9179ac440a // indirect
 	github.com/golangci/go-misc v0.0.0-20220329215616-d24fe342adfe // indirect

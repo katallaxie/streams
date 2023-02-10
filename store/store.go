@@ -34,35 +34,35 @@ var (
 	ErrNotExists = errors.New("not exists")
 )
 
-// StorageUnimplemented ...
-type StorageUnimplemented struct{}
+// Unimplemented ...
+type Unimplemented struct{}
 
 // Open ...
-func (s *StorageUnimplemented) Open() error {
+func (s *Unimplemented) Open() error {
 	return ErrUnimplemented
 }
 
 // Close ...
-func (s *StorageUnimplemented) Close() error {
+func (s *Unimplemented) Close() error {
 	return ErrUnimplemented
 }
 
 // Has ...
-func (s *StorageUnimplemented) Has(key string) (bool, error) {
+func (s *Unimplemented) Has(key string) (bool, error) {
 	return false, ErrUnimplemented
 }
 
 // Get ...
-func (s *StorageUnimplemented) Get(key string) ([]byte, error) {
+func (s *Unimplemented) Get(key string) ([]byte, error) {
 	return nil, ErrUnimplemented
 }
 
 // Set ...
-func (s *StorageUnimplemented) Set(key string, value []byte) error {
+func (s *Unimplemented) Set(key string, value []byte) error {
 	return ErrUnimplemented
 }
 
 // Delete ...
-func (s *StorageUnimplemented) Delete(key string) error {
+func (s *Unimplemented) Delete(key string) error {
 	return ErrUnimplemented
 }

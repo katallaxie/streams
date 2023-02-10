@@ -3,7 +3,7 @@ package noop
 import "github.com/ionos-cloud/streams/store"
 
 type noop struct {
-	store.StorageUnimplemented
+	store.Unimplemented
 }
 
 // NewNull returns a new Null storage.
