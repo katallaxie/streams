@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/ionos-cloud/streams"
+	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/store"
 
 	"github.com/katallaxie/pkg/server"
@@ -46,15 +47,15 @@ type view[V any] struct {
 	store store.Storage
 	table streams.Table
 
-	encoder streams.Encoder[V]
-	decoder streams.Decoder[V]
+	encoder codec.Encoder[V]
+	decoder codec.Decoder[V]
 
 	catchUpOnce sync.Once
 	catchUp     bool
 }
 
 // New ..
-func New[V any](table streams.Table, encoder streams.Encoder[V], decoder streams.Decoder[V], store store.Storage) View[V] {
+func New[V any](table streams.Table, encoder codec.Encoder[V], decoder codec.Decoder[V], store store.Storage) View[V] {
 	v := new(view[V])
 	v.table = table
 	v.store = store

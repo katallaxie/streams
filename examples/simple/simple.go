@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/streams"
+	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/kafka"
 	"github.com/ionos-cloud/streams/kafka/reader"
 	"github.com/ionos-cloud/streams/noop"
@@ -51,7 +52,7 @@ func run(ctx context.Context) error {
 		reader.WithTopic("demo12345"),
 	)
 
-	src := kafka.WithContext[string, string](ctx, r, streams.StringDecoder{}, streams.StringDecoder{}, streams.StringEncoder{})
+	src := kafka.WithContext[string, string](ctx, r, codec.StringDecoder{}, codec.StringDecoder{}, codec.StringEncoder{})
 
 	err := streams.DefaultRegisterer.Register(streams.DefaultMetrics)
 	if err != nil {

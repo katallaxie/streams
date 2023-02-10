@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/ionos-cloud/streams"
+	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/kafka/table"
 	"github.com/ionos-cloud/streams/store/memory"
 	"github.com/ionos-cloud/streams/view"
@@ -84,7 +84,7 @@ func run(ctx context.Context) error {
 	store := memory.New()
 	table := table.WithContext(ctx, table.WithTopic(table.NewTopic("test")), table.WithBrokers("localhost:9092"))
 
-	v := view.New[string](table, streams.StringEncoder{}, streams.StringDecoder{}, store)
+	v := view.New[string](table, codec.StringEncoder{}, codec.StringDecoder{}, store)
 
 	srv := &service{
 		view: v,

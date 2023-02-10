@@ -3,7 +3,7 @@ package kafka
 import (
 	"context"
 
-	"github.com/ionos-cloud/streams"
+	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/msg"
 	kgo "github.com/segmentio/kafka-go"
 )
@@ -11,13 +11,13 @@ import (
 type kafka[K, V any] struct {
 	reader       *kgo.Reader
 	ctx          context.Context
-	keyDecoder   streams.Decoder[K]
-	valueDecoder streams.Decoder[V]
-	keyEncoder   streams.Encoder[K]
+	keyDecoder   codec.Decoder[K]
+	valueDecoder codec.Decoder[V]
+	keyEncoder   codec.Encoder[K]
 }
 
 // WithContext is a constructor for a kafka source with a cancellation context.
-func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key streams.Decoder[K], value streams.Decoder[V], keyEncoder streams.Encoder[K]) *kafka[K, V] {
+func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key codec.Decoder[K], value codec.Decoder[V], keyEncoder codec.Encoder[K]) *kafka[K, V] {
 	k := new(kafka[K, V])
 	k.ctx = ctx
 	k.reader = r

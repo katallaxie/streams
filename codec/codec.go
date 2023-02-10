@@ -1,4 +1,4 @@
-package streams
+package codec
 
 // NilDecoder is a decoder that always returns a nil, no matter the input.
 var NilDecoder DecoderFunc[any] = func([]byte) (any, error) { return nil, nil }
