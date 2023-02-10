@@ -17,6 +17,13 @@ func (f DecoderFunc[T]) Decode(value []byte) (T, error) {
 	return f(value)
 }
 
+// StringDecoderFunc returns a decoder function that transforms byte data to a string.
+func StringDecoderFunc() DecoderFunc[string] {
+	return func(b []byte) (string, error) {
+		return string(b), nil
+	}
+}
+
 // Encoder represents a Kafka data encoder.
 type Encoder[T any] interface {
 	// Encode transforms the typed data to bytes.
@@ -29,6 +36,13 @@ type EncoderFunc[T any] func(T) ([]byte, error)
 // Encode transforms the typed data to bytes.
 func (f EncoderFunc[T]) Encode(value T) ([]byte, error) {
 	return f(value)
+}
+
+// StringEncoderFunc returns an encoder function that transforms a string to bytes.
+func StringEncoderFunc() EncoderFunc[string] {
+	return func(v string) ([]byte, error) {
+		return []byte(v), nil
+	}
 }
 
 // ByteDecoder represents a byte decoder.
