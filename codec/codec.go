@@ -1,62 +1,40 @@
 package codec
 
 // NilDecoder is a decoder that always returns a nil, no matter the input.
-var NilDecoder DecoderFunc[any] = func([]byte) (any, error) { return nil, nil }
+var NilDecoder Decoder[any] = func([]byte) (any, error) { return nil, nil }
 
-// Decoder represents a Kafka data decoder.
-type Decoder[T any] interface {
-	// Decode transforms byte data to the desired type.
-	Decode([]byte) (T, error)
-}
-
-// DecoderFunc is an adapter allowing to use a function as a decoder.
-type DecoderFunc[T any] func(value []byte) (T, error)
+// Decoder is an adapter allowing to use a function as a decoder.
+type Decoder[T any] func(value []byte) (T, error)
 
 // Decode transforms byte data to the desired type.
-func (f DecoderFunc[T]) Decode(value []byte) (T, error) {
+func (f Decoder[T]) Decode(value []byte) (T, error) {
 	return f(value)
 }
 
 // StringDecoder ...
-var StringDecoder DecoderFunc[string] = func(b []byte) (string, error) {
+var StringDecoder Decoder[string] = func(b []byte) (string, error) {
 	return string(b), nil
 }
 
-// Encoder represents a Kafka data encoder.
-type Encoder[T any] interface {
-	// Encode transforms the typed data to bytes.
-	Encode(T) ([]byte, error)
+// ByteDecoder represents a byte decoder.
+var ByteDecoder Decoder[[]byte] = func(b []byte) ([]byte, error) {
+	return b, nil
 }
 
-// EncoderFunc is an adapter allowing to use a function as an encoder.
-type EncoderFunc[T any] func(T) ([]byte, error)
+// Encoder is an adapter allowing to use a function as an encoder.
+type Encoder[T any] func(T) ([]byte, error)
 
 // Encode transforms the typed data to bytes.
-func (f EncoderFunc[T]) Encode(value T) ([]byte, error) {
+func (f Encoder[T]) Encode(value T) ([]byte, error) {
 	return f(value)
 }
 
 // StringEncoder ...
-var StringEncoder EncoderFunc[string] = func(v string) ([]byte, error) {
+var StringEncoder Encoder[string] = func(v string) ([]byte, error) {
 	return []byte(v), nil
 }
 
-// ByteDecoder represents a byte decoder.
-type ByteDecoder struct{}
-
-// Decode transforms byte data to the desired type.
-func (d ByteDecoder) Decode(b []byte) (interface{}, error) {
-	return b, nil
-}
-
 // ByteEncoder represents a byte encoder.
-type ByteEncoder struct{}
-
-// Encode transforms the typed data to bytes.
-func (e ByteEncoder) Encode(v interface{}) ([]byte, error) {
-	if v == nil {
-		return nil, nil
-	}
-
-	return v.([]byte), nil
+var ByteEncoder Encoder[[]byte] = func(v []byte) ([]byte, error) {
+	return v, nil
 }

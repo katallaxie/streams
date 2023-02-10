@@ -29,7 +29,7 @@ var (
 	ErrCatchup = errors.New("catching up with the latest changes")
 )
 
-// View ...
+// View is a view of the data in the table
 type View[V any] interface {
 	// Get ...
 	Get(key string) (V, error)

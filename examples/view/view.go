@@ -84,7 +84,7 @@ func run(ctx context.Context) error {
 	store := memory.New()
 	table := table.WithContext(ctx, table.WithTopic(table.NewTopic("test")), table.WithBrokers("localhost:9092"))
 
-	v := view.New[string](table, codec.StringEncoder, codec.StringDecoder, store)
+	v := view.New(table, codec.StringEncoder, codec.StringDecoder, store)
 
 	srv := &service{
 		view: v,
