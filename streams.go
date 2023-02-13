@@ -54,7 +54,7 @@ type Stream[K, V any] interface {
 	Sink(name string, sink Sink[K, V])
 
 	// Table sends messages to a table.
-	Table(name string, table Table) Stream[K, V]
+	Table(name string, table Table)
 
 	// Errors returns the first error.
 	Error() error

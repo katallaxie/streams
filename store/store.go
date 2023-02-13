@@ -4,22 +4,22 @@ import "errors"
 
 // Storage ...
 type Storage interface {
-	// Open ...
+	// Open is called when the storage is opened.
 	Open() error
 
-	// Close ...
+	// Close is called when the storage is closed.
 	Close() error
 
-	// Has ...
+	// Has is called to check if a key exists.
 	Has(key string) (bool, error)
 
-	// Get ...
+	// Get is called to get a value.
 	Get(key string) ([]byte, error)
 
-	// Set ...
+	// Set is called to set a value.
 	Set(key string, value []byte) error
 
-	// Delete ...
+	// Delete is called to delete a value.
 	Delete(key string) error
 }
 

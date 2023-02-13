@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/kafka/reader"
 	"github.com/ionos-cloud/streams/kafka/writer"
+	"github.com/ionos-cloud/streams/msg"
 
 	kgo "github.com/segmentio/kafka-go"
 )
@@ -33,6 +34,7 @@ type table struct {
 	errOnce sync.Once
 
 	streams.Table
+	streams.Sink[string, []byte]
 }
 
 const (
@@ -197,4 +199,16 @@ func (t *table) Next() <-chan streams.NextCursor {
 	}()
 
 	return out
+}
+
+// Write confirms to the Sink interface. And allows to persist to tables as a sink.
+func (t *table) Write(msgs ...msg.Message[string, []byte]) error {
+	for _, m := range msgs {
+		err := t.Set(m.Key(), m.Value())
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

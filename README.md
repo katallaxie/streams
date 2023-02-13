@@ -27,7 +27,8 @@ The package connects a `source` with a sink via small functional operatios.
 * `FanOut`
 * `Do`
 * `Merge`
-* `Branch
+* `Branch`
+* `Table` (experimental) Stores the message in a table. The table can be queried via a `View`.
 
 There is support for [Prometheus](https://prometheus.io/) metrics.
 

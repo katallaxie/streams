@@ -27,5 +27,8 @@ type Table interface {
 	// Error ...
 	Error() error
 
+	// Sink is the interface that wraps the basic Sink method.
+	Sink[string, []byte]
+
 	Iterator
 }

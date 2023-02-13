@@ -6,25 +6,43 @@ import (
 
 // Message represents a message in a Stream
 type Message[K, V any] interface {
+	// Key is used to get the key of a message.
 	Key() K
+
+	// Value is used to get the value of a message.
 	Mark()
+
+	// Marked is used to check if a message has been marked as processed
 	Marked() bool
+
+	// Offset is used to get the offset of a message.
 	Offset() int
+
+	// Partition is used to get the partition of a message.
 	Partition() int
+
+	// SetKey is used to set the key of a message.
 	SetKey(key K)
+
+	// SetValue is used to set the value of a message.
 	SetValue(val V)
+
+	// Topic is used to get the topic of a message.
 	Topic() string
+
+	// Value is used to get the value of a message.
 	Value() V
 }
 
 // MessageImpl is the default implementation of Message
 type MessageImpl[K, V any] struct {
-	key        K
-	val        V
-	partition  int
-	offset     int
-	topic      string
-	marked     bool
+	key       K
+	marked    bool
+	offset    int
+	partition int
+	topic     string
+	val       V
+
 	markedOnce sync.Once
 
 	sync.Mutex
