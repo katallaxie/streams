@@ -101,7 +101,6 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 
 		close(out)
 		close(stream.err)
-		close(stream.mark)
 	}()
 
 	go func() {
