@@ -5,8 +5,8 @@ go 1.19
 require (
 	github.com/gofiber/fiber/v2 v2.42.0
 	github.com/golang/mock v1.6.0
-	github.com/golangci/golangci-lint v1.51.0
-	github.com/katallaxie/pkg v0.0.0-20230210185923-5820e507735a
+	github.com/golangci/golangci-lint v1.42.1
+	github.com/katallaxie/pkg v0.0.0-20230214211457-fbe69d360a08
 	github.com/prometheus/client_golang v1.12.1
 	github.com/segmentio/kafka-go v0.4.38
 	github.com/spf13/cobra v1.6.1
@@ -43,7 +43,7 @@ require (
 	github.com/charithe/durationcheck v0.0.9 // indirect
 	github.com/chavacava/garif v0.0.0-20221024190013-b3ef35877348 // indirect
 	github.com/curioswitch/go-reassign v0.2.0 // indirect
-	github.com/daixiang0/gci v0.9.0 // indirect
+	github.com/daixiang0/gci v0.2.9 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denis-tingaikin/go-header v0.4.3 // indirect
 	github.com/dnephin/pflag v1.0.7 // indirect
