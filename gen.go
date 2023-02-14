@@ -1,3 +1,4 @@
-package streams
+//go:build generate
+// +build generate
 
-//go:generate echo "Generating..."
+package streams

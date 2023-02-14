@@ -21,8 +21,18 @@ type Sink[K, V any] interface {
 // Predicate is a function that returns true or false.
 type Predicate[K, V any] func(msg.Message[K, V]) (bool, error)
 
+// Key is a message key.
+type Key interface {
+	int | ~string | []byte
+}
+
+// Value is a message value.
+type Value interface {
+	int | ~string | []byte
+}
+
 // Stream is a stream of messages.
-type Stream[K, V any] interface {
+type Stream[K Key, V Value] interface {
 	// Close closes a stream.
 	Close()
 
@@ -31,9 +41,6 @@ type Stream[K, V any] interface {
 
 	// Drain drains a stream.
 	Drain()
-
-	// Filter filters a stream.
-	Fail(err error)
 
 	// FanOut splits a stream into multiple streams.
 	FanOut(name string, predicates ...Predicate[K, V]) []Stream[K, V]
@@ -45,16 +52,13 @@ type Stream[K, V any] interface {
 	Map(name string, fn func(msg.Message[K, V]) (msg.Message[K, V], error)) Stream[K, V]
 
 	// Mark marks a message.
-	Mark()
+	Mark() Stream[K, V]
 
 	// Log logs a message.
 	Log(name string) Stream[K, V]
 
 	// Sink sends messages to a sink.
 	Sink(name string, sink Sink[K, V])
-
-	// Table sends messages to a table.
-	Table(name string, table Table)
 
 	// Errors returns the first error.
 	Error() error

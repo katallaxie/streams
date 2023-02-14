@@ -109,7 +109,6 @@ func (t *table) Set(key string, value []byte) error {
 		Key:   []byte(key),
 		Value: value,
 	})
-
 	if err != nil {
 		return err
 	}
@@ -167,7 +166,6 @@ func (t *table) Delete(key string) error {
 		Key:   []byte(key),
 		Value: nil, // Tombstone record
 	})
-
 	if err != nil {
 		return err
 	}

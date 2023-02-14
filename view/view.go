@@ -24,10 +24,8 @@ const (
 	Running
 )
 
-var (
-	// ErrCatchup ...
-	ErrCatchup = errors.New("catching up with the latest changes")
-)
+// ErrCatchup ...
+var ErrCatchup = errors.New("catching up with the latest changes")
 
 // View is a view of the data in the table
 type View[V any] interface {
