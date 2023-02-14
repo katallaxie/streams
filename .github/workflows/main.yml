@@ -21,10 +21,5 @@ jobs:
     - uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go }}
-    - uses: golangci/golangci-lint-action@v3
-      with:
-        version: latest
-        # skip cache because of flaky behaviors
-        skip-build-cache: true
-        skip-pkg-cache: true
+    - run: make lint
     - run: make test

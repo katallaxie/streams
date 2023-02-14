@@ -9,9 +9,9 @@ import (
 
 // Opts is a set of options for a stream.
 type Opts struct {
-	buffer   int
-	nodeName string
-	monitor  *Monitor
+	buffer  int
+	name    string
+	monitor *Monitor
 }
 
 // Configure is a function that configures a stream.
@@ -31,10 +31,10 @@ func WithBuffer(size int) Opt {
 	}
 }
 
-// WithNodeName configures the node name for a stream.
-func WithNodeName(name string) Opt {
+// WithName configures the node name for a stream.
+func WithName(name string) Opt {
 	return func(o *Opts) {
-		o.nodeName = name
+		o.name = name
 	}
 }
 
@@ -45,10 +45,16 @@ func WithMonitor(m *Monitor) Opt {
 	}
 }
 
+// MessageChannel ...
+type MessageChannel[K, V any] chan msg.Message[K, V]
+
+// MessageReceiver ...
+type MessageReceiver[K, V any] <-chan msg.Message[K, V]
+
 // StreamImpl implements Stream.
 type StreamImpl[K, V any] struct {
-	in      chan msg.Message[K, V]
-	mark    chan msg.Message[K, V]
+	in      MessageChannel[K, V]
+	mark    MessageChannel[K, V]
 	close   chan bool
 	err     chan error
 	metrics *metrics
@@ -83,8 +89,8 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 	stream.topology = NewTopology(node)
 
 	stream.metrics = new(metrics)
-	stream.metrics.latency = newLatencyMetric(stream.opts.nodeName)
-	stream.metrics.count = newCountMetric(stream.opts.nodeName)
+	stream.metrics.latency = newLatencyMetric(stream.opts.name)
+	stream.metrics.count = newCountMetric(stream.opts.name)
 
 	go func() {
 		for x := range src.Messages() {
@@ -95,6 +101,7 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 
 		close(out)
 		close(stream.err)
+		close(stream.mark)
 	}()
 
 	go func() {
