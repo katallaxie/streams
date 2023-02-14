@@ -4,14 +4,15 @@ import (
 	"github.com/ionos-cloud/streams/msg"
 )
 
-type noopSource[K, V any] struct {
+// Source ...
+type Source[K, V any] struct {
 	buf []msg.Message[K, V]
 	out chan msg.Message[K, V]
 }
 
-// New ...
-func NewSource[K, V any](buf []msg.Message[K, V]) *noopSource[K, V] {
-	n := new(noopSource[K, V])
+// NewSource ...
+func NewSource[K, V any](buf []msg.Message[K, V]) *Source[K, V] {
+	n := new(Source[K, V])
 	n.buf = buf
 	n.out = make(chan msg.Message[K, V])
 
@@ -19,7 +20,7 @@ func NewSource[K, V any](buf []msg.Message[K, V]) *noopSource[K, V] {
 }
 
 // Message ...
-func (n *noopSource[K, V]) Messages() chan msg.Message[K, V] {
+func (n *Source[K, V]) Messages() chan msg.Message[K, V] {
 	out := make(chan msg.Message[K, V])
 
 	go func(buf []msg.Message[K, V]) {
@@ -32,11 +33,11 @@ func (n *noopSource[K, V]) Messages() chan msg.Message[K, V] {
 }
 
 // Commit ...
-func (n *noopSource[K, V]) Commit(messages ...msg.Message[K, V]) error {
+func (n *Source[K, V]) Commit(messages ...msg.Message[K, V]) error {
 	return nil
 }
 
 // Close ...
-func (n *noopSource[K, V]) Close() {
+func (n *Source[K, V]) Close() {
 	close(n.out)
 }

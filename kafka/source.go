@@ -8,7 +8,7 @@ import (
 	kgo "github.com/segmentio/kafka-go"
 )
 
-type kafka[K, V any] struct {
+type Source[K, V any] struct {
 	reader       *kgo.Reader
 	ctx          context.Context
 	keyDecoder   codec.Decoder[K]
@@ -17,8 +17,8 @@ type kafka[K, V any] struct {
 }
 
 // WithContext is a constructor for a kafka source with a cancellation context.
-func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key codec.Decoder[K], value codec.Decoder[V], keyEncoder codec.Encoder[K]) *kafka[K, V] {
-	k := new(kafka[K, V])
+func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key codec.Decoder[K], value codec.Decoder[V], keyEncoder codec.Encoder[K]) *Source[K, V] {
+	k := new(Source[K, V])
 	k.ctx = ctx
 	k.reader = r
 	k.keyDecoder = key
@@ -29,7 +29,7 @@ func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key codec.Decoder
 }
 
 // Commit ...
-func (k *kafka[K, V]) Commit(msgs ...msg.Message[K, V]) error {
+func (k *Source[K, V]) Commit(msgs ...msg.Message[K, V]) error {
 	mm := make([]kgo.Message, len(msgs))
 	for i, m := range msgs {
 		mm[i] = kgo.Message{Topic: m.Topic(), Partition: m.Partition(), Offset: int64(m.Offset())}
@@ -39,7 +39,7 @@ func (k *kafka[K, V]) Commit(msgs ...msg.Message[K, V]) error {
 }
 
 // Message ...
-func (k *kafka[K, V]) Messages() chan msg.Message[K, V] {
+func (k *Source[K, V]) Messages() chan msg.Message[K, V] {
 	out := make(chan msg.Message[K, V])
 
 	go func() {
