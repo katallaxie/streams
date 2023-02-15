@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := build
 
 GO ?= go
-GO_RUN_TOOLS ?= $(GO) run -modfile ./internal/tools/go.mod
+GO_RUN_TOOLS ?= $(GO) run -modfile ./tools/go.mod
 GO_TEST = $(GO_RUN_TOOLS) gotest.tools/gotestsum --format pkgname
 
 
@@ -23,7 +23,7 @@ test: fmt vet ## Run tests.
 	$(GO_TEST) --junitfile .test/reports/unit-test.xml -- -race ./... -count=1 -short -cover -coverprofile .test/reports/unit-test-coverage.out
 
 .PHONY: lint
-lint: 
+lint: ## Run lint.
 	$(GO_RUN_TOOLS) github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout 5m -c .golangci.yml
 
 .PHONY: clean

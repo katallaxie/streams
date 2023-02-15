@@ -1,9 +1,8 @@
-module github.com/ionos-cloud/streams/internal/tools
+module github.com/ionos-cloud/streams/tools
 
 go 1.19
 
 require (
-	github.com/golang/mock v1.4.4
 	github.com/golangci/golangci-lint v1.51.1
 	gotest.tools/gotestsum v1.9.0
 	mvdan.cc/gofumpt v0.4.0

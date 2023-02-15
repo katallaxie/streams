@@ -24,24 +24,31 @@ const (
 	Running
 )
 
-// ErrCatchup ...
-var ErrCatchup = errors.New("catching up with the latest changes")
+var (
+	// ErrCatchup is returned when the view is not yet caught up with the latest changes.
+	ErrCatchup = errors.New("catching up with the latest changes")
+)
+
+// Value is a value in the table.
+type Value interface {
+	int | ~string | []byte
+}
 
 // View is a view of the data in the table
-type View[V any] interface {
-	// Get ...
+type View[V Value] interface {
+	// Get is used to retrieve a value from the view.
 	Get(key string) (V, error)
 
-	// Set ...
+	// Set is used to set a value in the view.
 	Set(key string, value V) error
 
-	// Delete ...
+	// Delete is used to delete a value from the view.
 	Delete(key string) error
 
 	server.Listener
 }
 
-type view[V any] struct {
+type view[V Value] struct {
 	store store.Storage
 	table streams.Table
 
@@ -52,8 +59,8 @@ type view[V any] struct {
 	catchUp     bool
 }
 
-// New ..
-func New[V any](table streams.Table, encoder codec.Encoder[V], decoder codec.Decoder[V], store store.Storage) View[V] {
+// New initializes a new view.
+func New[V Value](table streams.Table, encoder codec.Encoder[V], decoder codec.Decoder[V], store store.Storage) View[V] {
 	v := new(view[V])
 	v.table = table
 	v.store = store
@@ -64,7 +71,7 @@ func New[V any](table streams.Table, encoder codec.Encoder[V], decoder codec.Dec
 	return v
 }
 
-// Get ...
+// Get is used to retrieve a value from the view.
 func (v *view[V]) Get(key string) (V, error) {
 	if !v.catchUp {
 		return utils.Zero[V](), ErrCatchup
@@ -83,7 +90,7 @@ func (v *view[V]) Get(key string) (V, error) {
 	return value, nil
 }
 
-// Set ...
+// Set is used to set a value in the view.
 func (v *view[V]) Set(key string, value V) error {
 	b, err := v.encoder.Encode(value)
 	if err != nil {
@@ -99,7 +106,7 @@ func (v *view[V]) Set(key string, value V) error {
 	return nil
 }
 
-// Delete ...
+// Delete is used to delete a value from the view.
 func (v *view[V]) Delete(key string) error {
 	err := v.table.Delete(key) // Tombstone message
 	if err != nil {
@@ -109,7 +116,7 @@ func (v *view[V]) Delete(key string) error {
 	return nil
 }
 
-// Start ...
+// Start is used to start the view.
 func (v *view[V]) Start(ctx context.Context, ready server.ReadyFunc, run server.RunFunc) func() error {
 	return func() error {
 		err := v.table.Setup()
