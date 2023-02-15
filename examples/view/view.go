@@ -4,9 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
-	"math/rand"
 	"os"
-	"time"
 
 	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/kafka/table"
@@ -66,8 +64,6 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rand.Seed(time.Now().UnixNano())
-
 	rootCmd.SilenceUsage = true
 }
 
@@ -82,7 +78,8 @@ func run(ctx context.Context) error {
 	log.SetOutput(os.Stderr)
 
 	store := memory.New()
-	table := table.WithContext(ctx, table.WithTopic(table.NewTopic("test")), table.WithBrokers("localhost:9092"))
+	name := table.Topic("test")
+	table := table.WithContext(ctx, table.WithTopic(name), table.WithBrokers("localhost:9092"))
 
 	v := view.New(table, codec.StringEncoder, codec.StringDecoder, store)
 

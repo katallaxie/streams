@@ -17,8 +17,13 @@ import (
 	kgo "github.com/segmentio/kafka-go"
 )
 
-// Topic ...
+// Topic is a kafka topic.
 type Topic string
+
+// String is returning the topic as string.
+func (t Topic) String() string {
+	return strings.Join([]string{prefix, string(t)}, sep)
+}
 
 type table struct {
 	dialer *kgo.Dialer
@@ -41,11 +46,6 @@ const (
 	prefix = "table"
 	sep    = "."
 )
-
-// NewTopic ...
-func NewTopic(name string) Topic {
-	return Topic(strings.Join([]string{prefix, name}, sep))
-}
 
 // Opt ...
 type Opt func(t *table)
