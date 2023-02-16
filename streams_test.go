@@ -24,6 +24,10 @@ func (m *mockSource[K, V]) Commit(msgs ...msg.Message[K, V]) error {
 	return nil
 }
 
+func (m *mockSource[K, V]) Error() error {
+	return nil
+}
+
 func newMockSource[K, V any]() *mockSource[K, V] {
 	return &mockSource[K, V]{
 		make(chan msg.Message[K, V]),

@@ -9,8 +9,14 @@ import (
 
 // Source is a source of messages.
 type Source[K, V any] interface {
+	// Messages returns a channel of messages.
 	Messages() chan msg.Message[K, V]
+
+	// Commit commits a message.
 	Commit(...msg.Message[K, V]) error
+
+	// Error returns an error.
+	Error() error
 }
 
 // Sink is a sink of messages.

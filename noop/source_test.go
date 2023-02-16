@@ -19,7 +19,7 @@ func TestCommit(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestClo(t *testing.T) {
+func TestClose(t *testing.T) {
 	s := NewSource[string, string](nil)
 	assert.NotNil(t, s)
 
