@@ -184,6 +184,8 @@ func (s *StreamImpl[K, V]) Branch(name string, fns ...Predicate[K, V]) []*Stream
 
 	go func() {
 		for x := range s.in {
+			mark := true
+
 			for i, fn := range fns {
 				ok, err := fn(x)
 				if err != nil {
@@ -193,7 +195,13 @@ func (s *StreamImpl[K, V]) Branch(name string, fns ...Predicate[K, V]) []*Stream
 
 				if ok {
 					streams[i].in <- x
+					mark = false
+					break
 				}
+			}
+
+			if mark {
+				s.Mark(x) // if we cannot match a message, we mark it.
 			}
 		}
 

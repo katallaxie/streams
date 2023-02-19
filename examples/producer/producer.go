@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 
-	"github.com/segmentio/kafka-go"
+	pb "github.com/ionos-cloud/streams/examples/producer/proto"
+	"google.golang.org/protobuf/proto"
 
+	"github.com/segmentio/kafka-go"
 	"github.com/spf13/cobra"
 )
 
@@ -20,8 +21,6 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rand.Seed(time.Now().UnixNano())
-
 	rootCmd.SilenceUsage = true
 }
 
@@ -43,11 +42,19 @@ func run(ctx context.Context) error {
 		log.Fatal("failed to dial leader:", err)
 	}
 
+	m := &pb.Demo{
+		Name: "demo",
+	}
+	msg, err := proto.Marshal(m)
+	if err != nil {
+		return err
+	}
+
 	conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
 	_, err = conn.WriteMessages(
-		kafka.Message{Key: []byte("foo"), Value: []byte("one!")},
-		kafka.Message{Key: []byte("bar"), Value: []byte("two!")},
-		kafka.Message{Value: []byte("three!")},
+		kafka.Message{Key: []byte("foo"), Value: msg},
+		kafka.Message{Key: []byte("bar"), Value: msg},
+		kafka.Message{Value: msg},
 	)
 	if err != nil {
 		log.Fatal("failed to write messages:", err)

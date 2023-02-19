@@ -1,6 +1,8 @@
 package codec
 
-import "strconv"
+import (
+	"strconv"
+)
 
 // NilDecoder is a decoder that always returns a nil, no matter the input.
 var NilDecoder Decoder[any] = func([]byte) (any, error) { return nil, nil }
