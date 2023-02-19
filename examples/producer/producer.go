@@ -45,8 +45,8 @@ func run(ctx context.Context) error {
 
 	conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
 	_, err = conn.WriteMessages(
-		kafka.Message{Value: []byte("one!")},
-		kafka.Message{Value: []byte("two!")},
+		kafka.Message{Key: []byte("foo"), Value: []byte("one!")},
+		kafka.Message{Key: []byte("bar"), Value: []byte("two!")},
 		kafka.Message{Value: []byte("three!")},
 	)
 	if err != nil {

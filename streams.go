@@ -240,7 +240,7 @@ func (s *StreamImpl[K, V]) Log(name string) *StreamImpl[K, V] {
 
 	go func() {
 		for x := range s.in {
-			log.Printf("%v:%v\n", x.Key(), x.Value())
+			log.Printf("%s:%v:%v\n", name, x.Key(), x.Value())
 
 			out <- x
 		}
@@ -279,15 +279,17 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 	node := NewNode(name)
 	s.node.AddChild(node)
 
-	for x := range s.in {
-		err := sink.Write(x)
-		if err != nil {
-			s.Fail(err)
-			return
-		}
+	go func(c <-chan msg.Message[K, V]) {
+		for x := range s.in {
+			err := sink.Write(x)
+			if err != nil {
+				s.Fail(err)
+				return
+			}
 
-		s.Mark(x)
-	}
+			s.Mark(x)
+		}
+	}(s.in)
 }
 
 // Collect is collect the content of a stream.

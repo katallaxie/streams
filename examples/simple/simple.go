@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/kafka"
 	"github.com/ionos-cloud/streams/kafka/reader"
+	"github.com/ionos-cloud/streams/msg"
 	"github.com/ionos-cloud/streams/noop"
 
 	kgo "github.com/segmentio/kafka-go"
@@ -25,8 +25,6 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rand.Seed(time.Now().UnixNano())
-
 	rootCmd.SilenceUsage = true
 }
 
@@ -61,9 +59,16 @@ func run(ctx context.Context) error {
 
 	m := streams.NewMonitor(streams.DefaultMetrics)
 
-	s := streams.NewStream[string, string](src, streams.WithMonitor(m))
-	s.Log("logging").Sink("mock-sink", noop.NewSink[string, string]())
-	if s.Error() != nil {
+	s := streams.NewStream[string, string](src, streams.WithMonitor(m), streams.WithBuffer(1))
+	ss := s.Branch("branch1", func(m msg.Message[string, string]) (bool, error) {
+		return m.Key() == "foo", nil
+	}, func(m msg.Message[string, string]) (bool, error) {
+		return m.Key() == "bar", nil
+	})
+	ss[0].Log("logging-foo").Sink("mock-sink-1", noop.NewSink[string, string]())
+	ss[1].Log("logging-bar").Sink("mock-sink-2", noop.NewSink[string, string]())
+
+	if s.Error(); err != nil {
 		return err
 	}
 
