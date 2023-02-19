@@ -2,6 +2,7 @@ package streams
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/ionos-cloud/streams/msg"
@@ -12,6 +13,8 @@ import (
 type mockSource[K, V any] struct {
 	in  chan msg.Message[K, V]
 	buf []msg.Message[K, V]
+
+	sync.RWMutex
 }
 
 func (m *mockSource[K, V]) Messages() chan msg.Message[K, V] {
@@ -19,6 +22,9 @@ func (m *mockSource[K, V]) Messages() chan msg.Message[K, V] {
 }
 
 func (m *mockSource[K, V]) Commit(msgs ...msg.Message[K, V]) error {
+	m.Lock()
+	defer m.Unlock()
+
 	m.buf = append(m.buf, msgs...)
 
 	return nil
@@ -32,14 +38,19 @@ func newMockSource[K, V any]() *mockSource[K, V] {
 	return &mockSource[K, V]{
 		make(chan msg.Message[K, V]),
 		make([]msg.Message[K, V], 0),
+		sync.RWMutex{},
 	}
 }
 
 type mockSink[K, V any] struct {
 	buf []msg.Message[K, V]
+	sync.RWMutex
 }
 
 func (m *mockSink[K, V]) Write(msg ...msg.Message[K, V]) error {
+	m.Lock()
+	defer m.Unlock()
+
 	m.buf = append(m.buf, msg...)
 
 	return nil
@@ -48,6 +59,7 @@ func (m *mockSink[K, V]) Write(msg ...msg.Message[K, V]) error {
 func newMockSink[K, V any]() *mockSink[K, V] {
 	return &mockSink[K, V]{
 		make([]msg.Message[K, V], 0),
+		sync.RWMutex{},
 	}
 }
 
@@ -155,7 +167,7 @@ func TestStreamSink(t *testing.T) {
 	s.Sink("foo", sink)
 	assert.NoError(t, s.Error())
 
-	assert.Equal(t, len(sink.buf), 2)
+	assert.Len(t, sink.buf, 2)
 	assert.Equal(t, "test", sink.buf[0].Key())
 	assert.Equal(t, "test2", sink.buf[1].Key())
 }

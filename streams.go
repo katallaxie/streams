@@ -297,6 +297,8 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 
 			s.Mark(x)
 		}
+
+		close(s.err)
 	}(s.in)
 }
 
