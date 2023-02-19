@@ -6,7 +6,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.42.0
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golangci/golangci-lint v1.42.1
-	github.com/katallaxie/pkg v0.0.0-20230214221029-382b886800ad
+	github.com/katallaxie/pkg v0.0.0-20230219193544-c0f9385a1596
 	github.com/prometheus/client_golang v1.12.1
 	github.com/segmentio/kafka-go v0.4.38
 	github.com/spf13/cobra v1.6.1

@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/streams/msg"
+	"github.com/katallaxie/pkg/logger"
+	"go.uber.org/zap"
 )
 
 // Opts is a set of options for a stream.
@@ -12,6 +14,7 @@ type Opts struct {
 	buffer  int
 	name    string
 	monitor *Monitor
+	logger  *zap.Logger
 }
 
 // Configure is a function that configures a stream.
@@ -28,6 +31,13 @@ type Opt func(*Opts)
 func WithBuffer(size int) Opt {
 	return func(o *Opts) {
 		o.buffer = size
+	}
+}
+
+// WithLogger configures the logger for a stream.
+func WithLogger(logger *zap.Logger) Opt {
+	return func(o *Opts) {
+		o.logger = logger
 	}
 }
 
@@ -94,6 +104,8 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 
 	go func() {
 		for x := range src.Messages() {
+			logger.Infow("received message", "key", x.Key(), "partition", x.Partition(), "offset", x.Offset(), "topic", x.Topic())
+
 			stream.metrics.latency.start()
 
 			out <- x
@@ -107,6 +119,8 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 		var buf []msg.Message[K, V]
 
 		for m := range stream.mark {
+			logger.Infow("marking message", "key", m.Key(), "partition", m.Partition(), "offset", m.Offset(), "topic", m.Topic())
+
 			if m.Marked() {
 				continue
 			}

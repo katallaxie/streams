@@ -1,10 +1,11 @@
 package streams
 
 import (
-	"log"
 	"sync"
 
 	"github.com/ionos-cloud/streams/msg"
+
+	"github.com/katallaxie/pkg/logger"
 )
 
 // Source is a source of messages.
@@ -248,7 +249,7 @@ func (s *StreamImpl[K, V]) Log(name string) *StreamImpl[K, V] {
 
 	go func() {
 		for x := range s.in {
-			log.Printf("%s:%v:%v\n", name, x.Key(), x.Value())
+			logger.Printf("%s:%v:%v\n", name, x.Key(), x.Value())
 
 			out <- x
 		}
@@ -289,6 +290,8 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 
 	go func(c <-chan msg.Message[K, V]) {
 		for x := range s.in {
+			logger.Infow("sink", "name", name, "key", x.Key())
+
 			err := sink.Write(x)
 			if err != nil {
 				s.Fail(err)
