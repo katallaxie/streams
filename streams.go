@@ -2,6 +2,7 @@ package streams
 
 import (
 	"sync"
+	"time"
 
 	"github.com/ionos-cloud/streams/msg"
 
@@ -294,26 +295,47 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 		var buf []msg.Message[K, V]
 		var count int
 
-		for x := range c {
-			logger.Infow("sink", "name", name, "key", x.Key())
+		timer := time.NewTicker(s.opts.timeout)
 
-			buf = append(buf, x)
-			count++
+	LOOP:
+		for {
+			select {
+			case <-timer.C:
+				err := sink.Write(buf...)
+				if err != nil {
+					s.Fail(err)
+					return
+				}
 
-			if count <= s.opts.buffer {
-				continue
+				s.Mark(buf...)
+
+				buf = buf[:0]
+				count = 0
+			case m, ok := <-c:
+				if !ok {
+					break LOOP
+				}
+
+				buf = append(buf, m)
+				count++
+
+				if count <= s.opts.buffer {
+					continue
+				}
+
+				err := sink.Write(buf...)
+				if err != nil {
+					s.Fail(err)
+					break LOOP
+				}
+
+				s.Mark(buf...)
+
+				buf = buf[:0]
+				count = 0
+
+				timer.Reset(s.opts.timeout)
 			}
-
-			err := sink.Write(buf...)
-			if err != nil {
-				s.Fail(err)
-				return
-			}
-
-			s.Mark(buf...)
-
-			buf = buf[:0]
-			count = 0
 		}
 
 		close(s.err)
