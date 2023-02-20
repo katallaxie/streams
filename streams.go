@@ -83,12 +83,14 @@ func (s *StreamImpl[K, V]) Drain() {
 }
 
 // Mark is a function that marks a message.
-func (s *StreamImpl[K, V]) Mark(m msg.Message[K, V]) {
+func (s *StreamImpl[K, V]) Mark(m ...msg.Message[K, V]) {
 	if s.mark == nil {
 		return
 	}
 
-	s.mark <- m
+	for _, x := range m {
+		s.mark <- x
+	}
 }
 
 // Fail is a function that fails a stream
@@ -289,16 +291,29 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 	s.node.AddChild(node)
 
 	go func(c <-chan msg.Message[K, V]) {
-		for x := range s.in {
+		var buf []msg.Message[K, V]
+		var count int
+
+		for x := range c {
 			logger.Infow("sink", "name", name, "key", x.Key())
 
-			err := sink.Write(x)
+			buf = append(buf, x)
+			count++
+
+			if count <= s.opts.buffer {
+				continue
+			}
+
+			err := sink.Write(buf...)
 			if err != nil {
 				s.Fail(err)
 				return
 			}
 
-			s.Mark(x)
+			s.Mark(buf...)
+
+			buf = buf[:0]
+			count = 0
 		}
 
 		close(s.err)

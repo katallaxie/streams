@@ -155,7 +155,7 @@ func TestStreamSink(t *testing.T) {
 	src := newMockSource[string, string]()
 	sink := newMockSink[string, string]()
 
-	s := NewStream[string, string](src)
+	s := NewStream[string, string](src, WithBuffer(0))
 	assert.NotNil(t, s)
 
 	go func() {
