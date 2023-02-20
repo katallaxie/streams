@@ -9,16 +9,37 @@ import (
 
 // Reader ...
 type Reader interface {
+	// Close closes the reader.
 	Close() error
+
+	// CommitMessages commits the messages to Kafka.
 	CommitMessages(ctx context.Context, msgs ...kafka.Message) error
+
+	// Config returns the reader configuration.
 	Config() kafka.ReaderConfig
+
+	// FetchMessage fetches a message from Kafka.
 	FetchMessage(ctx context.Context) (kafka.Message, error)
+
+	// Lag returns the current lag of the reader.
 	Lag() int64
+
+	// Offset returns the current offset of the reader.
 	Offset() int64
+
+	// ReadLag reads the current lag of the reader.
 	ReadLag(ctx context.Context) (lag int64, err error)
+
+	// ReadMessage reads a message from Kafka.
 	ReadMessage(ctx context.Context) (kafka.Message, error)
+
+	// SetOffset sets the offset of the reader.
 	SetOffset(offset int64) error
+
+	// SetOffsetAt sets the offset of the reader at the given time.
 	SetOffsetAt(ctx context.Context, t time.Time) error
+
+	// Stats returns the reader statistics.
 	Stats() kafka.ReaderStats
 }
 

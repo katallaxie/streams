@@ -1,4 +1,4 @@
-package kafka
+package source
 
 import (
 	"context"
@@ -36,8 +36,9 @@ func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key codec.Decoder
 // Commit is a Kafka source commit.
 func (k *Source[K, V]) Commit(msgs ...msg.Message[K, V]) error {
 	mm := make([]kgo.Message, len(msgs))
+
 	for i, m := range msgs {
-		mm[i] = kgo.Message{Topic: m.Topic(), Partition: m.Partition(), Offset: int64(m.Offset())}
+		mm[i] = kgo.Message{Topic: k.reader.Config().Topic, Partition: m.Partition(), Offset: int64(m.Offset())}
 	}
 
 	return k.reader.CommitMessages(k.ctx, mm...)

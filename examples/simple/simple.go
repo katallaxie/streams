@@ -9,8 +9,8 @@ import (
 	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/codec"
 	pb "github.com/ionos-cloud/streams/examples/producer/proto"
-	"github.com/ionos-cloud/streams/kafka"
 	"github.com/ionos-cloud/streams/kafka/reader"
+	"github.com/ionos-cloud/streams/kafka/source"
 	"github.com/ionos-cloud/streams/msg"
 	"github.com/ionos-cloud/streams/noop"
 	"google.golang.org/protobuf/proto"
@@ -26,10 +26,6 @@ var protoDecoder codec.Decoder[*pb.Demo] = func(b []byte) (*pb.Demo, error) {
 	}
 
 	return msg, nil
-}
-
-var protoEncoder codec.Encoder[*pb.Demo] = func(v *pb.Demo) ([]byte, error) {
-	return proto.Marshal(v)
 }
 
 var rootCmd = &cobra.Command{
@@ -65,7 +61,7 @@ func run(ctx context.Context) error {
 		reader.WithTopic("demo12345"),
 	)
 
-	src := kafka.WithContext(ctx, r, codec.StringDecoder, protoDecoder, codec.StringEncoder)
+	src := source.WithContext(ctx, r, codec.StringDecoder, protoDecoder, codec.StringEncoder)
 
 	err := streams.DefaultRegisterer.Register(streams.DefaultMetrics)
 	if err != nil {
