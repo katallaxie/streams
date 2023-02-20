@@ -12,6 +12,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.1
 	github.com/syndtr/goleveldb v1.0.0
+	go.uber.org/zap v1.21.0
 	google.golang.org/protobuf v1.28.1
 	mvdan.cc/gofumpt v0.4.0
 )
@@ -156,7 +157,6 @@ require (
 	github.com/yeya24/promlinter v0.2.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	go.uber.org/zap v1.21.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20221208152030-732eee02a75a // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect

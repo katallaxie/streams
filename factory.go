@@ -12,6 +12,7 @@ import (
 // Opts is a set of options for a stream.
 type Opts struct {
 	buffer  int
+	timeout time.Duration
 	name    string
 	monitor *Monitor
 	logger  *zap.Logger
@@ -55,6 +56,13 @@ func WithMonitor(m *Monitor) Opt {
 	}
 }
 
+// WithTimeout configures the timeout for a stream.
+func WithTimeout(timeout time.Duration) Opt {
+	return func(o *Opts) {
+		o.timeout = timeout
+	}
+}
+
 // MessageChannel ...
 type MessageChannel[K, V any] chan msg.Message[K, V]
 
@@ -76,6 +84,15 @@ type StreamImpl[K, V any] struct {
 	Collector
 }
 
+// DefaultOpts are the default options for a stream.
+func DefaultOpts() *Opts {
+	return &Opts{
+		buffer:  1000,
+		timeout: 1 * time.Second,
+		name:    "default",
+	}
+}
+
 type metrics struct {
 	latency *latencyMetric
 	count   *countMetric
@@ -83,7 +100,7 @@ type metrics struct {
 
 // NewStream from a source of messages.
 func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
-	options := new(Opts)
+	options := DefaultOpts()
 	options.Configure(opts...)
 
 	out := make(chan msg.Message[K, V])
@@ -118,37 +135,53 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 		var count int
 		var buf []msg.Message[K, V]
 
-		for m := range stream.mark {
-			logger.Infow("marking message", "key", m.Key(), "partition", m.Partition(), "offset", m.Offset(), "topic", m.Topic())
+		timer := time.NewTimer(stream.opts.timeout)
 
-			if m.Marked() {
-				continue
+		for {
+			select {
+			case <-timer.C:
+				err := src.Commit(buf...)
+				if err != nil {
+					stream.Fail(err)
+					return
+				}
+
+				buf = buf[:0]
+				count = 0
+			case m := <-stream.mark:
+				logger.Infow("marking message", "key", m.Key(), "partition", m.Partition(), "offset", m.Offset(), "topic", m.Topic())
+
+				if m.Marked() {
+					continue
+				}
+
+				buf = append(buf, m)
+				count++
+
+				m.Mark()
+
+				if count <= stream.opts.buffer {
+					continue
+				}
+
+				err := src.Commit(buf...)
+				if err != nil {
+					stream.Fail(err)
+					return
+				}
+
+				stream.metrics.latency.stop()
+				stream.metrics.count.inc(len(buf))
+
+				if stream.opts.monitor != nil {
+					stream.opts.monitor.Gather(stream)
+				}
+
+				buf = buf[:0]
+				count = 0
+
+				timer.Reset(stream.opts.timeout)
 			}
-
-			buf = append(buf, m)
-			count++
-
-			m.Mark()
-
-			if count <= stream.opts.buffer {
-				continue
-			}
-
-			err := src.Commit(buf...)
-			if err != nil {
-				stream.Fail(err)
-				return
-			}
-
-			stream.metrics.latency.stop()
-			stream.metrics.count.inc(len(buf))
-
-			if stream.opts.monitor != nil {
-				stream.opts.monitor.Gather(stream)
-			}
-
-			buf = buf[:0]
-			count = 0
 		}
 	}()
 
