@@ -30,6 +30,9 @@ type Message[K, V any] interface {
 	// Topic is used to get the topic of a message.
 	Topic() string
 
+	// SetTopic is used to set the topic of a message.
+	SetTopic(topic string)
+
 	// Value is used to get the value of a message.
 	Value() V
 }
@@ -84,6 +87,11 @@ func (m *MessageImpl[K, V]) Mark() {
 	m.markedOnce.Do(func() {
 		m.marked = true
 	})
+}
+
+// SetTopic is used to set the topic of a message.
+func (m *MessageImpl[K, V]) SetTopic(topic string) {
+	m.topic = topic
 }
 
 // Marked is used to check if a message has been marked as processed

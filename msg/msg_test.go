@@ -115,3 +115,26 @@ func TestSetKey(t *testing.T) {
 		})
 	}
 }
+
+func TestSetTopic(t *testing.T) {
+	tests := []struct {
+		desc  string
+		topic string
+	}{
+		{
+			desc:  "set topic",
+			topic: "foo",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			m := NewMessage("", "", 0, 0, "")
+			assert.NotNil(t, m)
+
+			m.SetTopic(tc.topic)
+
+			assert.Equal(t, tc.topic, m.Topic())
+		})
+	}
+}
