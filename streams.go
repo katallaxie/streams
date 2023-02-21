@@ -72,6 +72,53 @@ type Stream[K Key, V Value] interface {
 	Error() error
 }
 
+// Unimplemented ...
+type Unimplemented[K Key, V Value] struct{}
+
+// Close is a function that closes a stream.
+func (u *Unimplemented[K, V]) Close() {}
+
+// Drain is a function that drains a stream.
+func (u *Unimplemented[K, V]) Drain() {}
+
+// Mark is a function that marks a message.
+func (u *Unimplemented[K, V]) Mark() Stream[K, V] {
+	return u
+}
+
+// Log is a function that logs a message.
+func (u *Unimplemented[K, V]) Log(name string) Stream[K, V] {
+	return u
+}
+
+// Sink is a function that sends messages to a sink.
+func (u *Unimplemented[K, V]) Sink(name string, sink Sink[K, V]) {}
+
+// Error is a function that returns the first error.
+func (u *Unimplemented[K, V]) Error() error {
+	return nil
+}
+
+// Filter is a function that filters a stream.
+func (u *Unimplemented[K, V]) Filter(name string, predicate Predicate[K, V]) Stream[K, V] {
+	return u
+}
+
+// Do is a function that executes a function on a stream.
+func (u *Unimplemented[K, V]) Do(name string, fn func(msg.Message[K, V])) Stream[K, V] {
+	return u
+}
+
+// FanOut is a function that splits a stream into multiple streams.
+func (u *Unimplemented[K, V]) FanOut(name string, predicates ...Predicate[K, V]) []Stream[K, V] {
+	return nil
+}
+
+// Map is a function that maps a stream.
+func (u *Unimplemented[K, V]) Map(name string, fn func(msg.Message[K, V]) (msg.Message[K, V], error)) Stream[K, V] {
+	return u
+}
+
 // Close is a function that closes a stream.
 func (s *StreamImpl[K, V]) Close() {
 	close(s.in)
