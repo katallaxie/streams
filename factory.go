@@ -80,6 +80,8 @@ type MessageReceiver[K, V any] <-chan msg.Message[K, V]
 type StreamImpl[K, V any] struct {
 	in      MessageChannel[K, V]
 	mark    MessageChannel[K, V]
+	flush   chan struct{}
+	src     Source[K, V]
 	close   chan bool
 	err     chan error
 	metrics *metrics
@@ -117,6 +119,8 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 	stream := new(StreamImpl[K, V])
 	stream.opts = options
 	stream.mark = make(chan msg.Message[K, V])
+	stream.src = src
+	stream.flush = make(chan struct{})
 	stream.in = out
 	stream.err = make(chan error, 1)
 
@@ -131,9 +135,6 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 	go func() {
 		for x := range src.Messages() {
 			stream.log().Printf("received message", "key", x.Key(), "partition", x.Partition(), "offset", x.Offset(), "topic", x.Topic())
-
-			stream.metrics.latency.start()
-
 			out <- x
 		}
 
@@ -148,6 +149,15 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 
 		for {
 			select {
+			case <-stream.flush:
+				err := src.Commit(buf...)
+				if err != nil {
+					stream.Fail(err)
+					return
+				}
+
+				buf = buf[:0]
+				count = 0
 			case <-timer.C:
 				err := src.Commit(buf...)
 				if err != nil {
@@ -203,6 +213,10 @@ func (s *StreamImpl[K, V]) log() logger.LogFunc {
 
 func (s *StreamImpl[K, V]) error() logger.LogFunc {
 	return s.opts.errorLogger
+}
+
+func (s *StreamImpl[K, V]) commit() {
+	s.flush <- struct{}{}
 }
 
 type countMetric struct {
@@ -272,12 +286,12 @@ func (m *latencyMetric) Write(monitor *Monitor) error {
 	return nil
 }
 
-func (m *latencyMetric) start() {
-	m.Lock()
-	defer m.Unlock()
+// func (m *latencyMetric) start() {
+// 	m.Lock()
+// 	defer m.Unlock()
 
-	m.now = time.Now()
-}
+// 	m.now = time.Now()
+// }
 
 func (m *latencyMetric) stop() {
 	m.Lock()
