@@ -8,10 +8,15 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-// Writer ...
+// Writer is a Kafka writer.
 type Writer interface {
+	// Close closes the writer.
 	Close() error
+
+	// Stats returns the writer statistics.
 	Stats() kafka.WriterStats
+
+	// WriteMessage writes a message to Kafka.
 	WriteMessages(ctx context.Context, msgs ...kafka.Message) error
 }
 
@@ -64,7 +69,7 @@ func WithBalancer(b kafka.Balancer) Opt {
 func DefaultConfig() *kafka.Writer {
 	return &kafka.Writer{
 		BatchSize:    1000,
-		BatchTimeout: 100 * time.Millisecond,
+		BatchTimeout: time.Second,
 		Balancer:     &kafka.LeastBytes{},
 		Logger:       kafka.LoggerFunc(logger.Infof),
 		ErrorLogger:  kafka.LoggerFunc(logger.Errorf),

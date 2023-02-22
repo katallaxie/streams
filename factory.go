@@ -6,16 +6,16 @@ import (
 
 	"github.com/ionos-cloud/streams/msg"
 	"github.com/katallaxie/pkg/logger"
-	"go.uber.org/zap"
 )
 
 // Opts is a set of options for a stream.
 type Opts struct {
-	buffer  int
-	timeout time.Duration
-	name    string
-	monitor *Monitor
-	logger  *zap.Logger
+	buffer      int
+	timeout     time.Duration
+	name        string
+	monitor     *Monitor
+	logger      logger.LogFunc
+	errorLogger logger.LogFunc
 }
 
 // Configure is a function that configures a stream.
@@ -36,9 +36,16 @@ func WithBuffer(size int) Opt {
 }
 
 // WithLogger configures the logger for a stream.
-func WithLogger(logger *zap.Logger) Opt {
+func WithLogger(logger logger.LogFunc) Opt {
 	return func(o *Opts) {
 		o.logger = logger
+	}
+}
+
+// WithErrorLogger configures the error logger for a stream.
+func WithErrorLogger(logger logger.LogFunc) Opt {
+	return func(o *Opts) {
+		o.errorLogger = logger
 	}
 }
 
@@ -87,9 +94,11 @@ type StreamImpl[K, V any] struct {
 // DefaultOpts are the default options for a stream.
 func DefaultOpts() *Opts {
 	return &Opts{
-		buffer:  1000,
-		timeout: 1 * time.Second,
-		name:    "default",
+		buffer:      1000,
+		timeout:     1 * time.Second,
+		name:        "default",
+		logger:      logger.LogFunc(logger.Infow),
+		errorLogger: logger.LogFunc(logger.Errorw),
 	}
 }
 
@@ -121,7 +130,7 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 
 	go func() {
 		for x := range src.Messages() {
-			logger.Infow("received message", "key", x.Key(), "partition", x.Partition(), "offset", x.Offset(), "topic", x.Topic())
+			stream.log().Printf("received message", "key", x.Key(), "partition", x.Partition(), "offset", x.Offset(), "topic", x.Topic())
 
 			stream.metrics.latency.start()
 
@@ -149,7 +158,7 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 				buf = buf[:0]
 				count = 0
 			case m := <-stream.mark:
-				logger.Infow("marking message", "key", m.Key(), "partition", m.Partition(), "offset", m.Offset(), "topic", m.Topic())
+				stream.log().Printf("marking message", "key", m.Key(), "partition", m.Partition(), "offset", m.Offset(), "topic", m.Topic())
 
 				if m.Marked() {
 					continue
@@ -186,6 +195,14 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 	}()
 
 	return stream
+}
+
+func (s *StreamImpl[K, V]) log() logger.LogFunc {
+	return s.opts.logger
+}
+
+func (s *StreamImpl[K, V]) error() logger.LogFunc {
+	return s.opts.errorLogger
 }
 
 type countMetric struct {

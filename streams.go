@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/ionos-cloud/streams/msg"
-
-	"github.com/katallaxie/pkg/logger"
 )
 
 // Source is a source of messages.
@@ -145,6 +143,8 @@ func (s *StreamImpl[K, V]) Mark(m ...msg.Message[K, V]) {
 func (s *StreamImpl[K, V]) Fail(err error) {
 	s.Drain()
 	s.Close()
+
+	s.error().Printf("%v", err)
 
 	s.err <- err
 }
@@ -299,7 +299,7 @@ func (s *StreamImpl[K, V]) Log(name string) *StreamImpl[K, V] {
 
 	go func() {
 		for x := range s.in {
-			logger.Printf("%s:%v:%v\n", name, x.Key(), x.Value())
+			s.log().Printf("%s:%v:%v\n", name, x.Key(), x.Value())
 
 			out <- x
 		}
