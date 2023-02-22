@@ -80,7 +80,7 @@ func DefaultConfig() kafka.ReaderConfig {
 	return kafka.ReaderConfig{
 		Logger:         kafka.LoggerFunc(logger.Infof),
 		ErrorLogger:    kafka.LoggerFunc(logger.Errorf),
-		CommitInterval: time.Second, // flushes commits to Kafka every second
+		CommitInterval: 0,
 	}
 }
 
