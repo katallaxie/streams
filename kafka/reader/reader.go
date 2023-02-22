@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/katallaxie/pkg/logger"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -74,11 +75,18 @@ func WithBrokers(brokers ...string) Opt {
 	}
 }
 
-// NewReader creates a new Kafka reader.
-func NewReader(opts ...Opt) *kafka.Reader {
-	cfg := kafka.ReaderConfig{
+// DefaultConfig returns the default configuration for a Kafka reader.
+func DefaultConfig() kafka.ReaderConfig {
+	return kafka.ReaderConfig{
+		Logger:         kafka.LoggerFunc(logger.Infof),
+		ErrorLogger:    kafka.LoggerFunc(logger.Errorf),
 		CommitInterval: time.Second, // flushes commits to Kafka every second
 	}
+}
+
+// NewReader creates a new Kafka reader.
+func NewReader(opts ...Opt) *kafka.Reader {
+	cfg := DefaultConfig()
 
 	for _, opt := range opts {
 		opt(&cfg)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/katallaxie/pkg/logger"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -59,16 +60,23 @@ func WithBalancer(b kafka.Balancer) Opt {
 	}
 }
 
+// DefaultConfig returns the default configuration for a Kafka writer.
+func DefaultConfig() *kafka.Writer {
+	return &kafka.Writer{
+		BatchSize:    1000,
+		BatchTimeout: 100 * time.Millisecond,
+		Balancer:     &kafka.LeastBytes{},
+		Logger:       kafka.LoggerFunc(logger.Infof),
+		ErrorLogger:  kafka.LoggerFunc(logger.Errorf),
+	}
+}
+
 // NewWriter creates a new Kafka writer.
 func NewWriter(opts ...Opt) *kafka.Writer {
-	w := &kafka.Writer{}
+	w := DefaultConfig()
 
 	for _, opt := range opts {
 		opt(w)
-	}
-
-	if w.Balancer == nil {
-		w.Balancer = &kafka.LeastBytes{}
 	}
 
 	return w
