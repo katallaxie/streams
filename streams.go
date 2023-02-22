@@ -299,7 +299,7 @@ func (s *StreamImpl[K, V]) Log(name string) *StreamImpl[K, V] {
 
 	go func() {
 		for x := range s.in {
-			s.log().Printf("%s:%v:%v\n", name, x.Key(), x.Value())
+			s.log().Printf(name, "key", x.Key(), "partition", x.Partition(), "offset", x.Offset())
 
 			out <- x
 		}
