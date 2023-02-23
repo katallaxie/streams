@@ -3,6 +3,7 @@ package source
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/msg"
@@ -17,15 +18,50 @@ type Source[K, V any] struct {
 	valueDecoder codec.Decoder[V]
 	keyEncoder   codec.Encoder[K]
 
-	mark msg.Marker[K, V]
+	opts *Opts
 
 	err     error
 	errOnce sync.Once
 }
 
+// Opts is a set of options for a kafka source.
+type Opts struct {
+	bufferSize    int
+	bufferTimeout time.Duration
+}
+
+// Opt is a Kafka source option.
+type Opt func(o *Opts)
+
+// Configure is a function that configures a kafka source.
+func (o *Opts) Configure(opts ...Opt) {
+	for _, opt := range opts {
+		opt(o)
+	}
+}
+
+// WithBufferSize configures the buffer size for a kafka source.
+func WithBufferSize(size int) Opt {
+	return func(o *Opts) {
+		o.bufferSize = size
+	}
+}
+
+// DefaultOpts is the default options for a kafka source.
+func DefaultOpts() *Opts {
+	return &Opts{
+		bufferSize:    100,
+		bufferTimeout: 1 * time.Second,
+	}
+}
+
 // WithContext is a constructor for a kafka source with a cancellation context.
-func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key codec.Decoder[K], value codec.Decoder[V], keyEncoder codec.Encoder[K]) *Source[K, V] {
+func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key codec.Decoder[K], value codec.Decoder[V], keyEncoder codec.Encoder[K], opts ...Opt) *Source[K, V] {
+	options := DefaultOpts()
+	options.Configure(opts...)
+
 	k := new(Source[K, V])
+
 	k.ctx = ctx
 	k.reader = r
 	k.keyDecoder = key
@@ -49,6 +85,41 @@ func (s *Source[K, V]) Commit(msgs ...msg.Message[K, V]) error {
 // Message is a Kafka source message.
 func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 	out := make(chan msg.Message[K, V])
+	mark := make(msg.Marker[K, V])
+
+	go func(c msg.Marker[K, V]) {
+		var buf []msg.Message[K, V]
+		var count int
+
+		timer := time.NewTimer(s.opts.bufferTimeout)
+
+	LOOP:
+		for {
+			select {
+			case <-timer.C:
+				_ = s.Commit(buf...)
+
+				buf = buf[:0]
+				count = 0
+			case m, ok := <-c:
+				if !ok {
+					break LOOP
+				}
+
+				buf = append(buf, m)
+				count++
+
+				if count <= s.opts.bufferSize {
+					continue
+				}
+
+				_ = s.Commit(buf...)
+
+				buf = buf[:0]
+				count = 0
+			}
+		}
+	}(mark)
 
 	go func() {
 		for {
@@ -70,7 +141,7 @@ func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 				break
 			}
 
-			out <- msg.NewMessage(key, val, int(m.Offset), m.Partition, m.Topic, s.mark)
+			out <- msg.NewMessage(key, val, int(m.Offset), m.Partition, m.Topic, mark)
 		}
 
 		close(out)
