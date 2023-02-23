@@ -17,6 +17,8 @@ type Source[K, V any] struct {
 	valueDecoder codec.Decoder[V]
 	keyEncoder   codec.Encoder[K]
 
+	mark msg.Marker[K, V]
+
 	err     error
 	errOnce sync.Once
 }
@@ -34,41 +36,41 @@ func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key codec.Decoder
 }
 
 // Commit is a Kafka source commit.
-func (k *Source[K, V]) Commit(msgs ...msg.Message[K, V]) error {
+func (s *Source[K, V]) Commit(msgs ...msg.Message[K, V]) error {
 	mm := make([]kgo.Message, len(msgs))
 
 	for i, m := range msgs {
-		mm[i] = kgo.Message{Topic: k.reader.Config().Topic, Partition: m.Partition(), Offset: int64(m.Offset())}
+		mm[i] = kgo.Message{Topic: s.reader.Config().Topic, Partition: m.Partition(), Offset: int64(m.Offset())}
 	}
 
-	return k.reader.CommitMessages(k.ctx, mm...)
+	return s.reader.CommitMessages(s.ctx, mm...)
 }
 
 // Message is a Kafka source message.
-func (k *Source[K, V]) Messages() chan msg.Message[K, V] {
+func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 	out := make(chan msg.Message[K, V])
 
 	go func() {
 		for {
-			m, err := k.reader.FetchMessage(k.ctx)
+			m, err := s.reader.FetchMessage(s.ctx)
 			if err != nil {
-				k.fail(err)
+				s.fail(err)
 				break
 			}
 
-			val, err := k.valueDecoder.Decode(m.Value)
+			val, err := s.valueDecoder.Decode(m.Value)
 			if err != nil {
-				k.fail(err)
+				s.fail(err)
 				break
 			}
 
-			key, err := k.keyDecoder.Decode(m.Key)
+			key, err := s.keyDecoder.Decode(m.Key)
 			if err != nil {
-				k.fail(err)
+				s.fail(err)
 				break
 			}
 
-			out <- msg.NewMessage(key, val, int(m.Offset), m.Partition, m.Topic)
+			out <- msg.NewMessage(key, val, int(m.Offset), m.Partition, m.Topic, s.mark)
 		}
 
 		close(out)
@@ -78,12 +80,12 @@ func (k *Source[K, V]) Messages() chan msg.Message[K, V] {
 }
 
 // Error is a Kafka source error.
-func (k *Source[K, V]) Error() error {
-	return k.err
+func (s *Source[K, V]) Error() error {
+	return s.err
 }
 
-func (k *Source[K, V]) fail(err error) {
-	k.errOnce.Do(func() {
-		k.err = err
+func (s *Source[K, V]) fail(err error) {
+	s.errOnce.Do(func() {
+		s.err = err
 	})
 }
