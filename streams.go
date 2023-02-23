@@ -129,12 +129,21 @@ func (s *StreamImpl[K, V]) Drain() {
 }
 
 // Mark is a function that marks a message.
-func (s *StreamImpl[K, V]) Mark(x msg.Message[K, V]) {
-	if s.mark == nil {
-		return
-	}
+func (s *StreamImpl[K, V]) Mark(name string) *StreamImpl[K, V] {
+	out := make(chan msg.Message[K, V])
 
-	s.mark <- x
+	node := NewNode(name)
+	s.node.AddChild(node)
+
+	go func() {
+		for x := range s.in {
+			s.mark <- x
+			out <- x
+		}
+		close(out)
+	}()
+
+	return &StreamImpl[K, V]{out, s.mark, s.flush, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
 }
 
 // Fail is a function that fails a stream
@@ -170,7 +179,7 @@ func (s *StreamImpl[K, V]) Filter(name string, fn Predicate[K, V]) *StreamImpl[K
 			if ok {
 				out <- x
 			} else {
-				s.Mark(x)
+				s.mark <- x
 			}
 		}
 		close(out)
@@ -250,7 +259,7 @@ func (s *StreamImpl[K, V]) Branch(name string, fns ...Predicate[K, V]) []*Stream
 			}
 
 			if mark {
-				s.Mark(x) // if we cannot match a message, we mark it.
+				s.mark <- x
 			}
 		}
 
@@ -364,7 +373,7 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 				buf = append(buf, m)
 				count++
 
-				s.Mark(m)
+				s.mark <- m
 
 				if count <= s.opts.buffer {
 					continue
