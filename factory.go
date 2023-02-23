@@ -11,11 +11,11 @@ import (
 // Opts is a set of options for a stream.
 type Opts struct {
 	buffer      int
-	timeout     time.Duration
-	name        string
-	monitor     *Monitor
-	logger      logger.LogFunc
 	errorLogger logger.LogFunc
+	logger      logger.LogFunc
+	monitor     *Monitor
+	name        string
+	timeout     time.Duration
 }
 
 // Configure is a function that configures a stream.
@@ -102,11 +102,6 @@ func DefaultOpts() *Opts {
 		logger:      logger.LogFunc(logger.Infow),
 		errorLogger: logger.LogFunc(logger.Errorw),
 	}
-}
-
-type metrics struct {
-	latency *latencyMetric
-	count   *countMetric
 }
 
 // NewStream from a source of messages.
@@ -217,6 +212,11 @@ func (s *StreamImpl[K, V]) error() logger.LogFunc {
 
 func (s *StreamImpl[K, V]) commit() {
 	s.flush <- struct{}{}
+}
+
+type metrics struct {
+	latency *latencyMetric
+	count   *countMetric
 }
 
 type countMetric struct {

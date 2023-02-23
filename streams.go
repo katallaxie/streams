@@ -129,14 +129,12 @@ func (s *StreamImpl[K, V]) Drain() {
 }
 
 // Mark is a function that marks a message.
-func (s *StreamImpl[K, V]) Mark(m ...msg.Message[K, V]) {
+func (s *StreamImpl[K, V]) Mark(x msg.Message[K, V]) {
 	if s.mark == nil {
 		return
 	}
 
-	for _, x := range m {
-		s.mark <- x
-	}
+	s.mark <- x
 }
 
 // Fail is a function that fails a stream
