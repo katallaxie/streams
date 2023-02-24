@@ -7,27 +7,25 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/msg"
 	kgo "github.com/segmentio/kafka-go"
 )
 
-// CommitMode is a commit mode.
+// CommitMode is a Kafka source commit mode.
 type CommitMode int
 
 const (
-	// ManualCommit is a manual commit.
-	ManualCommit CommitMode = iota
+	// CommitAuto commits messages automatically.
+	CommitAuto CommitMode = iota
 
-	// AutoCommit is an auto commit.
-	AutoCommit
+	// CommitManual commits messages manually.
+	CommitManual
 )
 
 // Source is a Kafka source.
 type Source[K, V any] struct {
 	reader       *kgo.Reader
-	out          streams.MessageReceiver[K, V]
 	ctx          context.Context
 	keyDecoder   codec.Decoder[K]
 	valueDecoder codec.Decoder[V]
@@ -41,7 +39,7 @@ type Source[K, V any] struct {
 
 // Opts is a set of options for a kafka source.
 type Opts struct {
-	mode          CommitMode
+	commitMode    CommitMode
 	bufferSize    int
 	bufferTimeout time.Duration
 }
@@ -63,24 +61,10 @@ func WithBufferSize(size int) Opt {
 	}
 }
 
-// WithAutoCommit configures the kafka source to auto commit.
-func WithAutoCommit() Opt {
-	return func(o *Opts) {
-		o.mode = AutoCommit
-	}
-}
-
-// WithManualCommit configures the kafka source to manual commit.
-func WithManualCommit() Opt {
-	return func(o *Opts) {
-		o.mode = ManualCommit
-	}
-}
-
 // DefaultOpts is the default options for a kafka source.
 func DefaultOpts() *Opts {
 	return &Opts{
-		mode:          AutoCommit,
+		commitMode:    CommitAuto,
 		bufferSize:    100,
 		bufferTimeout: 1 * time.Second,
 	}
@@ -93,7 +77,6 @@ func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key codec.Decoder
 
 	k := new(Source[K, V])
 
-	k.out = make(streams.MessageReceiver[K, V])
 	k.ctx = ctx
 	k.reader = r
 	k.keyDecoder = key
@@ -117,19 +100,42 @@ func (s *Source[K, V]) Commit(msgs ...msg.Message[K, V]) error {
 // Message is a Kafka source message.
 func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 	out := make(chan msg.Message[K, V])
+	mark := make(msg.Marker[K, V])
 
-	if s.opts.mode == AutoCommit {
-		go s.autoCommit(out)()
+	if s.opts.commitMode == CommitAuto {
+		go s.autoCommit(out)
 	} else {
-		go s.manualCommit(out)()
+		go s.manualCommit(out, mark)
+		go s.commit(mark)
 	}
 
-	return out
-}
+	go func() {
+		for {
+			m, err := s.reader.FetchMessage(s.ctx)
+			if err != nil {
+				s.fail(err)
+				break
+			}
 
-// Close is a Kafka source close.
-func (s *Source[K, V]) Close() error {
-	return s.reader.Close()
+			val, err := s.valueDecoder.Decode(m.Value)
+			if err != nil {
+				s.fail(err)
+				break
+			}
+
+			key, err := s.keyDecoder.Decode(m.Key)
+			if err != nil {
+				s.fail(err)
+				break
+			}
+
+			out <- msg.NewMessage(key, val, int(m.Offset), m.Partition, m.Topic, mark)
+		}
+
+		close(out)
+	}()
+
+	return out
 }
 
 // Error is a Kafka source error.
@@ -137,7 +143,49 @@ func (s *Source[K, V]) Error() error {
 	return s.err
 }
 
-func (s *Source[K, V]) manualCommit(out chan msg.Message[K, V]) func() {
+func (s *Source[K, V]) fail(err error) {
+	s.errOnce.Do(func() {
+		s.err = err
+	})
+}
+
+func (s *Source[K, V]) commit(mark msg.Marker[K, V]) func() {
+	return func() {
+		var buf []msg.Message[K, V]
+		var count int
+
+		timer := time.NewTimer(s.opts.bufferTimeout)
+
+	LOOP:
+		for {
+			select {
+			case <-timer.C:
+				_ = s.Commit(buf...)
+
+				buf = buf[:0]
+				count = 0
+			case m, ok := <-mark:
+				if !ok {
+					break LOOP
+				}
+
+				buf = append(buf, m)
+				count++
+
+				if count <= s.opts.bufferSize {
+					continue
+				}
+
+				_ = s.Commit(buf...)
+
+				buf = buf[:0]
+				count = 0
+			}
+		}
+	}
+}
+
+func (s *Source[K, V]) manualCommit(out chan msg.Message[K, V], mark msg.Marker[K, V]) func() {
 	return func() {
 		for {
 			m, err := s.reader.FetchMessage(s.ctx)
@@ -162,7 +210,7 @@ func (s *Source[K, V]) manualCommit(out chan msg.Message[K, V]) func() {
 				break
 			}
 
-			out <- msg.NewMessage(key, val, int(m.Offset), m.Partition, m.Topic)
+			out <- msg.NewMessage(key, val, int(m.Offset), m.Partition, m.Topic, mark)
 		}
 
 		close(out)
@@ -194,15 +242,9 @@ func (s *Source[K, V]) autoCommit(out chan msg.Message[K, V]) func() {
 				break
 			}
 
-			out <- msg.NewMessage(key, val, int(m.Offset), m.Partition, m.Topic)
+			out <- msg.NewMessage(key, val, int(m.Offset), m.Partition, m.Topic, nil)
 		}
 
 		close(out)
 	}
-}
-
-func (s *Source[K, V]) fail(err error) {
-	s.errOnce.Do(func() {
-		s.err = err
-	})
 }

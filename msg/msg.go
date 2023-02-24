@@ -49,18 +49,20 @@ type MessageImpl[K, V any] struct {
 	topic     string
 	val       V
 
+	mark       Marker[K, V]
 	markedOnce sync.Once
 
 	sync.Mutex
 }
 
 // NewMessage creates a new Message.
-func NewMessage[K, V any](key K, val V, offset int, partition int, topic string) Message[K, V] {
+func NewMessage[K, V any](key K, val V, offset int, partition int, topic string, mark Marker[K, V]) Message[K, V] {
 	return &MessageImpl[K, V]{
 		key:       key,
 		offset:    offset,
 		partition: partition,
 		topic:     topic,
+		mark:      mark,
 		val:       val,
 	}
 }
@@ -88,6 +90,11 @@ func (m *MessageImpl[K, V]) SetValue(val V) {
 // Mark is used to mark a message as processed
 func (m *MessageImpl[K, V]) Mark() {
 	m.markedOnce.Do(func() {
+		if m.mark == nil {
+			return
+		}
+
+		m.mark <- m
 		m.marked = true
 	})
 }

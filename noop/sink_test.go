@@ -20,6 +20,6 @@ func TestSinkWrite(t *testing.T) {
 	s := NewSink[string, string]()
 	assert.NotNil(t, s)
 
-	err := s.Write(msg.NewMessage("foo", "bar", 0, 0, ""))
+	err := s.Write(msg.NewMessage("foo", "bar", 0, 0, "", nil))
 	assert.Nil(t, err)
 }

@@ -133,6 +133,11 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 			out <- x
 		}
 
+		if src.Error() != nil {
+			stream.Fail(src.Error())
+			return
+		}
+
 		close(out)
 	}()
 
