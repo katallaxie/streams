@@ -37,6 +37,9 @@ type Value interface {
 	int | ~string | []byte
 }
 
+// Messages is a channel of messages.
+type Messages[K, V any] chan msg.Message[K, V]
+
 // Stream is a stream of messages.
 type Stream[K Key, V Value] interface {
 	// Close closes a stream.

@@ -74,7 +74,7 @@ func WithTimeout(timeout time.Duration) Opt {
 type MessageChannel[K, V any] chan msg.Message[K, V]
 
 // MessageReceiver ...
-type MessageReceiver[K, V any] <-chan msg.Message[K, V]
+type MessageReceiver[K, V any] chan msg.Message[K, V]
 
 // StreamImpl implements Stream.
 type StreamImpl[K, V any] struct {

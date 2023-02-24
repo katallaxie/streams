@@ -27,7 +27,7 @@ func TestNewMessage(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			m := NewMessage(tc.key, tc.val, tc.offset, tc.partition, tc.topic, nil)
+			m := NewMessage(tc.key, tc.val, tc.offset, tc.partition, tc.topic)
 			assert.NotNil(t, m)
 
 			assert.Equal(t, tc.key, m.Key())
@@ -60,16 +60,12 @@ func TestMarkMessage(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			mark := make(Marker[string, string], 1)
-
-			m := NewMessage(tc.key, tc.val, tc.offset, tc.partition, tc.topic, mark)
+			m := NewMessage(tc.key, tc.val, tc.offset, tc.partition, tc.topic)
 			assert.NotNil(t, m)
 
 			m.Mark()
-			x := <-mark
 
 			assert.True(t, m.Marked())
-			assert.Equal(t, tc.key, x.Key())
 		})
 	}
 }
@@ -87,7 +83,7 @@ func TestSetValue(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			m := NewMessage("", "", 0, 0, "", nil)
+			m := NewMessage("", "", 0, 0, "")
 			assert.NotNil(t, m)
 
 			m.SetValue(tc.val)
@@ -110,7 +106,7 @@ func TestSetKey(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			m := NewMessage("", "", 0, 0, "", nil)
+			m := NewMessage("", "", 0, 0, "")
 			assert.NotNil(t, m)
 
 			m.SetKey(tc.key)
@@ -133,7 +129,7 @@ func TestSetTopic(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			m := NewMessage("", "", 0, 0, "", nil)
+			m := NewMessage("", "", 0, 0, "")
 			assert.NotNil(t, m)
 
 			m.SetTopic(tc.topic)

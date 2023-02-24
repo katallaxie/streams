@@ -76,7 +76,7 @@ func TestStreamMap(t *testing.T) {
 	})
 
 	go func() {
-		src.in <- msg.NewMessage("test", "test", 0, 0, "", nil)
+		src.in <- msg.NewMessage("test", "test", 0, 0, "")
 	}()
 
 	m := <-out.in
@@ -104,7 +104,7 @@ func TestStreamFilter(t *testing.T) {
 	})
 
 	go func() {
-		src.in <- msg.NewMessage("test", "test", 0, 0, "", nil)
+		src.in <- msg.NewMessage("test", "test", 0, 0, "")
 	}()
 
 	m := <-out.in
@@ -134,7 +134,7 @@ func TestStreamBranch(t *testing.T) {
 	})
 
 	go func() {
-		src.in <- msg.NewMessage("test", "test", 0, 0, "", nil)
+		src.in <- msg.NewMessage("test", "test", 0, 0, "")
 	}()
 
 	m := <-outs[0].in
@@ -159,8 +159,8 @@ func TestStreamSink(t *testing.T) {
 	assert.NotNil(t, s)
 
 	go func() {
-		src.in <- msg.NewMessage("test", "test", 0, 0, "", nil)
-		src.in <- msg.NewMessage("test2", "test", 0, 0, "", nil)
+		src.in <- msg.NewMessage("test", "test", 0, 0, "")
+		src.in <- msg.NewMessage("test2", "test", 0, 0, "")
 		close(src.in)
 	}()
 
@@ -181,7 +181,7 @@ func TestStreamFanOut(t *testing.T) {
 	outs := s.FanOut("foo", 2)
 
 	go func() {
-		src.in <- msg.NewMessage("test", "test", 0, 0, "", nil)
+		src.in <- msg.NewMessage("test", "test", 0, 0, "")
 		close(src.in)
 	}()
 
