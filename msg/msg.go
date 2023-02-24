@@ -49,7 +49,6 @@ type MessageImpl[K, V any] struct {
 	topic     string
 	val       V
 
-	mark       Marker[K, V]
 	markedOnce sync.Once
 
 	sync.Mutex
