@@ -19,7 +19,7 @@ func TestDefaultOpts(t *testing.T) {
 		{
 			name: "default options",
 			want: &Opts{
-				commitMode:    CommitAuto,
+				commitMode:    CommitManual,
 				bufferSize:    100,
 				bufferTimeout: time.Second,
 			},
@@ -62,7 +62,7 @@ func TestWithContext(t *testing.T) {
 				keyDecoder:   nil,
 				valueDecoder: nil,
 				keyEncoder:   nil,
-				opts:         nil,
+				opts:         DefaultOpts(),
 			},
 		},
 	}

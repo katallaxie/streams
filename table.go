@@ -2,10 +2,8 @@ package streams
 
 import "errors"
 
-var (
-	// ErrNotImplemented is returned when a method is not implemented.
-	ErrNotImplemented = errors.New("not implemented")
-)
+// ErrNotImplemented is returned when a method is not implemented.
+var ErrNotImplemented = errors.New("not implemented")
 
 // NextCursor is the next cursor.
 type NextCursor struct {
