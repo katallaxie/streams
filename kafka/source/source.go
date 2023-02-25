@@ -68,7 +68,7 @@ func WithBufferSize(size int) Opt {
 // DefaultOpts is the default options for a kafka source.
 func DefaultOpts() *Opts {
 	return &Opts{
-		commitMode:    CommitAuto,
+		commitMode:    CommitManual,
 		bufferSize:    100,
 		bufferTimeout: 1 * time.Second,
 	}
@@ -82,6 +82,7 @@ func WithContext[K, V any](ctx context.Context, r *kgo.Reader, key codec.Decoder
 	k := new(Source[K, V])
 
 	k.ctx = ctx
+	k.opts = options
 	k.reader = r
 	k.keyDecoder = key
 	k.valueDecoder = value

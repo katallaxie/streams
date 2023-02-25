@@ -10,9 +10,14 @@ import (
 )
 
 var (
-	DefaultRegistry                         = NewRegistry()
+	// DefaultRegistry is a default prometheus registry.
+	DefaultRegistry = NewRegistry()
+
+	// DefaultRegisterer is a default prometheus registerer.
 	DefaultRegisterer prometheus.Registerer = DefaultRegistry
-	DefaultGatherer   prometheus.Gatherer   = DefaultRegistry
+
+	// DefaultGatherer is a default prometheus gatherer.
+	DefaultGatherer prometheus.Gatherer = DefaultRegistry
 )
 
 // Registry is a prometheus registry.
