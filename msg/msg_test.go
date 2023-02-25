@@ -151,6 +151,7 @@ func TestClone(t *testing.T) {
 		offset    int
 		partition int
 		topic     string
+		mark      Marker[string, string]
 	}{
 		{
 			desc:      "clone message",
@@ -159,14 +160,22 @@ func TestClone(t *testing.T) {
 			offset:    0,
 			partition: 0,
 			topic:     "foo",
+			mark:      make(Marker[string, string], 1),
+		},
+		{
+			desc:      "clone message with nil marker",
+			val:       "foo",
+			key:       "bar",
+			offset:    0,
+			partition: 0,
+			topic:     "foo",
+			mark:      nil,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			mark := make(Marker[string, string], 1)
-
-			m := NewMessage(tc.key, tc.val, tc.offset, tc.partition, tc.topic, mark)
+			m := NewMessage(tc.key, tc.val, tc.offset, tc.partition, tc.topic, tc.mark)
 			assert.NotNil(t, m)
 
 			c := m.Clone()
@@ -178,11 +187,12 @@ func TestClone(t *testing.T) {
 			assert.Equal(t, tc.offset, c.Offset())
 			assert.Equal(t, tc.topic, c.Topic())
 
-			m.Mark()
-			x := <-mark
-
-			assert.True(t, m.Marked())
-			assert.Equal(t, tc.key, x.Key())
+			if tc.mark != nil {
+				m.Mark()
+				x := <-tc.mark
+				assert.True(t, m.Marked())
+				assert.Equal(t, tc.key, x.Key())
+			}
 		})
 	}
 }
