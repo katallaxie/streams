@@ -35,6 +35,9 @@ type Message[K, V any] interface {
 
 	// Value is used to get the value of a message.
 	Value() V
+
+	// Clone is used to clone a message.
+	Clone() Message[K, V]
 }
 
 // Marker is used to mark a message as processed.
@@ -112,17 +115,29 @@ func (m *MessageImpl[K, V]) Marked() bool {
 	return m.marked
 }
 
-// Topic ...
+// Topic is used to get the topic of a message.
 func (m *MessageImpl[K, V]) Topic() string {
 	return m.topic
 }
 
-// Offset ...
+// Offset is used to get the offset of a message.
 func (m *MessageImpl[K, V]) Offset() int {
 	return m.offset
 }
 
-// Partition ...
+// Partition is used to get the partition of a message.
 func (m *MessageImpl[K, V]) Partition() int {
 	return m.partition
+}
+
+// Clone is used to clone a message.
+func (m *MessageImpl[K, V]) Clone() Message[K, V] {
+	return &MessageImpl[K, V]{
+		key:       m.key,
+		offset:    m.offset,
+		partition: m.partition,
+		mark:      m.mark,
+		topic:     m.topic,
+		val:       m.val,
+	}
 }
