@@ -108,10 +108,10 @@ func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 	mark := make(msg.Marker[K, V])
 
 	if s.opts.commitMode == CommitAuto {
-		go s.autoCommit(out)
+		s.autoCommit(out)
 	} else {
-		go s.manualCommit(out, mark)
-		go s.commit(mark)
+		s.manualCommit(out, mark)
+		s.commit(mark)
 	}
 
 	return out
@@ -128,8 +128,8 @@ func (s *Source[K, V]) fail(err error) {
 	})
 }
 
-func (s *Source[K, V]) commit(mark msg.Marker[K, V]) func() {
-	return func() {
+func (s *Source[K, V]) commit(mark msg.Marker[K, V]) {
+	go func() {
 		var buf []msg.Message[K, V]
 		var count int
 
@@ -161,11 +161,11 @@ func (s *Source[K, V]) commit(mark msg.Marker[K, V]) func() {
 				count = 0
 			}
 		}
-	}
+	}()
 }
 
-func (s *Source[K, V]) manualCommit(out chan msg.Message[K, V], mark msg.Marker[K, V]) func() {
-	return func() {
+func (s *Source[K, V]) manualCommit(out chan msg.Message[K, V], mark msg.Marker[K, V]) {
+	go func() {
 		for {
 			m, err := s.reader.FetchMessage(s.ctx)
 			if errors.Is(err, io.EOF) {
@@ -193,11 +193,11 @@ func (s *Source[K, V]) manualCommit(out chan msg.Message[K, V], mark msg.Marker[
 		}
 
 		close(out)
-	}
+	}()
 }
 
-func (s *Source[K, V]) autoCommit(out chan msg.Message[K, V]) func() {
-	return func() {
+func (s *Source[K, V]) autoCommit(out chan msg.Message[K, V]) {
+	go func() {
 		for {
 			m, err := s.reader.ReadMessage(s.ctx)
 			if errors.Is(err, io.EOF) {
@@ -225,5 +225,5 @@ func (s *Source[K, V]) autoCommit(out chan msg.Message[K, V]) func() {
 		}
 
 		close(out)
-	}
+	}()
 }
