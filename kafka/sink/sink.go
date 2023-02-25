@@ -3,10 +3,13 @@ package sink
 import (
 	"context"
 
+	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/msg"
 	kgo "github.com/segmentio/kafka-go"
 )
+
+var _ streams.Sink[any, any] = (*Sink[any, any])(nil)
 
 // Sink is a noop sink.
 type Sink[K, V any] struct {
