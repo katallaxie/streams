@@ -114,32 +114,6 @@ func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 		go s.commit(mark)
 	}
 
-	go func() {
-		for {
-			m, err := s.reader.FetchMessage(s.ctx)
-			if err != nil {
-				s.fail(err)
-				break
-			}
-
-			val, err := s.valueDecoder.Decode(m.Value)
-			if err != nil {
-				s.fail(err)
-				break
-			}
-
-			key, err := s.keyDecoder.Decode(m.Key)
-			if err != nil {
-				s.fail(err)
-				break
-			}
-
-			out <- msg.NewMessage(key, val, int(m.Offset), m.Partition, m.Topic, mark)
-		}
-
-		close(out)
-	}()
-
 	return out
 }
 
