@@ -7,10 +7,14 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/msg"
+
 	kgo "github.com/segmentio/kafka-go"
 )
+
+var _ streams.Source[any, any] = (*Source[any, any])(nil)
 
 // CommitMode is a Kafka source commit mode.
 type CommitMode int

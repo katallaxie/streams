@@ -6,6 +6,7 @@ import (
 	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/msg"
+
 	kgo "github.com/segmentio/kafka-go"
 )
 
