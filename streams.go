@@ -140,13 +140,13 @@ func (s *StreamImpl[K, V]) Mark(name string) *StreamImpl[K, V] {
 
 	go func() {
 		for x := range s.in {
-			s.mark <- x
+			x.Mark()
 			out <- x
 		}
 		close(out)
 	}()
 
-	return &StreamImpl[K, V]{out, s.mark, s.flush, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
+	return &StreamImpl[K, V]{out, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
 }
 
 // Fail is a function that fails a stream
@@ -182,13 +182,13 @@ func (s *StreamImpl[K, V]) Filter(name string, fn Predicate[K, V]) *StreamImpl[K
 			if ok {
 				out <- x
 			} else {
-				s.mark <- x
+				x.Mark()
 			}
 		}
 		close(out)
 	}()
 
-	return &StreamImpl[K, V]{out, s.mark, s.flush, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
+	return &StreamImpl[K, V]{out, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
 }
 
 // Map is a function that maps a stream.
@@ -211,7 +211,7 @@ func (s *StreamImpl[K, V]) Map(name string, fn func(msg.Message[K, V]) (msg.Mess
 		close(out)
 	}()
 
-	return &StreamImpl[K, V]{out, s.mark, s.flush, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
+	return &StreamImpl[K, V]{out, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
 }
 
 // Do is a function that executes a function on a stream.
@@ -229,7 +229,7 @@ func (s *StreamImpl[K, V]) Do(name string, fn func(msg.Message[K, V])) *StreamIm
 		}
 	}()
 
-	return &StreamImpl[K, V]{out, s.mark, s.flush, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
+	return &StreamImpl[K, V]{out, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
 }
 
 // Branch is branch a stream to multiple streams.
@@ -240,7 +240,7 @@ func (s *StreamImpl[K, V]) Branch(name string, fns ...Predicate[K, V]) []*Stream
 		node := NewNode(name)
 		s.node.AddChild(node)
 
-		streams[i] = &StreamImpl[K, V]{make(chan msg.Message[K, V]), s.mark, s.flush, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
+		streams[i] = &StreamImpl[K, V]{make(chan msg.Message[K, V]), s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
 	}
 
 	go func() {
@@ -262,7 +262,7 @@ func (s *StreamImpl[K, V]) Branch(name string, fns ...Predicate[K, V]) []*Stream
 			}
 
 			if mark {
-				s.mark <- x
+				x.Mark()
 			}
 		}
 
@@ -282,7 +282,7 @@ func (s *StreamImpl[K, V]) FanOut(name string, num int) []*StreamImpl[K, V] {
 		node := NewNode(name)
 		s.node.AddChild(node)
 
-		streams[i] = &StreamImpl[K, V]{make(chan msg.Message[K, V]), s.mark, s.flush, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
+		streams[i] = &StreamImpl[K, V]{make(chan msg.Message[K, V]), s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
 	}
 
 	go func() {
@@ -317,7 +317,7 @@ func (s *StreamImpl[K, V]) Log(name string) *StreamImpl[K, V] {
 		close(out)
 	}()
 
-	return &StreamImpl[K, V]{out, s.mark, s.flush, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
+	return &StreamImpl[K, V]{out, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
 }
 
 // Merge is merge multiple streams into one.
@@ -340,7 +340,7 @@ func (s *StreamImpl[K, V]) Merge(name string, streams ...StreamImpl[K, V]) *Stre
 		}(s.in)
 	}
 
-	return &StreamImpl[K, V]{out, s.mark, s.flush, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
+	return &StreamImpl[K, V]{out, s.src, s.close, s.err, s.metrics, s.opts, s.topology, node, s.Collector}
 }
 
 // Sink is wire up a stream to a sink.
@@ -364,8 +364,6 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 					return
 				}
 
-				s.commit()
-
 				buf = buf[:0]
 				count = 0
 			case m, ok := <-c:
@@ -376,7 +374,7 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 				buf = append(buf, m)
 				count++
 
-				s.mark <- m
+				m.Mark()
 
 				if count <= s.opts.buffer {
 					continue
@@ -387,8 +385,6 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 					s.Fail(err)
 					break LOOP
 				}
-
-				s.commit()
 
 				buf = buf[:0]
 				count = 0

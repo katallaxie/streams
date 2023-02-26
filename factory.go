@@ -80,8 +80,6 @@ type MessageReceiver[K, V any] chan msg.Message[K, V]
 // StreamImpl implements Stream.
 type StreamImpl[K, V any] struct {
 	in      MessageChannel[K, V]
-	mark    MessageChannel[K, V]
-	flush   chan struct{}
 	src     Source[K, V]
 	close   chan bool
 	err     chan error
@@ -114,9 +112,7 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 
 	stream := new(StreamImpl[K, V])
 	stream.opts = options
-	stream.mark = make(chan msg.Message[K, V])
 	stream.src = src
-	stream.flush = make(chan struct{})
 	stream.in = out
 	stream.err = make(chan error, 1)
 
@@ -142,69 +138,6 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 		close(out)
 	}()
 
-	go func() {
-		var count int
-		var buf []msg.Message[K, V]
-
-		timer := time.NewTimer(stream.opts.timeout)
-
-		for {
-			select {
-			case <-stream.flush:
-				err := src.Commit(buf...)
-				if err != nil {
-					stream.Fail(err)
-					return
-				}
-
-				buf = buf[:0]
-				count = 0
-			case <-timer.C:
-				err := src.Commit(buf...)
-				if err != nil {
-					stream.Fail(err)
-					return
-				}
-
-				buf = buf[:0]
-				count = 0
-			case m := <-stream.mark:
-				stream.log().Printf("marking message", "key", m.Key(), "partition", m.Partition(), "offset", m.Offset(), "topic", m.Topic())
-
-				if m.Marked() {
-					continue
-				}
-
-				buf = append(buf, m)
-				count++
-
-				m.Mark()
-
-				if count <= stream.opts.buffer {
-					continue
-				}
-
-				err := src.Commit(buf...)
-				if err != nil {
-					stream.Fail(err)
-					return
-				}
-
-				stream.metrics.latency.stop()
-				stream.metrics.count.inc(len(buf))
-
-				if stream.opts.monitor != nil {
-					stream.opts.monitor.Gather(stream)
-				}
-
-				buf = buf[:0]
-				count = 0
-
-				timer.Reset(stream.opts.timeout)
-			}
-		}
-	}()
-
 	return stream
 }
 
@@ -214,10 +147,6 @@ func (s *StreamImpl[K, V]) log() logger.LogFunc {
 
 func (s *StreamImpl[K, V]) error() logger.LogFunc {
 	return s.opts.errorLogger
-}
-
-func (s *StreamImpl[K, V]) commit() {
-	s.flush <- struct{}{}
 }
 
 type metrics struct {
@@ -248,12 +177,12 @@ func (m *countMetric) Write(monitor *Monitor) error {
 	return nil
 }
 
-func (m *countMetric) inc(count int) {
-	m.Lock()
-	defer m.Unlock()
+// func (m *countMetric) inc(count int) {
+// 	m.Lock()
+// 	defer m.Unlock()
 
-	m.value += float64(int64(count))
-}
+// 	m.value += float64(int64(count))
+// }
 
 func (m *countMetric) reset() {
 	m.Lock()
@@ -299,12 +228,12 @@ func (m *latencyMetric) Write(monitor *Monitor) error {
 // 	m.now = time.Now()
 // }
 
-func (m *latencyMetric) stop() {
-	m.Lock()
-	defer m.Unlock()
+// func (m *latencyMetric) stop() {
+// 	m.Lock()
+// 	defer m.Unlock()
 
-	m.value = float64(time.Since(m.now).Microseconds())
-}
+// 	m.value = float64(time.Since(m.now).Microseconds())
+// }
 
 func newLatencyMetric(nodeName string) *latencyMetric {
 	return &latencyMetric{
