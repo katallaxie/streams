@@ -133,12 +133,12 @@ func (s *Source[K, V]) commit(mark msg.Marker[K, V]) {
 		var buf []msg.Message[K, V]
 		var count int
 
-		timer := time.NewTimer(s.opts.bufferTimeout)
+		ticker := time.NewTicker(s.opts.bufferTimeout)
 
 	LOOP:
 		for {
 			select {
-			case <-timer.C:
+			case <-ticker.C:
 				_ = s.Commit(buf...)
 
 				buf = buf[:0]
@@ -159,6 +159,8 @@ func (s *Source[K, V]) commit(mark msg.Marker[K, V]) {
 
 				buf = buf[:0]
 				count = 0
+
+				ticker.Reset(s.opts.bufferTimeout)
 			}
 		}
 	}()
