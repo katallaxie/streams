@@ -364,6 +364,10 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 					return
 				}
 
+				for _, m := range buf {
+					m.Mark()
+				}
+
 				buf = buf[:0]
 				count = 0
 			case m, ok := <-c:
@@ -374,8 +378,6 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 				buf = append(buf, m)
 				count++
 
-				m.Mark()
-
 				if count <= s.opts.buffer {
 					continue
 				}
@@ -384,6 +386,10 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 				if err != nil {
 					s.Fail(err)
 					break LOOP
+				}
+
+				for _, m := range buf {
+					m.Mark()
 				}
 
 				buf = buf[:0]
