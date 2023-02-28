@@ -352,12 +352,17 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 		var buf []msg.Message[K, V]
 		var count int
 
-		timer := time.NewTicker(s.opts.timeout)
+		ticker := time.NewTicker(s.opts.timeout)
+		defer ticker.Stop()
+
+		if s.opts.timeout == 0 {
+			ticker.Stop()
+		}
 
 	LOOP:
 		for {
 			select {
-			case <-timer.C:
+			case <-ticker.C:
 				err := sink.Write(buf...)
 				if err != nil {
 					s.Fail(err)
@@ -378,6 +383,10 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 				buf = append(buf, m)
 				count++
 
+				if s.opts.timeout > 0 {
+					continue
+				}
+
 				if count <= s.opts.buffer {
 					continue
 				}
@@ -395,7 +404,7 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 				buf = buf[:0]
 				count = 0
 
-				timer.Reset(s.opts.timeout)
+				ticker.Reset(s.opts.timeout)
 			}
 		}
 

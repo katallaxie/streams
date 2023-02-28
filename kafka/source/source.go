@@ -69,7 +69,7 @@ func WithBufferSize(size int) Opt {
 func DefaultOpts() *Opts {
 	return &Opts{
 		commitMode:    CommitManual,
-		bufferSize:    100,
+		bufferSize:    1000,
 		bufferTimeout: 1 * time.Second,
 	}
 }
@@ -134,12 +134,21 @@ func (s *Source[K, V]) commit(mark msg.Marker[K, V]) {
 		var count int
 
 		ticker := time.NewTicker(s.opts.bufferTimeout)
+		defer ticker.Stop()
+
+		if s.opts.bufferTimeout == 0 {
+			ticker.Stop()
+		}
 
 	LOOP:
 		for {
 			select {
 			case <-ticker.C:
-				_ = s.Commit(buf...)
+				err := s.Commit(buf...)
+				if err != nil {
+					s.fail(err)
+					break LOOP
+				}
 
 				buf = buf[:0]
 				count = 0
@@ -151,16 +160,22 @@ func (s *Source[K, V]) commit(mark msg.Marker[K, V]) {
 				buf = append(buf, m)
 				count++
 
+				if s.opts.bufferTimeout > 0 {
+					continue
+				}
+
 				if count <= s.opts.bufferSize {
 					continue
 				}
 
-				_ = s.Commit(buf...)
+				err := s.Commit(buf...)
+				if err != nil {
+					s.fail(err)
+					break LOOP
+				}
 
 				buf = buf[:0]
 				count = 0
-
-				ticker.Reset(s.opts.bufferTimeout)
 			}
 		}
 	}()
