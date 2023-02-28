@@ -1,6 +1,7 @@
 package streams
 
 import (
+	"math"
 	"sync"
 	"time"
 
@@ -352,10 +353,12 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 		var buf []msg.Message[K, V]
 		var count int
 
-		ticker := time.NewTicker(s.opts.timeout)
+		ticker := time.NewTicker(math.MaxInt32 * time.Second)
 		defer ticker.Stop()
 
-		if s.opts.timeout == 0 {
+		if s.opts.timeout > 0 {
+			ticker.Reset(s.opts.timeout)
+		} else {
 			ticker.Stop()
 		}
 
@@ -375,6 +378,8 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 
 				buf = buf[:0]
 				count = 0
+
+				ticker.Reset(s.opts.timeout)
 			case m, ok := <-c:
 				if !ok {
 					break LOOP
@@ -403,8 +408,6 @@ func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 
 				buf = buf[:0]
 				count = 0
-
-				ticker.Reset(s.opts.timeout)
 			}
 		}
 

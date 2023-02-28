@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"math"
 	"sync"
 	"time"
 
@@ -133,10 +134,12 @@ func (s *Source[K, V]) commit(mark msg.Marker[K, V]) {
 		var buf []msg.Message[K, V]
 		var count int
 
-		ticker := time.NewTicker(s.opts.bufferTimeout)
+		ticker := time.NewTicker(math.MaxInt32 * time.Second)
 		defer ticker.Stop()
 
-		if s.opts.bufferTimeout == 0 {
+		if s.opts.bufferTimeout > 0 {
+			ticker.Reset(s.opts.bufferTimeout)
+		} else {
 			ticker.Stop()
 		}
 

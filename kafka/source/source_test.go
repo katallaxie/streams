@@ -20,7 +20,7 @@ func TestDefaultOpts(t *testing.T) {
 			name: "default options",
 			want: &Opts{
 				commitMode:    CommitManual,
-				bufferSize:    100,
+				bufferSize:    1000,
 				bufferTimeout: time.Second,
 			},
 		},
