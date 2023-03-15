@@ -9,7 +9,7 @@ require (
 	github.com/ionos-cloud/v8go-polyfills v0.0.0-20230228195223-e573af88e3fd
 	github.com/katallaxie/pkg v0.5.1-0.20230222193335-191843018470
 	github.com/prometheus/client_golang v1.12.1
-	github.com/segmentio/kafka-go v0.4.38
+	github.com/segmentio/kafka-go v0.4.39
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.2
 	github.com/syndtr/goleveldb v1.0.0
