@@ -20,6 +20,7 @@ func TestOpen(t *testing.T) {
 
 	err := l.Open()
 	assert.NoError(t, err)
+	defer l.Close()
 }
 
 func TestHas(t *testing.T) {
@@ -28,6 +29,7 @@ func TestHas(t *testing.T) {
 
 	err := l.Open()
 	assert.NoError(t, err)
+	defer l.Close()
 
 	has, err := l.Has("foo")
 	assert.Error(t, err)
@@ -40,6 +42,7 @@ func TestGet(t *testing.T) {
 
 	err := l.Open()
 	assert.NoError(t, err)
+	defer l.Close()
 
 	_, err = l.Get("foo")
 	assert.Error(t, err)
@@ -51,6 +54,7 @@ func TestSet(t *testing.T) {
 
 	err := l.Open()
 	assert.NoError(t, err)
+	defer l.Close()
 
 	err = l.Set("foo", []byte("bar"))
 	assert.NoError(t, err)
@@ -62,6 +66,7 @@ func TestDelete(t *testing.T) {
 
 	err := l.Open()
 	assert.NoError(t, err)
+	defer l.Close()
 
 	err = l.Set("foo", []byte("bar"))
 	assert.NoError(t, err)
@@ -76,6 +81,7 @@ func TestSink(t *testing.T) {
 
 	err := l.Open()
 	assert.NoError(t, err)
+	defer l.Close()
 
 	s := store.NewSink(l, codec.StringEncoder)
 	assert.NotNil(t, s)
