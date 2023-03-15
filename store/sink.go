@@ -12,8 +12,10 @@ type Sink[V any] struct {
 }
 
 // NewSink is a new storage sink.
-func NewSink[K string, V any]() *Sink[V] {
+func NewSink[V any](store Storage, enc codec.Encoder[V]) *Sink[V] {
 	n := new(Sink[V])
+	n.Storage = store
+	n.Encoder = enc
 
 	return n
 }

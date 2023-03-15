@@ -3,6 +3,9 @@ package leveldb
 import (
 	"testing"
 
+	"github.com/ionos-cloud/streams/codec"
+	"github.com/ionos-cloud/streams/msg"
+	"github.com/ionos-cloud/streams/store"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -65,4 +68,22 @@ func TestDelete(t *testing.T) {
 
 	err = l.Delete("foo")
 	assert.NoError(t, err)
+}
+
+func TestSink(t *testing.T) {
+	l := New()
+	assert.NotNil(t, l)
+
+	err := l.Open()
+	assert.NoError(t, err)
+
+	s := store.NewSink(l, codec.StringEncoder)
+	assert.NotNil(t, s)
+
+	err = s.Write(msg.NewMessage("foo", "bar", 0, 0, "bar", nil))
+	assert.NoError(t, err)
+
+	b, err := l.Get("foo")
+	assert.NoError(t, err)
+	assert.Equal(t, "bar", string(b))
 }
