@@ -38,7 +38,7 @@ func (f Encoder[T]) Encode(value T) ([]byte, error) {
 	return f(value)
 }
 
-// StringEncoder ...
+// StringEncoder is a string encoder.
 var StringEncoder Encoder[string] = func(v string) ([]byte, error) {
 	return []byte(v), nil
 }
