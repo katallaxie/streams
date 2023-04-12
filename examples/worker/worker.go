@@ -60,6 +60,7 @@ func run(ctx context.Context) error {
 		reader.WithBrokers("localhost:9092"),
 		reader.WithGroupID("demo12345"),
 		reader.WithTopic("demo12345"),
+		reader.WithLogger(nil),
 	)
 
 	src := source.WithContext(ctx, r, codec.StringDecoder, protoDecoder, codec.StringEncoder)

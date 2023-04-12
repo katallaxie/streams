@@ -1,6 +1,8 @@
 package codec
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -46,4 +48,32 @@ func TestInt64Encoder(t *testing.T) {
 	v, err := Int64Encoder.Encode(int64(42))
 	assert.NoError(t, err)
 	assert.Equal(t, []byte("42"), v)
+}
+
+func TestByteEncrypter(t *testing.T) {
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	assert.NoError(t, err)
+	assert.NotNil(t, privateKey)
+
+	v, err := ByteEncrypter.Encrypt([]byte("foo"), &privateKey.PublicKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, []byte("foo"), v)
+
+	v, err = ByteDecrypter.Decrypt(v, privateKey)
+	assert.NoError(t, err)
+	assert.Equal(t, []byte("foo"), v)
+}
+
+func TestStringEncypter(t *testing.T) {
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	assert.NoError(t, err)
+	assert.NotNil(t, privateKey)
+
+	v, err := StringEncrypter.Encrypt("foo", &privateKey.PublicKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, []byte("foo"), v)
+
+	s, err := StringDecrypter.Decrypt(v, privateKey)
+	assert.NoError(t, err)
+	assert.Equal(t, "foo", s)
 }

@@ -75,6 +75,20 @@ func WithBrokers(brokers ...string) Opt {
 	}
 }
 
+// WithLogger configures the logger for the reader.
+func WithLogger(logger kafka.Logger) Opt {
+	return func(rc *kafka.ReaderConfig) {
+		rc.Logger = logger
+	}
+}
+
+// WithErrorLogger configures the error logger for the reader.
+func WithErrorLogger(logger kafka.Logger) Opt {
+	return func(rc *kafka.ReaderConfig) {
+		rc.ErrorLogger = logger
+	}
+}
+
 // DefaultConfig returns the default configuration for a Kafka reader.
 func DefaultConfig() kafka.ReaderConfig {
 	return kafka.ReaderConfig{
