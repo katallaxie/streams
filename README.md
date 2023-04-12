@@ -7,8 +7,6 @@
 
 A teeny-tiny package to create stream processing workloads. It is intended to be used with [Apache Kafka](https://kafka.apache.org/).  
 
-:warning: This is experimental. APIs may change. :warning:
-
 ## Getting Started
 
 There are only a few packages that help Gophers to create stream processing workloads. This package is one of them. It is intended to be used with [Apache Kafka](https://kafka.apache.org/).
