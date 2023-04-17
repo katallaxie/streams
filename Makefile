@@ -4,6 +4,7 @@ GO ?= go
 GO_RUN_TOOLS ?= $(GO) run -modfile ./tools/go.mod
 GO_TEST = $(GO_RUN_TOOLS) gotest.tools/gotestsum --format pkgname
 
+DOCKER ?= docker
 
 .PHONY: generate
 generate:
@@ -33,8 +34,16 @@ clean: ## Remove previous build.
 
 .PHONY: run-kafka
 run-kafka:
-	@docker run -d --rm  -p 2181:2181 -p 9092:9092 --name some-kafka --env ADVERTISED_HOST=127.0.0.1 --env ADVERTISED_PORT=9092 spotify/kafka
+	$(DOCKER) run -d --rm  -p 2181:2181 -p 9092:9092 --name some-kafka --env ADVERTISED_HOST=127.0.0.1 --env ADVERTISED_PORT=9092 spotify/kafka
 
 .PHONY: stop-kafka
 stop-kafka:
-	@docker stop some-kafka
+	$(DOCKER) stop some-kafka
+
+.PHONY: run-nats
+run-nats:
+	$(DOCKER) run --name nats --network nats --rm -p 4222:4222 -p 8222:8222 nats --http_port 8222
+
+.PHONY: stop-nats
+stop-nats:
+	$(DOCKER) stop nats
