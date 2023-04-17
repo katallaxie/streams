@@ -15,9 +15,9 @@ import (
 	"github.com/ionos-cloud/v8go-polyfills/console"
 	"google.golang.org/protobuf/proto"
 
+	v8 "github.com/ionos-cloud/v8go"
 	kgo "github.com/segmentio/kafka-go"
 	"github.com/spf13/cobra"
-	v8 "rogchap.com/v8go"
 )
 
 var protoDecoder codec.Decoder[*pb.Demo] = func(b []byte) (*pb.Demo, error) {
