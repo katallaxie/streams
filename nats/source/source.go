@@ -4,12 +4,15 @@ import (
 	"context"
 	"sync"
 
+	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/codec"
 	"github.com/ionos-cloud/streams/msg"
 
 	"github.com/katallaxie/pkg/utils"
 	"github.com/nats-io/nats.go"
 )
+
+var _ streams.Source[any, any] = (*Source[any, any])(nil)
 
 // Source is a source of NATS messages.
 type Source[K, V any] struct {
@@ -24,8 +27,7 @@ type Source[K, V any] struct {
 }
 
 // Opts is a set of options for a NATS source.
-type Opts struct {
-}
+type Opts struct{}
 
 // Opt is a NATS source option.
 type Opt func(o *Opts)
@@ -56,7 +58,7 @@ func WithContext[K, V any](ctx context.Context, sub *nats.Subscription, key code
 	return k
 }
 
-// Commit is a function that commits a NATS message.
+// Messages is a function that returns a channel of NATS messages.
 func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 	out := make(chan msg.Message[K, V])
 
@@ -86,6 +88,11 @@ func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 	}(s.sub)
 
 	return out
+}
+
+// Commit is a function that commits a NATS message.
+func (s *Source[K, V]) Commit(msgs ...msg.Message[K, V]) error {
+	return nil
 }
 
 // Error is a function that returns the error of a NATS source.
