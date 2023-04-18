@@ -11,6 +11,11 @@ A teeny-tiny package to create stream processing workloads. It is intended to be
 
 There are only a few packages that help Gophers to create stream processing workloads. This package is one of them. It is intended to be used with [Apache Kafka](https://kafka.apache.org/).
 
+Supported:
+
+* [Apache Kafka](https://kafka.apache.org/)
+* [nats.io](https://nats.io/) (experimental)
+
 ```bash
 go get github.com/katallaxie/streams
 ```
