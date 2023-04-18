@@ -1,7 +1,7 @@
 package noop
 
 import (
-	"github.com/ionos-cloud/streams/msg"
+	"github.com/katallaxie/streams/msg"
 )
 
 // Sink is a noop sink.

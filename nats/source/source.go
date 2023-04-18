@@ -4,9 +4,9 @@ import (
 	"context"
 	"sync"
 
-	"github.com/ionos-cloud/streams"
-	"github.com/ionos-cloud/streams/codec"
-	"github.com/ionos-cloud/streams/msg"
+	"github.com/katallaxie/streams"
+	"github.com/katallaxie/streams/codec"
+	"github.com/katallaxie/streams/msg"
 
 	"github.com/katallaxie/pkg/utils"
 	"github.com/nats-io/nats.go"

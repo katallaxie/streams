@@ -1,4 +1,4 @@
-module github.com/ionos-cloud/streams/tools
+module github.com/katallaxie/streams/tools
 
 go 1.19
 

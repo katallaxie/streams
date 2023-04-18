@@ -300,10 +300,6 @@ github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6/go.mod h1:
 github.com/ianlancetaylor/demangle v0.0.0-20200824232613-28f6c0f3b639/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
-github.com/ionos-cloud/v8go v0.8.1 h1:p1AP0Wti8IAEQboO9frS+7H4AzdIPmtOV0Y4Aem46C0=
-github.com/ionos-cloud/v8go v0.8.1/go.mod h1:2oHc5Qg0l1oUs4ZMX6La3std4wDZ6PloCBYe+wab1IM=
-github.com/ionos-cloud/v8go-polyfills v0.0.0-20230305194412-10058ed6bd3e h1:AxU1A5qoGFyh30OJaGjdnSxi/eeAcFIubUv1/z0IBLw=
-github.com/ionos-cloud/v8go-polyfills v0.0.0-20230305194412-10058ed6bd3e/go.mod h1:ShWnAfNO8LqtyB8zcFI/G+peY/S3NBec57GZEtDb4l4=
 github.com/jgautheron/goconst v1.5.1 h1:HxVbL1MhydKs8R8n/HE5NPvzfaYmQJA3o879lE4+WcM=
 github.com/jgautheron/goconst v1.5.1/go.mod h1:aAosetZ5zaeC/2EfMeRswtxUFBpe2Hr7HzkgX4fanO4=
 github.com/jingyugao/rowserrcheck v1.1.1 h1:zibz55j/MJtLsjP1OF4bSdgXxwL1b+Vn7Tjzq7gFzUs=
@@ -325,6 +321,10 @@ github.com/junk1tm/musttag v0.5.0 h1:bV1DTdi38Hi4pG4OVWa7Kap0hi0o7EczuK6wQt9zPOM
 github.com/junk1tm/musttag v0.5.0/go.mod h1:PcR7BA+oREQYvHwgjIDmw3exJeds5JzRcvEJTfjrA0M=
 github.com/katallaxie/pkg v0.5.4 h1:xDYafxMAxN7225MV3QlrmrzVv4b7fIcbr7qPShyz4V0=
 github.com/katallaxie/pkg v0.5.4/go.mod h1:AaitRwLWykvfYqHUMq6j2zAJ6nXHsUWbrv5R0My3Y0U=
+github.com/katallaxie/v8go v0.8.0 h1:P3RBFBYfpl7DuxEQ2povDoUp+HEiNSEb042M0ZOADI8=
+github.com/katallaxie/v8go v0.8.0/go.mod h1:I8VYG8yxrfjUlwNmyPA5vn/D33m0Ga0f9wjruZQNhOs=
+github.com/katallaxie/v8go-polyfills v0.0.0-20230401180502-28586091a71a h1:NlZH32sow5nUWj877HMwyrZu76eKteHfzWGqBxCx0bs=
+github.com/katallaxie/v8go-polyfills v0.0.0-20230401180502-28586091a71a/go.mod h1:/vzG7Lip1rsNb4X2zXoX+prP0pqtxDDqw/3hneQtsQE=
 github.com/kisielk/errcheck v1.6.3 h1:dEKh+GLHcWm2oN34nMvDzn1sqI0i0WxPvrgiJA5JuM8=
 github.com/kisielk/errcheck v1.6.3/go.mod h1:nXw/i/MfnvRHqXa7XXmQMUB0oNFGuBrNI8d8NLy0LPw=
 github.com/kisielk/gotool v1.0.0 h1:AV2c/EiW3KqPNT9ZKl07ehoAGi4C5/01Cfbblndcapg=

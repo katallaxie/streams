@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ionos-cloud/streams/msg"
+	"github.com/katallaxie/streams/msg"
 )
 
 // Source is a source of messages.

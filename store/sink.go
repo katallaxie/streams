@@ -1,8 +1,8 @@
 package store
 
 import (
-	"github.com/ionos-cloud/streams/codec"
-	"github.com/ionos-cloud/streams/msg"
+	"github.com/katallaxie/streams/codec"
+	"github.com/katallaxie/streams/msg"
 )
 
 // Sink is a storage sink.

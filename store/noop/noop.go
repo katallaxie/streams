@@ -1,6 +1,6 @@
 package noop
 
-import "github.com/ionos-cloud/streams/store"
+import "github.com/katallaxie/streams/store"
 
 type noop struct {
 	store.Unimplemented

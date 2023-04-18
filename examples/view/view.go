@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/ionos-cloud/streams/codec"
-	"github.com/ionos-cloud/streams/kafka/table"
-	"github.com/ionos-cloud/streams/store/memory"
-	"github.com/ionos-cloud/streams/view"
+	"github.com/katallaxie/streams/codec"
+	"github.com/katallaxie/streams/kafka/table"
+	"github.com/katallaxie/streams/store/memory"
+	"github.com/katallaxie/streams/view"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"

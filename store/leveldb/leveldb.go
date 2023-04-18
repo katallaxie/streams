@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ionos-cloud/streams/store"
+	"github.com/katallaxie/streams/store"
 
 	"github.com/katallaxie/pkg/utils/files"
 	level "github.com/syndtr/goleveldb/leveldb"

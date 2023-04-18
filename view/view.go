@@ -5,9 +5,9 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/ionos-cloud/streams"
-	"github.com/ionos-cloud/streams/codec"
-	"github.com/ionos-cloud/streams/store"
+	"github.com/katallaxie/streams"
+	"github.com/katallaxie/streams/codec"
+	"github.com/katallaxie/streams/store"
 
 	"github.com/katallaxie/pkg/server"
 	"github.com/katallaxie/pkg/utils"

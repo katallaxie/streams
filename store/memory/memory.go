@@ -4,7 +4,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/ionos-cloud/streams/store"
+	"github.com/katallaxie/streams/store"
 )
 
 type memory struct {

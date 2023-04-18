@@ -6,11 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/ionos-cloud/streams"
-	"github.com/ionos-cloud/streams/codec"
-	pb "github.com/ionos-cloud/streams/examples/producer/proto"
-	"github.com/ionos-cloud/streams/nats/source"
-	"github.com/ionos-cloud/streams/noop"
+	"github.com/katallaxie/streams"
+	"github.com/katallaxie/streams/codec"
+	pb "github.com/katallaxie/streams/examples/producer/proto"
+	"github.com/katallaxie/streams/nats/source"
+	"github.com/katallaxie/streams/noop"
 	"github.com/nats-io/nats.go"
 	"google.golang.org/protobuf/proto"
 

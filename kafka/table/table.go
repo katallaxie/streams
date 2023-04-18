@@ -9,10 +9,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ionos-cloud/streams"
-	"github.com/ionos-cloud/streams/kafka/reader"
-	"github.com/ionos-cloud/streams/kafka/writer"
-	"github.com/ionos-cloud/streams/msg"
+	"github.com/katallaxie/streams"
+	"github.com/katallaxie/streams/kafka/reader"
+	"github.com/katallaxie/streams/kafka/writer"
+	"github.com/katallaxie/streams/msg"
 
 	kgo "github.com/segmentio/kafka-go"
 )

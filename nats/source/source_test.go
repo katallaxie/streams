@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ionos-cloud/streams/codec"
+	"github.com/katallaxie/streams/codec"
 	"github.com/nats-io/nats.go"
 
 	"github.com/stretchr/testify/assert"

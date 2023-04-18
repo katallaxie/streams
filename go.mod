@@ -1,4 +1,4 @@
-module github.com/ionos-cloud/streams
+module github.com/katallaxie/streams
 
 go 1.20
 
@@ -6,9 +6,9 @@ require (
 	github.com/gofiber/fiber/v2 v2.44.0
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golangci/golangci-lint v1.52.2
-	github.com/ionos-cloud/v8go v0.8.1
-	github.com/ionos-cloud/v8go-polyfills v0.0.0-20230305194412-10058ed6bd3e
 	github.com/katallaxie/pkg v0.5.4
+	github.com/katallaxie/v8go v0.8.0
+	github.com/katallaxie/v8go-polyfills v0.0.0-20230401180502-28586091a71a
 	github.com/nats-io/nats.go v1.25.0
 	github.com/prometheus/client_golang v1.15.0
 	github.com/segmentio/kafka-go v0.4.39

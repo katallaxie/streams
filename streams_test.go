@@ -5,7 +5,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/ionos-cloud/streams/msg"
+	"github.com/katallaxie/streams/msg"
 
 	"github.com/stretchr/testify/assert"
 )

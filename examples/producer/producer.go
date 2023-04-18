@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	pb "github.com/ionos-cloud/streams/examples/producer/proto"
+	pb "github.com/katallaxie/streams/examples/producer/proto"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/segmentio/kafka-go"
