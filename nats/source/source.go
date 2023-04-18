@@ -22,6 +22,8 @@ type Source[K, V any] struct {
 
 	sub *nats.Subscription
 
+	opts *Opts
+
 	err     error
 	errOnce sync.Once
 }
@@ -54,6 +56,7 @@ func WithContext[K, V any](ctx context.Context, sub *nats.Subscription, key code
 	k.keyDecoder = key
 	k.valueDecoder = value
 	k.sub = sub
+	k.opts = options
 
 	return k
 }
