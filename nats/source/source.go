@@ -64,6 +64,7 @@ func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 
 	go func(sub *nats.Subscription) {
 		for {
+
 			m, err := sub.NextMsgWithContext(s.ctx)
 			if err != nil {
 				s.fail(err)
@@ -77,11 +78,6 @@ func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 			}
 
 			out <- msg.NewMessage(utils.Zero[K](), val, 0, 0, m.Subject, nil)
-
-			if err := m.Ack(); err != nil {
-				s.fail(err)
-				break
-			}
 		}
 
 		close(out)

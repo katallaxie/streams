@@ -4,11 +4,11 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
 
 	"github.com/ionos-cloud/streams"
 	"github.com/ionos-cloud/streams/codec"
 	pb "github.com/ionos-cloud/streams/examples/producer/proto"
-	"github.com/ionos-cloud/streams/msg"
 	"github.com/ionos-cloud/streams/nats/source"
 	"github.com/ionos-cloud/streams/noop"
 	"github.com/nats-io/nats.go"
@@ -47,21 +47,26 @@ func run(ctx context.Context) error {
 	log.SetFlags(0)
 	log.SetOutput(os.Stderr)
 
-	nc, err := nats.Connect(nats.DefaultURL)
+	nc, err := nats.Connect(nats.DefaultURL, nats.Timeout(1*time.Second))
 	if err != nil {
 		return err
 	}
 
-	m := &pb.Demo{Name: "foo"}
-	b, err := proto.Marshal(m)
-	if err != nil {
-		return err
-	}
+	go func() {
+		ticker := time.NewTicker(1 * time.Second)
+		for range ticker.C {
+			m := &pb.Demo{Name: "foo"}
+			b, err := proto.Marshal(m)
+			if err != nil {
+				return
+			}
 
-	err = nc.Publish("foo", b)
-	if err != nil {
-		return err
-	}
+			err = nc.Publish("foo", b)
+			if err != nil {
+				return
+			}
+		}
+	}()
 
 	sub, err := nc.SubscribeSync("foo")
 	if err != nil {
@@ -78,14 +83,7 @@ func run(ctx context.Context) error {
 	mon := streams.NewMonitor(streams.DefaultMetrics)
 
 	s := streams.NewStream[string, *pb.Demo](src, streams.WithMonitor(mon))
-
-	ss := s.Branch("branch", func(m msg.Message[string, *pb.Demo]) (bool, error) {
-		return m.Key() == "foo", nil
-	}, func(m msg.Message[string, *pb.Demo]) (bool, error) {
-		return m.Key() == "bar", nil
-	})
-	ss[0].Log("logging-foo").Sink("mock-sink-1", noop.NewSink[string, *pb.Demo]())
-	ss[1].Log("logging-bar").Sink("mock-sink-2", noop.NewSink[string, *pb.Demo]())
+	s.Log("logging-foo").Sink("mock-sink-1", noop.NewSink[string, *pb.Demo]())
 
 	if s.Error(); err != nil {
 		return err
