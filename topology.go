@@ -1,21 +1,21 @@
 package streams
 
-type topology struct {
-	root Node
-}
+var _ Node = (*node)(nil)
 
 type node struct {
 	name     string
 	children []Node
 }
 
-func NewNode(name string) Node {
+// NewNode is a constructor for a new node in the topology.
+func NewNode(name string) *node {
 	n := new(node)
 	n.name = name
 
 	return n
 }
 
+// AddChild adds a child to a node.
 func (n *node) AddChild(child Node) {
 	n.children = append(n.children, child)
 }
@@ -48,8 +48,14 @@ type Node interface {
 	Name() string
 }
 
+var _ Topology = (*topology)(nil)
+
+type topology struct {
+	root Node
+}
+
 // NewTopology is a constructor for Topology.
-func NewTopology(root Node) Topology {
+func NewTopology(root Node) *topology {
 	t := new(topology)
 	t.root = root
 
