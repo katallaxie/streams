@@ -121,13 +121,14 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 	stream.topology = NewTopology(node)
 
 	stream.metrics = new(metrics)
-	stream.metrics.latency = newLatencyMetric(stream.opts.name)
 	stream.metrics.count = newCountMetric(stream.opts.name)
 
 	go func() {
 		for x := range src.Messages() {
 			stream.log().Printf("received message", "key", x.Key(), "partition", x.Partition(), "offset", x.Offset(), "topic", x.Topic())
 			out <- x
+
+			stream.metrics.count.inc()
 		}
 
 		if src.Error() != nil {
@@ -150,8 +151,7 @@ func (s *StreamImpl[K, V]) error() logger.LogFunc {
 }
 
 type metrics struct {
-	latency *latencyMetric
-	count   *countMetric
+	count *countMetric
 }
 
 type countMetric struct {
@@ -177,12 +177,12 @@ func (m *countMetric) Write(monitor *Monitor) error {
 	return nil
 }
 
-// func (m *countMetric) inc(count int) {
-// 	m.Lock()
-// 	defer m.Unlock()
+func (m *countMetric) inc() {
+	m.Lock()
+	defer m.Unlock()
 
-// 	m.value += float64(int64(count))
-// }
+	m.value += float64(int64(1))
+}
 
 func (m *countMetric) reset() {
 	m.Lock()
@@ -194,50 +194,5 @@ func (m *countMetric) reset() {
 func newCountMetric(nodeName string) *countMetric {
 	return &countMetric{
 		nodeName: nodeName,
-	}
-}
-
-type latencyMetric struct {
-	value    float64
-	nodeName string
-
-	now time.Time
-
-	Metric
-	Collector
-
-	sync.Mutex
-}
-
-// Collect is collecting metrics.
-func (m *latencyMetric) Collect(ch chan<- Metric) {
-	ch <- m
-}
-
-// Write is writing metrics to a channel.
-func (m *latencyMetric) Write(monitor *Monitor) error {
-	monitor.SetLatency(m.nodeName, m.value)
-
-	return nil
-}
-
-// func (m *latencyMetric) start() {
-// 	m.Lock()
-// 	defer m.Unlock()
-
-// 	m.now = time.Now()
-// }
-
-// func (m *latencyMetric) stop() {
-// 	m.Lock()
-// 	defer m.Unlock()
-
-// 	m.value = float64(time.Since(m.now).Microseconds())
-// }
-
-func newLatencyMetric(nodeName string) *latencyMetric {
-	return &latencyMetric{
-		nodeName: nodeName,
-		now:      time.Now(),
 	}
 }
