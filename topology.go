@@ -8,7 +8,7 @@ type node struct {
 }
 
 // NewNode is a constructor for a new node in the topology.
-func NewNode(name string) *node {
+func NewNode(name string) Node {
 	n := new(node)
 	n.name = name
 
@@ -48,14 +48,12 @@ type Node interface {
 	Name() string
 }
 
-var _ Topology = (*topology)(nil)
-
 type topology struct {
 	root Node
 }
 
 // NewTopology is a constructor for Topology.
-func NewTopology(root Node) *topology {
+func NewTopology(root Node) Topology {
 	t := new(topology)
 	t.root = root
 
