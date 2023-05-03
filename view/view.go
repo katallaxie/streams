@@ -25,7 +25,7 @@ const (
 )
 
 // ErrCatchup is returned when the view is not yet caught up with the latest changes.
-var ErrCatchup = errors.New("catching up with the latest changes")
+var ErrCatchup = errors.New("views: catching up with the latest changes")
 
 // Value is a value in the table.
 type Value interface {

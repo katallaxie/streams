@@ -90,7 +90,7 @@ func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 }
 
 // Commit is a function that commits a NATS message.
-func (s *Source[K, V]) Commit(msgs ...msg.Message[K, V]) error {
+func (s *Source[K, V]) Commit(_ ...msg.Message[K, V]) error {
 	return nil
 }
 

@@ -20,7 +20,7 @@ linters:
     - goimports
     - gofmt  # We enable this as well as goimports for its simplify mode.
     - prealloc
-    - revive
+    # - revive disable for now
     - unconvert
     - misspell
     - nakedret

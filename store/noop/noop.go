@@ -24,21 +24,21 @@ func (n *noop) Close() error {
 }
 
 // Has is checking if a key exists.
-func (n *noop) Has(key string) (bool, error) {
+func (n *noop) Has(_ string) (bool, error) {
 	return false, nil
 }
 
 // Get is getting a value from the storage.
-func (n *noop) Get(key string) ([]byte, error) {
+func (n *noop) Get(_ string) ([]byte, error) {
 	return nil, nil
 }
 
 // Set is setting a value in the storage.
-func (n *noop) Set(key string, value []byte) error {
+func (n *noop) Set(_ string, value []byte) error {
 	return nil
 }
 
 // Delete is deleting a value from the storage.
-func (n *noop) Delete(key string) error {
+func (n *noop) Delete(_ string) error {
 	return nil
 }

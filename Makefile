@@ -8,15 +8,15 @@ DOCKER ?= docker
 
 .PHONY: generate
 generate:
-	go generate ./...
+	$(GO) generate ./...
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.
-	go run mvdan.cc/gofumpt -w .
+	$(GO) run mvdan.cc/gofumpt -w .
 
 .PHONY: vet
 vet: ## Run go vet against code.
-	go vet ./...
+	$(GO) vet ./...
 
 .PHONY: test
 test: fmt vet ## Run tests.

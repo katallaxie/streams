@@ -23,6 +23,8 @@ type Storage interface {
 	Delete(key string) error
 }
 
+var _ Storage = (*Unimplemented)(nil)
+
 var (
 	// ErrUnimplemented ...
 	ErrUnimplemented = errors.New("not implemented")
@@ -48,21 +50,21 @@ func (s *Unimplemented) Close() error {
 }
 
 // Has ...
-func (s *Unimplemented) Has(key string) (bool, error) {
+func (s *Unimplemented) Has(_ string) (bool, error) {
 	return false, ErrUnimplemented
 }
 
 // Get ...
-func (s *Unimplemented) Get(key string) ([]byte, error) {
+func (s *Unimplemented) Get(_ string) ([]byte, error) {
 	return nil, ErrUnimplemented
 }
 
 // Set ...
-func (s *Unimplemented) Set(key string, value []byte) error {
+func (s *Unimplemented) Set(_ string, value []byte) error {
 	return ErrUnimplemented
 }
 
 // Delete ...
-func (s *Unimplemented) Delete(key string) error {
+func (s *Unimplemented) Delete(_ string) error {
 	return ErrUnimplemented
 }

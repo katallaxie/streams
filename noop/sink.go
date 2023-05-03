@@ -1,8 +1,11 @@
 package noop
 
 import (
+	"github.com/katallaxie/streams"
 	"github.com/katallaxie/streams/msg"
 )
+
+var _ streams.Sink[any, any] = (*Sink[any, any])(nil)
 
 // Sink is a noop sink.
 type Sink[K, V any] struct {

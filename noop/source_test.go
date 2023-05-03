@@ -33,3 +33,11 @@ func TestMessages(t *testing.T) {
 	out := s.Messages()
 	assert.NotNil(t, out)
 }
+
+func TestError(t *testing.T) {
+	s := NewSource[string, string](nil)
+	assert.NotNil(t, s)
+
+	err := s.Error()
+	assert.Nil(t, err)
+}
