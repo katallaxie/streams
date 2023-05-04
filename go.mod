@@ -11,7 +11,7 @@ require (
 	github.com/katallaxie/v8go v0.8.0
 	github.com/katallaxie/v8go-polyfills v0.0.0-20230401180502-28586091a71a
 	github.com/nats-io/nats.go v1.25.0
-	github.com/prometheus/client_golang v1.15.0
+	github.com/prometheus/client_golang v1.15.1
 	github.com/segmentio/kafka-go v0.4.39
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.2
