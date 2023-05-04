@@ -7,12 +7,12 @@ updates:
     time: "04:00"
   open-pull-requests-limit: 10
 - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
+  directory: "/"
+  schedule:
+    interval: "weekly"
 - package-ecosystem: gomod
-    directory: "/tools"
-    schedule:
-      interval: daily
-      time: "04:00"
-    open-pull-requests-limit: 10
+  directory: "/tools"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
