@@ -515,8 +515,8 @@ github.com/sashamelentyev/usestdlibvars v1.24.0 h1:MKNzmXtGh5N0y74Z/CIaJh4GlB364
 github.com/sashamelentyev/usestdlibvars v1.24.0/go.mod h1:9cYkq+gYJ+a5W2RPdhfaSCnTVUC1OQP/bSiiBhq3OZE=
 github.com/securego/gosec/v2 v2.17.0 h1:ZpAStTDKY39insEG9OH6kV3IkhQZPTq9a9eGOLOjcdI=
 github.com/securego/gosec/v2 v2.17.0/go.mod h1:lt+mgC91VSmriVoJLentrMkRCYs+HLTBnUFUBuhV2hc=
-github.com/segmentio/kafka-go v0.4.42 h1:qffhBZCz4WcWyNuHEclHjIMLs2slp6mZO8px+5W5tfU=
-github.com/segmentio/kafka-go v0.4.42/go.mod h1:d0g15xPMqoUookug0OU75DhGZxXwCFxSLeJ4uphwJzg=
+github.com/segmentio/kafka-go v0.4.43 h1:yKVQ/i6BobbX7AWzwkhulsEn47wpLA8eO6H03bCMqYg=
+github.com/segmentio/kafka-go v0.4.43/go.mod h1:d0g15xPMqoUookug0OU75DhGZxXwCFxSLeJ4uphwJzg=
 github.com/shazow/go-diff v0.0.0-20160112020656-b6b7b6733b8c h1:W65qqJCIOVP4jpqPQ0YvHYKwcMEMVWIzWC5iNQQfBTU=
 github.com/shazow/go-diff v0.0.0-20160112020656-b6b7b6733b8c/go.mod h1:/PevMnwAxekIXwN8qQyfc5gl2NlkB3CQlkizAbOkeBs=
 github.com/shurcooL/go v0.0.0-20180423040247-9e1955d9fb6e/go.mod h1:TDJrrUr11Vxrven61rcy3hJMUqaf/CLWYhHNPmT14Lk=
