@@ -10,7 +10,7 @@ require (
 	github.com/katallaxie/pkg v0.5.8
 	github.com/katallaxie/v8go v0.8.0
 	github.com/katallaxie/v8go-polyfills v0.0.0-20230401180502-28586091a71a
-	github.com/nats-io/nats.go v1.30.1
+	github.com/nats-io/nats.go v1.30.2
 	github.com/prometheus/client_golang v1.17.0
 	github.com/segmentio/kafka-go v0.4.43
 	github.com/spf13/cobra v1.7.0
