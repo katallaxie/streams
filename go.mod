@@ -2,8 +2,6 @@ module github.com/katallaxie/streams
 
 go 1.21
 
-toolchain go1.21.1
-
 require (
 	github.com/derision-test/go-mockgen v1.3.7
 	github.com/gofiber/fiber/v2 v2.50.0
