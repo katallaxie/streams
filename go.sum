@@ -355,8 +355,8 @@ github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7V
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
 github.com/julz/importas v0.1.0 h1:F78HnrsjY3cR7j0etXy5+TU1Zuy7Xt08X/1aJnH5xXY=
 github.com/julz/importas v0.1.0/go.mod h1:oSFU2R4XK/P7kNBrnL/FEQlDGN1/6WoxXEjSSXO0DV0=
-github.com/katallaxie/pkg v0.5.11 h1:tBh+2XZQBMlivnyv+a1WkLXC8nmmX0tRiAUt+sqDDBA=
-github.com/katallaxie/pkg v0.5.11/go.mod h1:vWIIdxItdQaklvWishHkMqsTQ3OUlcTM0gIeafgtJU8=
+github.com/katallaxie/pkg v0.5.12 h1:HLl1udT18KrhvilEQe90yrYOhEokNJ0khDlvNUUGgHk=
+github.com/katallaxie/pkg v0.5.12/go.mod h1:vWIIdxItdQaklvWishHkMqsTQ3OUlcTM0gIeafgtJU8=
 github.com/katallaxie/v8go v0.8.0 h1:P3RBFBYfpl7DuxEQ2povDoUp+HEiNSEb042M0ZOADI8=
 github.com/katallaxie/v8go v0.8.0/go.mod h1:I8VYG8yxrfjUlwNmyPA5vn/D33m0Ga0f9wjruZQNhOs=
 github.com/katallaxie/v8go-polyfills v0.0.0-20230401180502-28586091a71a h1:NlZH32sow5nUWj877HMwyrZu76eKteHfzWGqBxCx0bs=
