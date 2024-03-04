@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/derision-test/go-mockgen v1.3.7
-	github.com/gofiber/fiber/v2 v2.52.0
+	github.com/gofiber/fiber/v2 v2.52.2
 	github.com/golang/mock v1.7.0-rc.1.0.20220812172401-5b455625bd2c
 	github.com/golangci/golangci-lint v1.56.2
 	github.com/katallaxie/pkg v0.5.12
