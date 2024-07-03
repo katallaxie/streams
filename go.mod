@@ -7,7 +7,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.0
 	github.com/golang/mock v1.7.0-rc.1.0.20220812172401-5b455625bd2c
 	github.com/golangci/golangci-lint v1.59.1
-	github.com/katallaxie/pkg v0.6.5
+	github.com/katallaxie/pkg v0.6.6
 	github.com/katallaxie/v8go v0.8.0
 	github.com/katallaxie/v8go-polyfills v0.0.0-20230401180502-28586091a71a
 	github.com/nats-io/nats.go v1.36.0
