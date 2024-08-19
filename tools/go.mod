@@ -1,13 +1,14 @@
 module tools
 
 go 1.21
+toolchain go1.22.5
 
 require (
 	github.com/golang/mock v1.6.0
 	github.com/golangci/golangci-lint v1.59.1
 	github.com/goreleaser/goreleaser v1.25.1
 	gotest.tools/gotestsum v1.12.0
-	mvdan.cc/gofumpt v0.6.0
+	mvdan.cc/gofumpt v0.7.0
 )
 
 require (
