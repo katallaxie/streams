@@ -1,6 +1,7 @@
 module github.com/katallaxie/streams
 
 go 1.21
+toolchain go1.22.5
 
 require (
 	github.com/derision-test/go-mockgen v1.3.7
@@ -17,7 +18,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/syndtr/goleveldb v1.0.0
 	google.golang.org/protobuf v1.34.2
-	mvdan.cc/gofumpt v0.6.0
+	mvdan.cc/gofumpt v0.7.0
 )
 
 require (
