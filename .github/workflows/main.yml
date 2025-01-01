@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ 1.22.x ,1.21.x, 1.20.x ]
+        go: [1.22.x, 1.21.x, 1.20.x]
     permissions:
-        checks: write
+      checks: write
     steps:
       - uses: actions/checkout@v4
       - uses: arduino/setup-protoc@v3
@@ -28,6 +28,10 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
+          cache-dependency-path: |
+            tools/go.sum
+            go.sum
+
       - run: make generate
       - run: make test
       - uses: dorny/test-reporter@v1
@@ -36,7 +40,7 @@ jobs:
           name: Go ${{ matrix.go-version }} Test Results
           path: .test/reports/**-test.xml
           reporter: java-junit
-          fail-on-error: 'true'
+          fail-on-error: "true"
       - uses: actions/upload-artifact@v3
         if: success() || failure()
         with:

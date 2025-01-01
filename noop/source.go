@@ -27,7 +27,7 @@ func (n *Source[K, V]) Messages() chan msg.Message[K, V] {
 	out := make(chan msg.Message[K, V])
 
 	go func(buf []msg.Message[K, V]) {
-		for _, msg := range n.buf {
+		for _, msg := range buf {
 			out <- msg
 		}
 	}(n.buf)

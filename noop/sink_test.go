@@ -21,5 +21,5 @@ func TestSinkWrite(t *testing.T) {
 	assert.NotNil(t, s)
 
 	err := s.Write(msg.NewMessage("foo", "bar", 0, 0, "", nil))
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }

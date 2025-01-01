@@ -17,8 +17,8 @@ func TestCountMetric(t *testing.T) {
 	m := newCountMetric("foo")
 	m.inc()
 
-	assert.Equal(t, m.value, float64(1))
-	assert.Equal(t, m.nodeName, "foo")
+	assert.InEpsilon(t, 1, m.value, 1)
+	assert.Equal(t, "foo", m.nodeName)
 
 	ch := make(chan Metric)
 
@@ -28,5 +28,5 @@ func TestCountMetric(t *testing.T) {
 
 	mm := <-ch
 	assert.Equal(t, mm, m)
-	assert.Equal(t, m.value, float64(1))
+	assert.InEpsilon(t, 1, m.value, 1)
 }

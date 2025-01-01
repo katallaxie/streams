@@ -4,22 +4,23 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUnimplemented(t *testing.T) {
 	s := new(Unimplemented)
 
-	assert.Error(t, ErrUnimplemented, s.Open())
-	assert.Error(t, ErrUnimplemented, s.Close())
+	require.ErrorIs(t, ErrUnimplemented, s.Open())
+	require.ErrorIs(t, ErrUnimplemented, s.Close())
 
 	ok, err := s.Has("foo")
-	assert.Error(t, ErrUnimplemented, err)
+	require.ErrorIs(t, ErrUnimplemented, err)
 	assert.False(t, ok)
 
 	b, err := s.Get("foo")
-	assert.Error(t, ErrUnimplemented, err)
+	require.ErrorIs(t, ErrUnimplemented, err)
 	assert.Nil(t, b)
 
-	assert.Equal(t, ErrUnimplemented, s.Set("foo", []byte("bar")))
-	assert.Equal(t, ErrUnimplemented, s.Delete("foo"))
+	require.ErrorIs(t, ErrUnimplemented, s.Set("foo", []byte("bar")))
+	require.ErrorIs(t, ErrUnimplemented, s.Delete("foo"))
 }

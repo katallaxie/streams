@@ -16,7 +16,7 @@ func TestCommit(t *testing.T) {
 	assert.NotNil(t, s)
 
 	err := s.Commit()
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func TestClose(t *testing.T) {
@@ -39,5 +39,5 @@ func TestError(t *testing.T) {
 	assert.NotNil(t, s)
 
 	err := s.Error()
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }

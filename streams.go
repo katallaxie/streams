@@ -345,6 +345,7 @@ func (s *StreamImpl[K, V]) Merge(name string, streams ...StreamImpl[K, V]) *Stre
 }
 
 // Sink is wire up a stream to a sink.
+// nolint: gocyclo
 func (s *StreamImpl[K, V]) Sink(name string, sink Sink[K, V]) {
 	node := NewNode(name)
 	s.node.AddChild(node)

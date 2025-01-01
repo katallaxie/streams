@@ -92,7 +92,7 @@ func (v *view[V]) Get(key string) (V, error) {
 func (v *view[V]) Set(key string, value V) error {
 	b, err := v.encoder.Encode(value)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	// TODO: this is non optimistic, the update is published to the table and then synced to storage

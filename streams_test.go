@@ -8,6 +8,7 @@ import (
 	"github.com/katallaxie/streams/msg"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type mockSource[K, V any] struct {
@@ -90,7 +91,7 @@ func TestStreamMapError(t *testing.T) {
 		return nil, fmt.Errorf("error")
 	})
 
-	assert.Error(t, fmt.Errorf("error"), err)
+	require.Error(t, fmt.Errorf("error"), err)
 }
 
 func TestStreamFilter(t *testing.T) {
@@ -118,7 +119,7 @@ func TestStreamFilterError(t *testing.T) {
 		return true, fmt.Errorf("error")
 	})
 
-	assert.Error(t, fmt.Errorf("error"), err)
+	require.Error(t, fmt.Errorf("error"), err)
 }
 
 func TestStreamBranch(t *testing.T) {
@@ -148,7 +149,7 @@ func TestStreamError(t *testing.T) {
 		return true, fmt.Errorf("error")
 	})
 
-	assert.Error(t, fmt.Errorf("error"), err)
+	require.Error(t, fmt.Errorf("error"), err)
 }
 
 func TestStreamSink(t *testing.T) {
@@ -165,7 +166,7 @@ func TestStreamSink(t *testing.T) {
 	}()
 
 	s.Sink("foo", sink)
-	assert.NoError(t, s.Error())
+	require.NoError(t, s.Error())
 
 	assert.Len(t, sink.buf, 2)
 	assert.Equal(t, "test", sink.buf[0].Key())
