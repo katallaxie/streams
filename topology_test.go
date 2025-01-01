@@ -16,7 +16,7 @@ func TestNewNode(t *testing.T) {
 func TestAddChild(t *testing.T) {
 	n := NewNode("test")
 	n.AddChild(NewNode("child"))
-	assert.Len(t, 1, len(n.Children()))
+	assert.Len(t, n.Children(), 1)
 
 	nn := n.Children()
 	assert.Equal(t, "child", nn[0].Name())
