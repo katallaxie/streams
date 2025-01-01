@@ -12,7 +12,7 @@
   "postCreateCommand": "bash scripts/postCreateCommand.sh",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "golang": "latest"
+    "ghcr.io/devcontainers/features/go:1": {}
   },
   "remoteUser": "vscode"
 }
