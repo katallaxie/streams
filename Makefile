@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := build
 
-GO 						?= go
+GO 				?= go
 GO_RUN_TOOLS 	?= $(GO) run -modfile ./tools/go.mod
-GO_TEST 			?= $(GO_RUN_TOOLS) gotest.tools/gotestsum --format pkgname
+GO_TEST 		?= $(GO_RUN_TOOLS) gotest.tools/gotestsum --format pkgname
 GO_RELEASER 	?= $(GO_RUN_TOOLS) github.com/goreleaser/goreleaser
 
 DOCKER ?= docker
