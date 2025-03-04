@@ -14,7 +14,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 	github.com/syndtr/goleveldb v1.0.0
-	google.golang.org/protobuf v1.36.1
+	google.golang.org/protobuf v1.36.5
 )
 
 require (
