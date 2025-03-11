@@ -5,7 +5,7 @@ go 1.24
 toolchain go1.24.0
 
 require (
-	github.com/derision-test/go-mockgen v1.3.7
+	github.com/golang/mock v1.6.0
 	github.com/golangci/golangci-lint v1.63.1
 	github.com/goreleaser/goreleaser v1.26.2
 	github.com/vektra/mockery/v2 v2.53.0
@@ -65,9 +65,6 @@ require (
 	github.com/OpenPeeDeeP/depguard/v2 v2.2.0 // indirect
 	github.com/ProtonMail/go-crypto v1.0.0 // indirect
 	github.com/alecthomas/go-check-sumtype v0.3.1 // indirect
-	github.com/alecthomas/kingpin v2.2.6+incompatible // indirect
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
-	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/alexkohler/nakedret/v2 v2.0.5 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
@@ -150,7 +147,6 @@ require (
 	github.com/curioswitch/go-reassign v0.3.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/daixiang0/gci v0.13.5 // indirect
-	github.com/dave/jennifer v1.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/davidmz/go-pageant v1.0.2 // indirect
 	github.com/denis-tingaikin/go-header v0.5.0 // indirect
@@ -316,7 +312,6 @@ require (
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect

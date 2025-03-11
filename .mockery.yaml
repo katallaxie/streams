@@ -1,0 +1,16 @@
+inpackage: true
+with-expecter: true
+dir: "mocks/{{.PackageName}}"
+packages:
+  github.com/katallaxie/streams:
+    interfaces:
+      Sink:
+      Source:
+      Table:
+      Iterator:
+  github.com/katallaxie/streams/kafka/reader:
+    interfaces:
+      Reader:
+  github.com/katallaxie/streams/kafka/writer:
+    interfaces:
+      Writer:
