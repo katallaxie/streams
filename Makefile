@@ -15,9 +15,13 @@ release: ## Release the project.
 generate:
 	$(GO) generate ./...
 
+.PHONY: mocks
+mocks: ## Generate mocks.
+	$(GO_RUN_TOOLS) github.com/vektra/mockery/v2
+
 .PHONY: fmt
 fmt: ## Run go fmt against code.
-	$(GO) run mvdan.cc/gofumpt -w .
+	$(GO_RUN_TOOLS) mvdan.cc/gofumpt -w .
 
 .PHONY: vet
 vet: ## Run go vet against code.
