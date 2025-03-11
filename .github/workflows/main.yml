@@ -44,8 +44,7 @@ jobs:
         if: success() || failure()
         with:
           name: Test Reports
-          path: .test/reports/**
-          include-hidden-files: true
+          path: .test/reports/**-test.xml
 
   lint:
     runs-on: ubuntu-latest
