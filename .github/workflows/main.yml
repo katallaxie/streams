@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [1.23.x]
+        go: [1.23.x, 1.24.x]
     permissions:
       checks: write
     steps:
@@ -27,24 +27,25 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go }}
-          cache-dependency-path: |
-            tools/go.sum
-            go.sum
+            go-version: ${{ matrix.go }}
+            cache-dependency-path: |
+              go.sum
+              tools/go.sum
       - run: make generate
       - run: make test
       - uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: Go ${{ matrix.go-version }} Test Results
+          name: Go ${{ matrix.go }} Test Results
           path: .test/reports/**-test.xml
           reporter: java-junit
           fail-on-error: "true"
       - uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
-          name: Test Reports
+          name: Test Reports ${{ matrix.go }}
           path: .test/reports/**
+          include-hidden-files: true
 
   lint:
     runs-on: ubuntu-latest
@@ -52,6 +53,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version-file: ./tools/go.mod
+          go-version-file: ./go.mod
           check-latest: true
+          cache-dependency-path: |
+            tools/go.sum
       - run: make lint
