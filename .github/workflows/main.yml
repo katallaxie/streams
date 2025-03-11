@@ -45,6 +45,7 @@ jobs:
         with:
           name: Test Reports
           path: .test/reports/**
+          include-hidden-files: true
 
   lint:
     runs-on: ubuntu-latest
