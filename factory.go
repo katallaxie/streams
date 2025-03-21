@@ -6,14 +6,14 @@ import (
 
 	"github.com/katallaxie/streams/msg"
 
-	"github.com/katallaxie/pkg/logger"
+	"github.com/katallaxie/pkg/logx"
 )
 
 // Opts is a set of options for a stream.
 type Opts struct {
 	buffer      int
-	errorLogger logger.LogFunc
-	logger      logger.LogFunc
+	errorLogger logx.LogFunc
+	logger      logx.LogFunc
 	monitor     *Monitor
 	name        string
 	timeout     time.Duration
@@ -37,14 +37,14 @@ func WithBuffer(size int) Opt {
 }
 
 // WithLogger configures the logger for a stream.
-func WithLogger(logger logger.LogFunc) Opt {
+func WithLogger(logger logx.LogFunc) Opt {
 	return func(o *Opts) {
 		o.logger = logger
 	}
 }
 
 // WithErrorLogger configures the error logger for a stream.
-func WithErrorLogger(logger logger.LogFunc) Opt {
+func WithErrorLogger(logger logx.LogFunc) Opt {
 	return func(o *Opts) {
 		o.errorLogger = logger
 	}
@@ -98,8 +98,8 @@ func DefaultOpts() *Opts {
 		buffer:      1000,
 		timeout:     1 * time.Second,
 		name:        "default",
-		logger:      logger.LogFunc(logger.Infow),
-		errorLogger: logger.LogFunc(logger.Errorw),
+		logger:      logx.LogFunc(logx.Infow),
+		errorLogger: logx.LogFunc(logx.Errorw),
 	}
 }
 
@@ -142,11 +142,11 @@ func NewStream[K, V any](src Source[K, V], opts ...Opt) *StreamImpl[K, V] {
 	return stream
 }
 
-func (s *StreamImpl[K, V]) log() logger.LogFunc {
+func (s *StreamImpl[K, V]) log() logx.LogFunc {
 	return s.opts.logger
 }
 
-func (s *StreamImpl[K, V]) error() logger.LogFunc {
+func (s *StreamImpl[K, V]) error() logx.LogFunc {
 	return s.opts.errorLogger
 }
 

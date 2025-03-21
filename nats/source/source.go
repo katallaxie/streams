@@ -4,11 +4,11 @@ import (
 	"context"
 	"sync"
 
+	"github.com/katallaxie/pkg/cast"
 	"github.com/katallaxie/streams"
 	"github.com/katallaxie/streams/codec"
 	"github.com/katallaxie/streams/msg"
 
-	"github.com/katallaxie/pkg/utils"
 	"github.com/nats-io/nats.go"
 )
 
@@ -80,7 +80,7 @@ func (s *Source[K, V]) Messages() chan msg.Message[K, V] {
 				break
 			}
 
-			out <- msg.NewMessage(utils.Zero[K](), val, 0, 0, m.Subject, nil)
+			out <- msg.NewMessage(cast.Zero[K](), val, 0, 0, m.Subject, nil)
 		}
 
 		close(out)

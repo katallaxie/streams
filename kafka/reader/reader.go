@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/katallaxie/pkg/logger"
+	"github.com/katallaxie/pkg/logx"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -92,8 +92,8 @@ func WithErrorLogger(logger kafka.Logger) Opt {
 // DefaultConfig returns the default configuration for a Kafka reader.
 func DefaultConfig() kafka.ReaderConfig {
 	return kafka.ReaderConfig{
-		Logger:         kafka.LoggerFunc(logger.Infof),
-		ErrorLogger:    kafka.LoggerFunc(logger.Errorf),
+		Logger:         kafka.LoggerFunc(logx.Infof),
+		ErrorLogger:    kafka.LoggerFunc(logx.Errorf),
 		CommitInterval: 0,
 	}
 }

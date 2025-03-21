@@ -7,13 +7,13 @@ import (
 
 	"github.com/katallaxie/streams/store"
 
-	"github.com/katallaxie/pkg/utils/files"
+	"github.com/katallaxie/pkg/filex"
 	level "github.com/syndtr/goleveldb/leveldb"
 )
 
 type leveldb struct {
 	db       *level.DB
-	teardown files.TearDownFunc
+	teardown filex.TearDownFunc
 
 	store.Unimplemented
 }

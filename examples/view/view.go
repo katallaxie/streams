@@ -91,7 +91,7 @@ func run(ctx context.Context) error {
 	s.Listen(v, true)
 	s.Listen(srv, false)
 
-	if err := s.Wait(); !errors.Is(err, &server.Error{}) {
+	if err := s.Wait(); !errors.Is(err, &server.ServerError{}) {
 		return err
 	}
 

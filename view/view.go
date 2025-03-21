@@ -9,8 +9,8 @@ import (
 	"github.com/katallaxie/streams/codec"
 	"github.com/katallaxie/streams/store"
 
+	"github.com/katallaxie/pkg/cast"
 	"github.com/katallaxie/pkg/server"
-	"github.com/katallaxie/pkg/utils"
 )
 
 const (
@@ -72,17 +72,17 @@ func New[V Value](table streams.Table, encoder codec.Encoder[V], decoder codec.D
 // Get is used to retrieve a value from the view.
 func (v *view[V]) Get(key string) (V, error) {
 	if !v.catchUp {
-		return utils.Zero[V](), ErrCatchup
+		return cast.Zero[V](), ErrCatchup
 	}
 
 	b, err := v.store.Get(key)
 	if err != nil {
-		return utils.Zero[V](), err
+		return cast.Zero[V](), err
 	}
 
 	value, err := v.decoder.Decode(b)
 	if err != nil {
-		return utils.Zero[V](), err
+		return cast.Zero[V](), err
 	}
 
 	return value, nil

@@ -32,7 +32,7 @@ func NewMap[T, R any](fn MapFunction[T, R]) *Map[T, R] {
 // To streams data to the sink and waits for it to complete.
 func (m *Map[T, R]) To(sink Sinkable) {
 	m.stream(sink)
-	sink.Close()
+	sink.Wait()
 }
 
 // In returns the input channel.
@@ -45,9 +45,10 @@ func (m *Map[T, R]) Out() <-chan any {
 	return m.out
 }
 
-// Close closes the input channel.
-func (m *Map[T, R]) Close() {
-	close(m.in)
+// Pipe pipes the output channel to the input channel.
+func (m *Map[T, R]) Pipe(c Connectable) Connectable {
+	go m.stream(c)
+	return c
 }
 
 func (m *Map[T, R]) stream(r Receivable) {
