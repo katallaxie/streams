@@ -8,14 +8,41 @@ import (
 	"github.com/katallaxie/streams/msg"
 )
 
+// Streamable is a streamable interface.
+type Streamable interface {
+	// Out returns the output channel.
+	Out() <-chan any
+}
+
+// Receivable is a receivable interface.
+type Receivable interface {
+	// In returns the input channel.
+	In() chan<- any
+	// Close closes the input channel.
+	Close()
+}
+
+// Sinkable is a sinkable interface.
+type Sinkable interface {
+	Receivable
+	// Wait waits for the sink to complete.
+	Wait()
+}
+
+// Connectable is a connectable interface.
+type Connectable interface {
+	Streamable
+	Receivable
+	// To streams data to the sink and waits for it to complete.
+	To(sing Sinkable)
+}
+
 // Source is a source of messages.
 type Source[K, V any] interface {
 	// Messages returns a channel of messages.
 	Messages() chan msg.Message[K, V]
-
 	// Commit commits a message.
 	Commit(...msg.Message[K, V]) error
-
 	// Error returns an error.
 	Error() error
 }
