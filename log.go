@@ -1,6 +1,8 @@
 package streams
 
-import "github.com/katallaxie/pkg/logx"
+import (
+	"github.com/katallaxie/pkg/logx"
+)
 
 var (
 	_ Streamable = (*Log)(nil)
@@ -52,7 +54,7 @@ func (l *Log) Pipe(c Connectable) Connectable {
 func (l *Log) stream(r Receivable) {
 	go func() {
 		for x := range l.in {
-			l.fn.Printf("%v", x)
+			l.fn.Printf("value: %v", x)
 			r.In() <- x
 		}
 
