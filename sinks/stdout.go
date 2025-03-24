@@ -29,7 +29,7 @@ func NewStdout() *Stdout {
 func (s *Stdout) attach() {
 	defer close(s.done)
 	for elem := range s.in {
-		fmt.Println(elem)
+		fmt.Print(elem)
 	}
 }
 
