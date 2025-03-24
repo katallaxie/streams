@@ -1,8 +1,7 @@
 package streams
 
-// MapFunction is a function that takes a key and a value and returns a new value.
-
-type MapFunction[T, R any] func(T) R
+// MapFunc is a function that takes a key and a value and returns a new value.
+type MapFunc[T, R any] func(T) R
 
 var (
 	_ Streamable = (*Map[any, any])(nil)
@@ -11,13 +10,13 @@ var (
 
 // Map takes one element and produces a new element of the same type.
 type Map[T, R any] struct {
-	fn  MapFunction[T, R]
+	fn  MapFunc[T, R]
 	in  chan any
 	out chan any
 }
 
 // NewMap returns a new operator on maps.
-func NewMap[T, R any](fn MapFunction[T, R]) *Map[T, R] {
+func NewMap[T, R any](fn MapFunc[T, R]) *Map[T, R] {
 	t := &Map[T, R]{
 		fn:  fn,
 		in:  make(chan any),

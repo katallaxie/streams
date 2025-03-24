@@ -21,12 +21,12 @@ func NewStdout() *Stdout {
 		done: make(chan struct{}),
 	}
 
-	go out.process()
+	go out.attach()
 
 	return out
 }
 
-func (s *Stdout) process() {
+func (s *Stdout) attach() {
 	defer close(s.done)
 	for elem := range s.in {
 		fmt.Println(elem)

@@ -4,7 +4,7 @@ go 1.24
 
 require (
 	github.com/gofiber/fiber/v2 v2.52.6
-	github.com/katallaxie/pkg v0.7.1-0.20250321204904-cd570fda1e47
+	github.com/katallaxie/pkg v0.7.1-0.20250324084620-ca2ff02d7763
 	github.com/katallaxie/v8go v0.8.0
 	github.com/katallaxie/v8go-polyfills v0.0.0-20230401180502-28586091a71a
 	github.com/nats-io/nats.go v1.39.1

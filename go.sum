@@ -28,6 +28,8 @@ github.com/katallaxie/pkg v0.7.1-0.20250321202123-7fd81d6a71a8 h1://zxCYn1wQ2JPH
 github.com/katallaxie/pkg v0.7.1-0.20250321202123-7fd81d6a71a8/go.mod h1:QcHYXMuIvLu0cdcohM5VB1mF4TAoHHv/xqqWUuyzmUI=
 github.com/katallaxie/pkg v0.7.1-0.20250321204904-cd570fda1e47 h1:G1DDNUk1HsorIEd2HzPyqxVOg0BWJ6xjxnGbKgsBlQc=
 github.com/katallaxie/pkg v0.7.1-0.20250321204904-cd570fda1e47/go.mod h1:QcHYXMuIvLu0cdcohM5VB1mF4TAoHHv/xqqWUuyzmUI=
+github.com/katallaxie/pkg v0.7.1-0.20250324084620-ca2ff02d7763 h1:Vpq8eRSMSKjsg9hr09xS45ocJVwJvQoo+dRAJUehhgs=
+github.com/katallaxie/pkg v0.7.1-0.20250324084620-ca2ff02d7763/go.mod h1:0Ux99A1ih5lCl7FMOsciNMtGDQzvBjaHIPSUAACXG1E=
 github.com/katallaxie/v8go v0.8.0 h1:P3RBFBYfpl7DuxEQ2povDoUp+HEiNSEb042M0ZOADI8=
 github.com/katallaxie/v8go v0.8.0/go.mod h1:I8VYG8yxrfjUlwNmyPA5vn/D33m0Ga0f9wjruZQNhOs=
 github.com/katallaxie/v8go-polyfills v0.0.0-20230401180502-28586091a71a h1:NlZH32sow5nUWj877HMwyrZu76eKteHfzWGqBxCx0bs=
