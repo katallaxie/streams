@@ -23,7 +23,7 @@ func NewMap[T, R any](fn MapFunc[T, R]) *Map[T, R] {
 		out: make(chan any),
 	}
 
-	t.attach()
+	go t.attach()
 
 	return t
 }
@@ -59,12 +59,10 @@ func (m *Map[T, R]) stream(r Receivable) {
 }
 
 func (m *Map[T, R]) attach() {
-	go func() {
-		for x := range m.in {
-			x := m.fn(x.(T))
-			m.out <- x
-		}
+	for x := range m.in {
+		x := m.fn(x.(T))
+		m.out <- x
+	}
 
-		close(m.out)
-	}()
+	close(m.out)
 }
