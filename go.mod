@@ -3,7 +3,7 @@ module github.com/katallaxie/streams
 go 1.24
 
 require (
-	github.com/katallaxie/pkg v0.7.1-0.20250324084620-ca2ff02d7763
+	github.com/katallaxie/pkg v0.7.1-0.20250325102519-340e373934b2
 	github.com/stretchr/testify v1.10.0
 )
 
