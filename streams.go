@@ -114,3 +114,8 @@ func Merge(in ...Streamable) Connectable {
 
 	return merged
 }
+
+// Flatten creates a flatten stream.
+func Flatten[T any]() Connectable {
+	return NewFlatMap(func(element []T) []T { return element })
+}
