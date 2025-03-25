@@ -1,27 +1,30 @@
 .DEFAULT_GOAL := build
 
-GO 				?= go
-GO_RUN_TOOLS 	?= $(GO) run -modfile ./tools/go.mod
-GO_TEST 		?= $(GO_RUN_TOOLS) gotest.tools/gotestsum --format pkgname
-GO_RELEASER 	?= $(GO_RUN_TOOLS) github.com/goreleaser/goreleaser
-
-DOCKER ?= docker
+# Go variables
+GO 					?= go
+GO_TOOL 			?= $(GO) tool
+GO_TEST 			?= $(GO_TOOL) gotest.tools/gotestsum --format pkgname
+GO_RELEASER 		?= $(GO_TOOL) github.com/goreleaser/goreleaser/v2
 
 .PHONY: release
 release: ## Release the project.
 	$(GO_RELEASER) release --clean
 
+.PHONY: build
+build: ## Build the binary file.
+	$(GO_RELEASER) build --snapshot --clean
+
 .PHONY: generate
-generate:
+generate: ## Generate code.
 	$(GO) generate ./...
 
 .PHONY: mocks
 mocks: ## Generate mocks.
-	$(GO_RUN_TOOLS) github.com/vektra/mockery/v2
+	$(GO_TOOL) mockery
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.
-	$(GO_RUN_TOOLS) mvdan.cc/gofumpt -w .
+	$(GO_TOOL) mvdan.cc/gofumpt -w .
 
 .PHONY: vet
 vet: ## Run go vet against code.
@@ -34,25 +37,14 @@ test: fmt vet ## Run tests.
 
 .PHONY: lint
 lint: ## Run lint.
-	$(GO_RUN_TOOLS) github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout 5m -c .golangci.yml
+	$(GO_TOOL) golangci-lint run --timeout 5m -c .golangci.yml
 
 .PHONY: clean
 clean: ## Remove previous build.
-	find . -type f -name '*.gen.go' -exec rm {} +
-	git checkout go.mod
+	@rm -rf .test .dist
+	@find . -type f -name '*.gen.go' -exec rm {} +
+	@git checkout go.mod
 
-.PHONY: run-kafka
-run-kafka:
-	$(DOCKER) run -d --rm  -p 2181:2181 -p 9092:9092 --name some-kafka --env ADVERTISED_HOST=127.0.0.1 --env ADVERTISED_PORT=9092 spotify/kafka
-
-.PHONY: stop-kafka
-stop-kafka:
-	$(DOCKER) stop some-kafka
-
-.PHONY: run-nats
-run-nats:
-	$(DOCKER) run -d --rm --name nats -p 4222:4222 -p 8222:8222 nats --http_port 8222
-
-.PHONY: stop-nats
-stop-nats:
-	$(DOCKER) stop nats
+.PHONY: help
+help: ## Display this help screen.
+	@grep -E '^[a-z.A-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
