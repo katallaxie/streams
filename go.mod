@@ -12,7 +12,7 @@ tool (
 )
 
 require (
-	github.com/katallaxie/pkg v0.7.1-0.20250325102519-340e373934b2
+	github.com/katallaxie/pkg v0.7.2
 	github.com/stretchr/testify v1.10.0
 )
 
@@ -20,7 +20,7 @@ require (
 	4d63.com/gocheckcompilerdirectives v1.3.0 // indirect
 	4d63.com/gochecknoglobals v0.2.2 // indirect
 	cel.dev/expr v0.19.1 // indirect
-	cloud.google.com/go v0.116.0 // indirect
+	cloud.google.com/go v0.117.0 // indirect
 	cloud.google.com/go/auth v0.15.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
