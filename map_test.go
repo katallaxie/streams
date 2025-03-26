@@ -14,7 +14,7 @@ import (
 func TestMap(t *testing.T) {
 	tests := []struct {
 		name     string
-		recv     streams.Connectable
+		recv     streams.Operatable
 		in       []string
 		expected []string
 	}{

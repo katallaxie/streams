@@ -22,7 +22,7 @@ type Streamable interface {
 	// Out returns the output channel.
 	Out() <-chan any
 	// Pipe pipes the output channel to the input channel.
-	Pipe(Connectable) Connectable
+	Pipe(Operatable) Operatable
 }
 
 // Receivable is a receivable interface.
@@ -39,8 +39,8 @@ type Sinkable interface {
 	// Connect connects the sink to the source.
 }
 
-// Connectable is a connectable interface.
-type Connectable interface {
+// Operatable is a Operatable interface.
+type Operatable interface {
 	Streamable
 	Receivable
 	// To streams data to the sink and waits for it to complete.
@@ -48,7 +48,7 @@ type Connectable interface {
 }
 
 // Split splits a stream in two based on a predicate.
-func Split[T any](in Streamable, predicate FilterPredicate[T]) [2]Connectable {
+func Split[T any](in Streamable, predicate FilterPredicate[T]) [2]Operatable {
 	left := NewPassThrough()
 	right := NewPassThrough()
 
@@ -64,14 +64,14 @@ func Split[T any](in Streamable, predicate FilterPredicate[T]) [2]Connectable {
 		close(right.In())
 	}()
 
-	return [...]Connectable{left, right}
+	return [...]Operatable{left, right}
 }
 
 // FanOut fans out a stream to multiple streams.
-func FanOut(in Streamable, num int) []Connectable {
-	out := make([]Connectable, num)
+func FanOut(in Streamable, num int) []Operatable {
+	out := make([]Operatable, num)
 
-	slices.ForEach(func(o Connectable, i int) {
+	slices.ForEach(func(o Operatable, i int) {
 		out[i] = NewPassThrough()
 	}, out...)
 
@@ -91,7 +91,7 @@ func FanOut(in Streamable, num int) []Connectable {
 }
 
 // Merge merges multiple streams into one.
-func Merge(in ...Streamable) Connectable {
+func Merge(in ...Streamable) Operatable {
 	merged := NewPassThrough()
 	var wg sync.WaitGroup
 
@@ -116,6 +116,6 @@ func Merge(in ...Streamable) Connectable {
 }
 
 // Flatten creates a flatten stream.
-func Flatten[T any]() Connectable {
+func Flatten[T any]() Operatable {
 	return NewFlatMap(func(element []T) []T { return element })
 }

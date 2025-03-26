@@ -46,7 +46,7 @@ func (l *Log) Out() <-chan any {
 }
 
 // Pipe pipes the output channel to the input channel.
-func (l *Log) Pipe(c Connectable) Connectable {
+func (l *Log) Pipe(c Operatable) Operatable {
 	go l.stream(c)
 	return c
 }

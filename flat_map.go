@@ -45,7 +45,7 @@ func (f *FlatMap[T, R]) Out() <-chan any {
 }
 
 // Pipe pipes the output channel to the input channel.
-func (f *FlatMap[T, R]) Pipe(c Connectable) Connectable {
+func (f *FlatMap[T, R]) Pipe(c Operatable) Operatable {
 	go f.stream(c)
 	return c
 }

@@ -61,7 +61,7 @@ func (r *ReaderSource) emitElement(element []byte) {
 }
 
 // Pipe pipes the output channel of the ReaderSource connector to the input channel
-func (s *ReaderSource) Pipe(operator streams.Connectable) streams.Connectable {
+func (s *ReaderSource) Pipe(operator streams.Operatable) streams.Operatable {
 	streams.Pipe(s, operator)
 	return operator
 }

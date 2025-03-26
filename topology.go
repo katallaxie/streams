@@ -1,8 +1,22 @@
 package streams
 
+import "github.com/katallaxie/pkg/slices"
+
+// Node
 var _ Node = (*node)(nil)
 
+// Node is a node in a topology.
+type Node interface {
+	// AddChildren adds children to a node.
+	AddChild(nodes ...Node)
+	// Children returns the children of a node.
+	Children() []Node
+	// Name returns the name of a node.
+	Name(names ...string) string
+}
+
 type node struct {
+	id       int64
 	name     string
 	children []Node
 }
@@ -15,9 +29,14 @@ func NewNode(name string) Node {
 	return n
 }
 
+// ID return the ID of a node.
+func (n *node) ID() int64 {
+	return n.id
+}
+
 // AddChild adds a child to a node.
-func (n *node) AddChild(child Node) {
-	n.children = append(n.children, child)
+func (n *node) AddChild(nodes ...Node) {
+	n.children = append(n.children, nodes...)
 }
 
 // Children returns the children of a node.
@@ -26,7 +45,11 @@ func (n *node) Children() []Node {
 }
 
 // Name returns the name of a node.
-func (n *node) Name() string {
+func (n *node) Name(name ...string) string {
+	if slices.Len(name) > 0 {
+		n.name = slices.First(name...)
+	}
+
 	return n.name
 }
 
@@ -34,18 +57,6 @@ func (n *node) Name() string {
 type Topology interface {
 	// Root returns the root node of a topology.
 	Root() Node
-}
-
-// Node is a node in a topology.
-type Node interface {
-	// AddChild adds a child to a node.
-	AddChild(Node)
-
-	// Children returns the children of a node.
-	Children() []Node
-
-	// Name returns the name of a node.
-	Name() string
 }
 
 type topology struct {

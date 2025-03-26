@@ -1,7 +1,6 @@
 package streams_test
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/katallaxie/pkg/channels"
@@ -11,28 +10,25 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFlatMap(t *testing.T) {
+func TestSkip(t *testing.T) {
 	tests := []struct {
 		name     string
 		recv     streams.Operatable
-		in       []string
-		expected []string
+		in       []int
+		expected []int
 	}{
 		{
-			name:     "string to string",
-			in:       []string{"a", "b", "c"},
-			expected: []string{"a", "A", "b", "B", "c", "C"},
-			recv: streams.NewFlatMap(func(in string) []string {
-				upper := strings.ToUpper(in)
-				return []string{in, upper}
-			}),
+			name:     "skip 2",
+			in:       []int{1, 2, 3, 4, 5},
+			expected: []int{3, 4, 5},
+			recv:     streams.NewSkip(2),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			in := make(chan any, 3)
-			out := make(chan any, 9)
+			in := make(chan any, 5)
+			out := make(chan any, 3)
 
 			channels.Channel(tt.in, in)
 
@@ -43,7 +39,7 @@ func TestFlatMap(t *testing.T) {
 
 			source.Pipe(tt.recv).To(sink)
 
-			output := channels.Slice[string](out)
+			output := channels.Slice[int](out)
 			require.Equal(t, tt.expected, output)
 		})
 	}

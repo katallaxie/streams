@@ -17,7 +17,7 @@ func odd(a int) bool {
 func TestFilter(t *testing.T) {
 	tests := []struct {
 		name     string
-		recv     streams.Connectable
+		recv     streams.Operatable
 		in       []int
 		expected []int
 	}{

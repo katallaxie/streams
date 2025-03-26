@@ -45,7 +45,7 @@ func (m *Map[T, R]) Out() <-chan any {
 }
 
 // Pipe pipes the output channel to the input channel.
-func (m *Map[T, R]) Pipe(c Connectable) Connectable {
+func (m *Map[T, R]) Pipe(c Operatable) Operatable {
 	go m.stream(c)
 	return c
 }

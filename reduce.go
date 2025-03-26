@@ -45,7 +45,7 @@ func (r *Reduce[T]) Out() <-chan any {
 }
 
 // Pipe pipes the output channel to the input channel.
-func (r *Reduce[T]) Pipe(c Connectable) Connectable {
+func (r *Reduce[T]) Pipe(c Operatable) Operatable {
 	go r.stream(c)
 	return c
 }

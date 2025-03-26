@@ -17,7 +17,7 @@ func sum(a, b int) int {
 func TestReduce(t *testing.T) {
 	tests := []struct {
 		name     string
-		recv     streams.Connectable
+		recv     streams.Operatable
 		in       []int
 		expected []int
 	}{

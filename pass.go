@@ -40,7 +40,7 @@ func (p *PassThrough) Out() <-chan any {
 }
 
 // Pipe pipes the output channel to the input channel.
-func (p *PassThrough) Pipe(c Connectable) Connectable {
+func (p *PassThrough) Pipe(c Operatable) Operatable {
 	go p.stream(c)
 	return c
 }

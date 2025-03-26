@@ -22,7 +22,7 @@ func NewChanSource(out chan any) *ChanSource {
 }
 
 // Pipe pipes the output channel to the input channel.
-func (s *ChanSource) Pipe(c streams.Connectable) streams.Connectable {
+func (s *ChanSource) Pipe(c streams.Operatable) streams.Operatable {
 	streams.Pipe(s, c)
 	return c
 }

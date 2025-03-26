@@ -45,7 +45,7 @@ func (f *Filter[T]) Out() <-chan any {
 }
 
 // Pipe pipes the output channel to the input channel.
-func (f *Filter[T]) Pipe(c Connectable) Connectable {
+func (f *Filter[T]) Pipe(c Operatable) Operatable {
 	go f.stream(c)
 	return c
 }

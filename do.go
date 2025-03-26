@@ -45,7 +45,7 @@ func (d *Do[T]) Out() <-chan any {
 }
 
 // Pipe pipes the output channel to the input channel.
-func (d *Do[T]) Pipe(c Connectable) Connectable {
+func (d *Do[T]) Pipe(c Operatable) Operatable {
 	go d.stream(c)
 	return c
 }
