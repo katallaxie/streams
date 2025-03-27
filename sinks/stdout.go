@@ -10,6 +10,7 @@ import (
 type Stdout struct {
 	in   chan any
 	done chan struct{}
+	err  chan error
 }
 
 var _ streams.Sinkable = (*ChanSink)(nil)
@@ -24,6 +25,11 @@ func NewStdout() *Stdout {
 	go out.attach()
 
 	return out
+}
+
+// Error returns the error.
+func (s *Stdout) Error() error {
+	return <-s.err
 }
 
 func (s *Stdout) attach() {

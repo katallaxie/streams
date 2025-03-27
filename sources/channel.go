@@ -4,12 +4,7 @@ import (
 	"github.com/katallaxie/streams"
 )
 
-// Source is the interface that represents a source of data.
-type Source interface {
-	streams.Streamable
-}
-
-var _ Source = (*ChanSource)(nil)
+var _ streams.Sourceable = (*ChanSource)(nil)
 
 // ChanSource is a source that returns a channel of data.
 type ChanSource struct {

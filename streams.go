@@ -36,7 +36,13 @@ type Sinkable interface {
 	Receivable
 	// Wait waits for the sink to complete.
 	Wait()
-	// Connect connects the sink to the source.
+	// Error returns the error.
+	Error() error
+}
+
+// Sourceable is a sourceable interface.
+type Sourceable interface {
+	Streamable
 }
 
 // Operatable is a Operatable interface.

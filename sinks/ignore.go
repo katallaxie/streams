@@ -7,7 +7,8 @@ import (
 
 // Ignore represents a sink that ignores all incoming data.
 type Ignore struct {
-	in chan any
+	in  chan any
+	err chan error
 }
 
 var _ streams.Sinkable = (*Ignore)(nil)
@@ -25,6 +26,11 @@ func NewIgnore() *Ignore {
 
 func (i *Ignore) attach() {
 	channels.Drain(i.in)
+}
+
+// Error returns the error.
+func (i *Ignore) Error() error {
+	return <-i.err
 }
 
 // In returns the input channel of a Ignore sink.

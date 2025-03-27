@@ -17,7 +17,7 @@ type ReaderSource struct {
 	out           chan any
 }
 
-var _ Source = (*ReaderSource)(nil)
+var _ streams.Sourceable = (*ReaderSource)(nil)
 
 // NewReaderSource returns a new ReaderSource connector that reads elements from
 func NewReaderSource(reader io.ReadCloser, elementReader ElementReader) (*ReaderSource, error) {
