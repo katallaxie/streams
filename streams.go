@@ -43,6 +43,8 @@ type Sinkable interface {
 // Sourceable is a sourceable interface.
 type Sourceable interface {
 	Streamable
+	// Error returns the error.
+	Error() error
 }
 
 // Operatable is a Operatable interface.

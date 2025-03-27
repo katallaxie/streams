@@ -3,6 +3,7 @@ package sources
 import (
 	"errors"
 	"io"
+	"sync"
 
 	"github.com/katallaxie/streams"
 )
@@ -15,6 +16,8 @@ type ReaderSource struct {
 	reader        io.ReadCloser
 	elementReader ElementReader
 	out           chan any
+	err           error
+	errOnce       sync.Once
 }
 
 var _ streams.Sourceable = (*ReaderSource)(nil)
@@ -32,6 +35,17 @@ func NewReaderSource(reader io.ReadCloser, elementReader ElementReader) (*Reader
 	return readerSource, nil
 }
 
+// Error returns the error.
+func (s *ReaderSource) Error() error {
+	return s.err
+}
+
+func (s *ReaderSource) fail(err error) {
+	s.errOnce.Do(func() {
+		s.err = err
+	})
+}
+
 func (s *ReaderSource) attach() {
 loop:
 	for {
@@ -42,6 +56,7 @@ loop:
 		}
 
 		if err != nil {
+			s.fail(err)
 			break loop
 		}
 

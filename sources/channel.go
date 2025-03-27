@@ -16,6 +16,11 @@ func NewChanSource(out chan any) *ChanSource {
 	return &ChanSource{out: out}
 }
 
+// Error returns the error.
+func (s *ChanSource) Error() error {
+	return nil // no-op
+}
+
 // Pipe pipes the output channel to the input channel.
 func (s *ChanSource) Pipe(c streams.Operatable) streams.Operatable {
 	streams.Pipe(s, c)
