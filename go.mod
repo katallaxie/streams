@@ -12,7 +12,7 @@ tool (
 )
 
 require (
-	github.com/katallaxie/pkg v0.7.2-0.20250331112127-a665e87a3051
+	github.com/katallaxie/pkg v0.7.2
 	github.com/stretchr/testify v1.10.0
 )
 
