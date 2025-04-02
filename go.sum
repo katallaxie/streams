@@ -724,6 +724,8 @@ github.com/katallaxie/pkg v0.7.2-0.20250402073707-46d55e1d3030 h1:2GrwPhWbpMIOLW
 github.com/katallaxie/pkg v0.7.2-0.20250402073707-46d55e1d3030/go.mod h1:7WaCAu/FhPPKDVldVH2sDlfglKYupInPvAq9x8az3Lk=
 github.com/katallaxie/pkg v0.7.2-0.20250402090917-635442cc5f98 h1:LUP5PKNp2WvyZIEHjpDxV/XFrvV0d7M07UxP5t8TdyI=
 github.com/katallaxie/pkg v0.7.2-0.20250402090917-635442cc5f98/go.mod h1:7WaCAu/FhPPKDVldVH2sDlfglKYupInPvAq9x8az3Lk=
+github.com/katallaxie/pkg v0.7.2-0.20250402112407-783b1d25117a h1:rb1vXQCEi4xGTLF5JVLbdJs4OQ31vUx2H2D1CZ8Tt7s=
+github.com/katallaxie/pkg v0.7.2-0.20250402112407-783b1d25117a/go.mod h1:7WaCAu/FhPPKDVldVH2sDlfglKYupInPvAq9x8az3Lk=
 github.com/katallaxie/pkg v0.7.2 h1:yM+v1uyoNpIuKnAUF0xzfeNTBKG8uKrHAzvvt7hyl8I=
 github.com/katallaxie/pkg v0.7.2/go.mod h1:JuLbiF5TZv7iSpQfaoqQSMaC+O5+E7tCkCJvA3Vi8G0=
 github.com/kevinburke/ssh_config v1.2.0 h1:x584FjTGwHzMwvHx18PXxbBVzfnxogHaAReU4gf13a4=
