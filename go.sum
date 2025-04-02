@@ -724,6 +724,8 @@ github.com/karamaru-alpha/copyloopvar v1.2.1 h1:wmZaZYIjnJ0b5UoKDjUHrikcV0zuPyyx
 github.com/karamaru-alpha/copyloopvar v1.2.1/go.mod h1:nFmMlFNlClC2BPvNaHMdkirmTJxVCY0lhxBtlfOypMM=
 github.com/katallaxie/pkg v0.7.2-0.20250402112407-783b1d25117a h1:rb1vXQCEi4xGTLF5JVLbdJs4OQ31vUx2H2D1CZ8Tt7s=
 github.com/katallaxie/pkg v0.7.2-0.20250402112407-783b1d25117a/go.mod h1:7WaCAu/FhPPKDVldVH2sDlfglKYupInPvAq9x8az3Lk=
+github.com/katallaxie/pkg v0.7.2-0.20250402133648-a14862d04e89 h1:reG0O1nCBTZq/Y6Km822OYU3ymFPeK3+TKK03xrqoa8=
+github.com/katallaxie/pkg v0.7.2-0.20250402133648-a14862d04e89/go.mod h1:7WaCAu/FhPPKDVldVH2sDlfglKYupInPvAq9x8az3Lk=
 github.com/kevinburke/ssh_config v1.2.0 h1:x584FjTGwHzMwvHx18PXxbBVzfnxogHaAReU4gf13a4=
 github.com/kevinburke/ssh_config v1.2.0/go.mod h1:CT57kijsi8u/K/BOFA39wgDQJ9CxiF4nAY/ojJ6r6mM=
 github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI2bnpBCr8=
