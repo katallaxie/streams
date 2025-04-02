@@ -27,6 +27,17 @@ See the [examples](/examples) directory for more.
 * `FlatMap`: Transform elements in the stream into multiple elements.
 * `Skip`: Skip elements in the stream.
 
+## Source 
+
+* `Channel`: Takes a channel as an input
+
+## Sink
+
+* `Channel`: Takes a channel as an output
+* `FSM`: Takes a finite state machine as an output
+* `Stdout`: Takes the standard output as an output
+* `Ignore`: Ignores the output
+
 ## License
 
 [Apache 2.0](/LICENSE)
