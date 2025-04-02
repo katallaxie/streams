@@ -25,8 +25,7 @@ func TestStore(t *testing.T) {
 	state := NoopState{}
 
 	noopReducer := func(prev fsmx.State, action fsmx.Action) fsmx.State {
-		switch action.Type() {
-		case AnyAction:
+		if action.Type() == AnyAction {
 			return NoopState{Name: action.Payload().(string)}
 		}
 
