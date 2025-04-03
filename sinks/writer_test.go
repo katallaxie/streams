@@ -33,7 +33,7 @@ func TestNewWriter(t *testing.T) {
 
 	channels.Channel([]string{"foo"}, in)
 	source := sources.NewChanSource(in)
-	sink, err := sinks.NewWriterSink(mw)
+	sink, err := sinks.NewWriter(mw)
 	require.NoError(t, err)
 
 	close(in)

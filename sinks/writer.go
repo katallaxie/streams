@@ -18,7 +18,7 @@ type Writer struct {
 var _ streams.Sinkable = (*Writer)(nil)
 
 // NewWriter creates a new WriterSink that writes data to the provided io.WriteCloser.
-func NewWriterSink(writer io.WriteCloser) (*Writer, error) {
+func NewWriter(writer io.WriteCloser) (*Writer, error) {
 	w := &Writer{
 		writer: writer,
 		in:     make(chan any),
