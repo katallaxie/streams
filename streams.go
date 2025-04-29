@@ -79,7 +79,7 @@ func Split[T any](in Streamable, predicate FilterPredicate[T]) [2]Operatable {
 func FanOut(in Streamable, num int) []Operatable {
 	out := make([]Operatable, num)
 
-	slices.ForEach(func(o Operatable, i int) {
+	slices.ForEach(func(_ Operatable, i int) {
 		out[i] = NewPassThrough()
 	}, out...)
 

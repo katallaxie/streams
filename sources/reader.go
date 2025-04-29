@@ -5,6 +5,7 @@ import (
 	"io"
 	"sync"
 
+	"github.com/katallaxie/pkg/slices"
 	"github.com/katallaxie/streams"
 )
 
@@ -22,7 +23,7 @@ type ReaderSource struct {
 
 var _ streams.Sourceable = (*ReaderSource)(nil)
 
-// NewReaderSource returns a new ReaderSource connector that reads elements from
+// NewReaderSource returns a new ReaderSource connector that reads elements from.
 func NewReaderSource(reader io.ReadCloser, elementReader ElementReader) (*ReaderSource, error) {
 	readerSource := &ReaderSource{
 		reader:        reader,
@@ -69,13 +70,13 @@ loop:
 
 // emitElement sends the element downstream to the output channel if the context
 // is not canceled and the element is not empty.
-func (r *ReaderSource) emitElement(element []byte) {
-	if len(element) > 0 {
-		r.out <- element
+func (s *ReaderSource) emitElement(element []byte) {
+	if slices.GreaterThen(0, element) {
+		s.out <- element
 	}
 }
 
-// Pipe pipes the output channel of the ReaderSource connector to the input channel
+// Pipe pipes the output channel of the ReaderSource connector to the input channel.
 func (s *ReaderSource) Pipe(operator streams.Operatable) streams.Operatable {
 	streams.Pipe(s, operator)
 	return operator

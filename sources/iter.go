@@ -38,7 +38,7 @@ func (s *SeqSource[I]) attach() {
 	close(s.out)
 }
 
-// Pipe pipes the output channel of the ReaderSource connector to the input channel
+// Pipe pipes the output channel of the ReaderSource connector to the input channel.
 func (s *SeqSource[I]) Pipe(operator streams.Operatable) streams.Operatable {
 	streams.Pipe(s, operator)
 	return operator

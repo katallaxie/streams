@@ -45,8 +45,8 @@ func (p *PassThrough) Pipe(c Operatable) Operatable {
 	return c
 }
 
-func (m *PassThrough) stream(r Receivable) {
-	for x := range m.out {
+func (p *PassThrough) stream(r Receivable) {
+	for x := range p.out {
 		r.In() <- x
 	}
 

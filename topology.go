@@ -2,7 +2,6 @@ package streams
 
 import "github.com/katallaxie/pkg/slices"
 
-// Node
 var _ Node = (*node)(nil)
 
 // Node is a node in a topology.
@@ -46,7 +45,7 @@ func (n *node) Children() []Node {
 
 // Name returns the name of a node.
 func (n *node) Name(name ...string) string {
-	if slices.Len(name) > 0 {
+	if slices.GreaterThen(0, name...) {
 		n.name = slices.First(name...)
 	}
 
