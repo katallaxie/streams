@@ -45,6 +45,7 @@ linters:
 
   disable:
     - forcetypeassert
+    - mnd
 
   settings:
     exhaustive:

@@ -20,12 +20,12 @@ See the [examples](/examples) directory for more.
 
 * `Do`: Execute a function for each element in the stream.
 * `Filter`: Filter elements from the stream.
-* `Map`: Transform elements in the stream.
-* `Reduce`: Reduce elements in the stream.
-* `Split`: Split the stream into multiple streams.
-* `Merge`: Merge multiple streams into one.
 * `FlatMap`: Transform elements in the stream into multiple elements.
+* `Map`: Transform elements in the stream.
+* `Merge`: Merge multiple streams into one.
+* `Reduce`: Reduce elements in the stream.
 * `Skip`: Skip elements in the stream.
+* `Split`: Split the stream into multiple streams.
 
 ## Source 
 
@@ -35,8 +35,8 @@ See the [examples](/examples) directory for more.
 
 * `Channel`: Takes a channel as an output
 * `FSM`: Takes a finite state machine as an output
-* `Stdout`: Takes the standard output as an output
 * `Ignore`: Ignores the output
+* `Stdout`: Takes the standard output as an output
 
 ## License
 
