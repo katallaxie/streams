@@ -7,6 +7,7 @@ tool (
 	github.com/vektra/mockery/v2
 	gotest.tools/gotestsum
 	mvdan.cc/gofumpt
+	github.com/goreleaser/goreleaser/v2
 )
 
 require (
