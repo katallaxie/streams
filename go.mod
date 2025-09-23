@@ -4,15 +4,15 @@ go 1.24.0
 
 tool (
 	github.com/golangci/golangci-lint/v2/cmd/golangci-lint
+	github.com/goreleaser/goreleaser/v2
 	github.com/vektra/mockery/v2
 	gotest.tools/gotestsum
 	mvdan.cc/gofumpt
-	github.com/goreleaser/goreleaser/v2
 )
 
 require (
 	github.com/katallaxie/pkg v0.7.9
-	github.com/nats-io/nats.go v1.45.0
+	github.com/nats-io/nats.go v1.46.0
 	github.com/stretchr/testify v1.11.1
 )
 
