@@ -11,7 +11,7 @@ tool (
 )
 
 require (
-	github.com/katallaxie/pkg v0.7.9
+	github.com/katallaxie/pkg v0.7.10
 	github.com/nats-io/nats.go v1.47.0
 	github.com/stretchr/testify v1.11.1
 )
@@ -195,7 +195,7 @@ require (
 	github.com/firefart/nonamedreturns v1.0.6 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fzipp/gocyclo v0.6.0 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
 	github.com/ghostiam/protogetter v0.3.15 // indirect
 	github.com/github/smimesign v0.2.0 // indirect
 	github.com/go-chi/chi/v5 v5.2.2 // indirect
