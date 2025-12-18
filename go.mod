@@ -12,7 +12,7 @@ tool (
 
 require (
 	github.com/katallaxie/pkg v0.7.10
-	github.com/nats-io/nats.go v1.47.0
+	github.com/nats-io/nats.go v1.48.0
 	github.com/stretchr/testify v1.11.1
 )
 
