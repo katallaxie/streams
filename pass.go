@@ -5,6 +5,8 @@ var (
 	_ Receivable = (*PassThrough)(nil)
 )
 
+var DefaultPassThrough = NewPassThrough()
+
 // PassThrough passes through an incoming element.
 type PassThrough struct {
 	in  chan any

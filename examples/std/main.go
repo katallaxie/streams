@@ -19,9 +19,7 @@ func (msg *message) String() string {
 
 func main() {
 	source := sources.NewChanSource(tickerChan(time.Second))
-	sink := sinks.NewStdout()
-
-	source.Pipe(streams.NewPassThrough()).To(sink)
+	source.Pipe(streams.DefaultPassThrough).To(sinks.DefaultStdout)
 }
 
 func tickerChan(interval time.Duration) chan any {

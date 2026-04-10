@@ -6,6 +6,8 @@ import (
 	"github.com/katallaxie/streams"
 )
 
+var DefaultStdout = NewStdout()
+
 // Stdout is a sink that writes data to stdout.
 type Stdout struct {
 	in   chan any
