@@ -2,6 +2,7 @@ package nats
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/katallaxie/streams"
@@ -21,6 +22,7 @@ type JetStreamSourceConfig struct {
 	PullOpts       []nats.PullOpt
 	Subject        string
 	SubOpts        []nats.SubOpt
+	Sub            *nats.Subscription
 }
 
 // DefaultJetStreamSourceConfig returns a default JetStream source configuration.
@@ -85,8 +87,10 @@ loop:
 			break loop
 		default:
 		}
-		messages, err := j.sub.Fetch(j.cfg.FetchBatchSize, j.cfg.PullOpts...)
+
+		messages, err := j.cfg.Sub.Fetch(j.cfg.FetchBatchSize, j.cfg.PullOpts...)
 		if err != nil {
+			fmt.Println(err)
 			j.fail(err)
 			break loop
 		}
@@ -105,5 +109,6 @@ loop:
 	if err := j.sub.Drain(); err != nil {
 		j.fail(err)
 	}
+
 	close(j.out)
 }
