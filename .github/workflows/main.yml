@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [1.25.x]
+        go: [1.26.x]
     permissions:
       checks: write
     steps:
@@ -31,7 +31,6 @@ jobs:
             cache-dependency-path: |
               go.sum
               tools/go.sum
-      - run: make generate
       - run: make test
       - uses: dorny/test-reporter@v3
         if: success() || failure()
