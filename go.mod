@@ -14,7 +14,7 @@ tool (
 require (
 	github.com/katallaxie/pkg v0.7.11
 	github.com/nats-io/nats-server/v2 v2.12.6
-	github.com/nats-io/nats.go v1.50.0
+	github.com/nats-io/nats.go v1.51.0
 	github.com/stretchr/testify v1.11.1
 )
 
