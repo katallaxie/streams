@@ -34,9 +34,15 @@ func NewDo[T any](fn DoFunc[T]) *DoImpl[T] {
 }
 
 // To streams data to the sink and waits for it to complete.
-func (d *DoImpl[T]) To(sink Sinkable) {
+func (d *DoImpl[T]) To(sink Sinkable) error {
 	d.stream(sink)
-	sink.Wait()
+
+	err := sink.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // In returns the input channel.

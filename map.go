@@ -34,9 +34,15 @@ func NewMap[T, R any](fn MapFunc[T, R]) *MapImpl[T, R] {
 }
 
 // To streams data to the sink and waits for it to complete.
-func (m *MapImpl[T, R]) To(sink Sinkable) {
+func (m *MapImpl[T, R]) To(sink Sinkable) error {
 	m.stream(sink)
-	sink.Wait()
+
+	err := sink.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // In returns the input channel.

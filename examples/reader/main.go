@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/katallaxie/pkg/conv"
-	"github.com/katallaxie/pkg/errorx"
 	"github.com/katallaxie/streams"
 	"github.com/katallaxie/streams/sinks"
 	"github.com/katallaxie/streams/sources"
@@ -24,8 +23,11 @@ func read(r io.Reader) ([]byte, error) {
 func main() {
 	r := io.NopCloser(strings.NewReader("Hello, world!"))
 
-	s, err := sources.NewReaderSource(r, read)
-	errorx.Panic(err)
-
-	s.Pipe(streams.PassThrough()).Pipe(streams.Map(conv.String)).To(sinks.DefaultStdout)
+	err := sources.NewReaderSource(r, read).
+		Pipe(streams.PassThrough()).
+		Pipe(streams.Map(conv.String)).
+		To(sinks.DefaultStdout)
+	if err != nil {
+		panic(err)
+	}
 }

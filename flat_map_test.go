@@ -41,7 +41,8 @@ func TestFlatMap(t *testing.T) {
 
 			close(in)
 
-			source.Pipe(tt.recv).To(sink)
+			err := source.Pipe(tt.recv).To(sink)
+			require.NoError(t, err)
 
 			output := channels.Slice[string](out)
 			require.Equal(t, tt.expected, output)

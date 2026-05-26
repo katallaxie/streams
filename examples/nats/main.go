@@ -64,5 +64,10 @@ func main() {
 	})
 	errorx.Panic(err)
 
-	s.Pipe(streams.PassThrough()).Pipe(streams.NewMap(conv.String)).To(sinks.DefaultStdout)
+	err = s.Pipe(streams.PassThrough()).Pipe(streams.NewMap(conv.String)).To(sinks.DefaultStdout)
+	if err != nil {
+		panic(err)
+	}
+
+	select {}
 }

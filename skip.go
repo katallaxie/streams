@@ -31,9 +31,15 @@ func NewSkip(n int) *SkipImpl {
 }
 
 // To streams data to the sink and waits for it to complete.
-func (s *SkipImpl) To(sink Sinkable) {
+func (s *SkipImpl) To(sink Sinkable) error {
 	s.stream(sink)
-	sink.Wait()
+
+	err := sink.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // In returns the input channel.

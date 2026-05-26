@@ -35,9 +35,7 @@ type Receivable interface {
 type Sinkable interface {
 	Receivable
 	// Wait waits for the sink to complete.
-	Wait()
-	// Error returns the error.
-	Error() error
+	Wait() error
 }
 
 // Sourceable is a sourceable interface.
@@ -52,13 +50,13 @@ type Operatable interface {
 	Streamable
 	Receivable
 	// To streams data to the sink and waits for it to complete.
-	To(sink Sinkable)
+	To(sink Sinkable) error
 }
 
 // Split splits a stream in two based on a predicate.
 func Split[T any](in Streamable, predicate FilterPredicate[T]) [2]Operatable {
-	left := NewPassThrough()
-	right := NewPassThrough()
+	left := PassThrough()
+	right := PassThrough()
 
 	go func() {
 		for x := range in.Out() {
@@ -80,7 +78,7 @@ func FanOut(in Streamable, num int) []Operatable {
 	out := make([]Operatable, num)
 
 	slices.ForEach(func(_ Operatable, i int) {
-		out[i] = NewPassThrough()
+		out[i] = PassThrough()
 	}, out...)
 
 	go func() {

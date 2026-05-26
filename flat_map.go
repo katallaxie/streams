@@ -29,9 +29,15 @@ func NewFlatMap[T, R any](fn FlatMapFunc[T, R]) *FlatMap[T, R] {
 }
 
 // To streams data to the sink and waits for it to complete.
-func (f *FlatMap[T, R]) To(sink Sinkable) {
+func (f *FlatMap[T, R]) To(sink Sinkable) error {
 	f.stream(sink)
-	sink.Wait()
+
+	err := sink.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // In returns the input channel.

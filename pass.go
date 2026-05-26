@@ -29,9 +29,15 @@ func NewPassThrough() *PassThroughImpl {
 }
 
 // To streams data to the sink and waits for it to complete.
-func (p *PassThroughImpl) To(sink Sinkable) {
+func (p *PassThroughImpl) To(sink Sinkable) error {
 	p.stream(sink)
-	sink.Wait()
+
+	err := sink.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // In returns the input channel.

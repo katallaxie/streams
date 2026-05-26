@@ -41,8 +41,10 @@ func (w *Writer) In() chan<- any {
 }
 
 // Wait waits for the sink to complete.
-func (w *Writer) Wait() {
+func (w *Writer) Wait() error {
 	<-w.done
+
+	return nil
 }
 
 func (w *Writer) attach() {

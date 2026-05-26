@@ -29,9 +29,15 @@ func NewReduce[T any](fn ReduceFunc[T]) *Reduce[T] {
 }
 
 // To streams data to the sink and waits for it to complete.
-func (r *Reduce[T]) To(sink Sinkable) {
+func (r *Reduce[T]) To(sink Sinkable) error {
 	r.stream(sink)
-	sink.Wait()
+
+	err := sink.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // In returns the input channel.

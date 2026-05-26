@@ -47,6 +47,8 @@ func (s *Stdout) In() chan<- any {
 }
 
 // Wait waits for the sink to complete.
-func (s *Stdout) Wait() {
+func (s *Stdout) Wait() error {
 	<-s.done
+
+	return nil
 }

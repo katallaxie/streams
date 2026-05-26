@@ -35,9 +35,15 @@ func NewLog(fn logx.LogFunc) *LogImpl {
 }
 
 // To streams data to the sink and waits for it to complete.
-func (l *LogImpl) To(sink Sinkable) {
+func (l *LogImpl) To(sink Sinkable) error {
 	l.stream(sink)
-	sink.Wait()
+
+	err := sink.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // In returns the input channel.

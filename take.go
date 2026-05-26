@@ -31,9 +31,15 @@ func NewTake(count int) *TakeTimpl {
 }
 
 // To streams data to the sink and waits for it to complete.
-func (t *TakeTimpl) To(sink Sinkable) {
+func (t *TakeTimpl) To(sink Sinkable) error {
 	t.stream(sink)
-	sink.Wait()
+
+	err := sink.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // In returns the input channel.

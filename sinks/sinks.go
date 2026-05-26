@@ -28,6 +28,6 @@ func (s *ChanSink) In() chan<- any {
 }
 
 // Wait waits for the sink to complete.
-func (s *ChanSink) Wait() {
-	// no-op
+func (s *ChanSink) Wait() error {
+	return nil
 }

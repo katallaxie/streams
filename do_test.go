@@ -38,7 +38,9 @@ func TestDo(t *testing.T) {
 
 			close(in)
 
-			source.Pipe(recv).To(sink)
+			err := source.Pipe(recv).To(sink)
+			require.NoError(t, err)
+
 			require.Equal(t, tt.expected, s)
 		})
 	}

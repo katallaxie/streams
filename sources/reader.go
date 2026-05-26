@@ -24,7 +24,7 @@ type ReaderSource struct {
 var _ streams.Sourceable = (*ReaderSource)(nil)
 
 // NewReaderSource returns a new ReaderSource connector that reads elements from.
-func NewReaderSource(reader io.ReadCloser, elementReader ElementReader) (*ReaderSource, error) {
+func NewReaderSource(reader io.ReadCloser, elementReader ElementReader) *ReaderSource {
 	readerSource := &ReaderSource{
 		reader:        reader,
 		elementReader: elementReader,
@@ -33,7 +33,7 @@ func NewReaderSource(reader io.ReadCloser, elementReader ElementReader) (*Reader
 
 	go readerSource.attach()
 
-	return readerSource, nil
+	return readerSource
 }
 
 // Error returns the error.

@@ -39,6 +39,6 @@ func (i *Ignore) In() chan<- any {
 }
 
 // Wait waits for the sink to complete.
-func (i *Ignore) Wait() {
-	// no-op
+func (i *Ignore) Wait() error {
+	return nil
 }

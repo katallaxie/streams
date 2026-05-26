@@ -38,7 +38,8 @@ func TestNewWriter(t *testing.T) {
 
 	close(in)
 
-	source.Pipe(streams.NewPassThrough()).To(sink)
+	err = source.Pipe(streams.NewPassThrough()).To(sink)
+	require.NoError(t, err)
 
 	assert.Equal(t, "foo", b.String())
 }
