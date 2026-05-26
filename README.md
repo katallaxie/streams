@@ -24,6 +24,8 @@ See the [examples](/examples) directory for more.
 * `Map`: Transform elements in the stream.
 * `Merge`: Merge multiple streams into one.
 * `Reduce`: Reduce elements in the stream.
+* `Take`: Takes the given number of elements from the stream.
+* `Expires`: Expires elements in the stream after a given time.
 * `Skip`: Skip elements in the stream.
 * `Split`: Split the stream into multiple streams.
 

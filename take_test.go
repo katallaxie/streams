@@ -21,7 +21,7 @@ func TestTake(t *testing.T) {
 			name:     "take 2",
 			in:       []int{1, 2, 3, 4, 5},
 			expected: []int{1, 2},
-			recv:     streams.NewTake(2),
+			recv:     streams.Take(2),
 		},
 	}
 
