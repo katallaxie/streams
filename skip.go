@@ -1,20 +1,25 @@
 package streams
 
 var (
-	_ Streamable = (*Reduce[any])(nil)
-	_ Receivable = (*Reduce[any])(nil)
+	_ Streamable = (*SkipImpl)(nil)
+	_ Receivable = (*SkipImpl)(nil)
 )
 
-// Skip skips the first n elements.
-type Skip struct {
+// SkipImpl skips the first n elements.
+type SkipImpl struct {
 	n   int
 	in  chan any
 	out chan any
 }
 
+// Skip returns a new operator that skips the first n elements.
+func Skip(n int) *SkipImpl {
+	return NewSkip(n)
+}
+
 // NewSkip returns a new operator on skips.
-func NewSkip(n int) *Skip {
-	t := &Skip{
+func NewSkip(n int) *SkipImpl {
+	t := &SkipImpl{
 		n:   n,
 		in:  make(chan any),
 		out: make(chan any),
@@ -26,28 +31,28 @@ func NewSkip(n int) *Skip {
 }
 
 // To streams data to the sink and waits for it to complete.
-func (s *Skip) To(sink Sinkable) {
+func (s *SkipImpl) To(sink Sinkable) {
 	s.stream(sink)
 	sink.Wait()
 }
 
 // In returns the input channel.
-func (s *Skip) In() chan<- any {
+func (s *SkipImpl) In() chan<- any {
 	return s.in
 }
 
 // Out returns the output channel.
-func (s *Skip) Out() <-chan any {
+func (s *SkipImpl) Out() <-chan any {
 	return s.out
 }
 
 // Pipe pipes the output channel to the input channel.
-func (s *Skip) Pipe(c Operatable) Operatable {
+func (s *SkipImpl) Pipe(c Operatable) Operatable {
 	go s.stream(c)
 	return c
 }
 
-func (s *Skip) stream(recv Receivable) {
+func (s *SkipImpl) stream(recv Receivable) {
 	for x := range s.out {
 		recv.In() <- x
 	}
@@ -55,7 +60,7 @@ func (s *Skip) stream(recv Receivable) {
 	close(recv.In())
 }
 
-func (s *Skip) attach() {
+func (s *SkipImpl) attach() {
 	curr := s.n
 	for x := range s.in {
 		curr--

@@ -4,20 +4,25 @@ package streams
 type DoFunc[T any] func(T) error
 
 var (
-	_ Streamable = (*Map[any, any])(nil)
-	_ Receivable = (*Map[any, any])(nil)
+	_ Streamable = (*DoImpl[any])(nil)
+	_ Receivable = (*DoImpl[any])(nil)
 )
 
-// Do takes one element and executes a function on it.
-type Do[T any] struct {
+// DoImpl takes one element and executes a function on it.
+type DoImpl[T any] struct {
 	fn  DoFunc[T]
 	in  chan any
 	out chan any
 }
 
+// Do returns a new Do.
+func Do[T any](fn DoFunc[T]) *DoImpl[T] {
+	return NewDo(fn)
+}
+
 // NewDo creates a new Do.
-func NewDo[T any](fn DoFunc[T]) *Do[T] {
-	t := &Do[T]{
+func NewDo[T any](fn DoFunc[T]) *DoImpl[T] {
+	t := &DoImpl[T]{
 		fn:  fn,
 		in:  make(chan any),
 		out: make(chan any),
@@ -29,28 +34,28 @@ func NewDo[T any](fn DoFunc[T]) *Do[T] {
 }
 
 // To streams data to the sink and waits for it to complete.
-func (d *Do[T]) To(sink Sinkable) {
+func (d *DoImpl[T]) To(sink Sinkable) {
 	d.stream(sink)
 	sink.Wait()
 }
 
 // In returns the input channel.
-func (d *Do[T]) In() chan<- any {
+func (d *DoImpl[T]) In() chan<- any {
 	return d.in
 }
 
 // Out returns the output channel.
-func (d *Do[T]) Out() <-chan any {
+func (d *DoImpl[T]) Out() <-chan any {
 	return d.out
 }
 
 // Pipe pipes the output channel to the input channel.
-func (d *Do[T]) Pipe(c Operatable) Operatable {
+func (d *DoImpl[T]) Pipe(c Operatable) Operatable {
 	go d.stream(c)
 	return c
 }
 
-func (d *Do[T]) stream(r Receivable) {
+func (d *DoImpl[T]) stream(r Receivable) {
 	for x := range d.out {
 		r.In() <- x
 	}
@@ -58,7 +63,7 @@ func (d *Do[T]) stream(r Receivable) {
 	close(r.In())
 }
 
-func (d *Do[T]) attach() {
+func (d *DoImpl[T]) attach() {
 	for x := range d.in {
 		err := d.fn(x.(T))
 		if err != nil {

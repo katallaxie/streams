@@ -64,5 +64,5 @@ func main() {
 	})
 	errorx.Panic(err)
 
-	s.Pipe(streams.DefaultPassThrough).Pipe(streams.NewMap(conv.String)).To(sinks.DefaultStdout)
+	s.Pipe(streams.PassThrough()).Pipe(streams.NewMap(conv.String)).To(sinks.DefaultStdout)
 }

@@ -21,7 +21,7 @@ func TestPassThrough(t *testing.T) {
 			name:     "pass-trough",
 			in:       []int{1, 2, 3},
 			expected: []int{1, 2, 3},
-			recv:     streams.NewPassThrough(),
+			recv:     streams.PassThrough(),
 		},
 	}
 

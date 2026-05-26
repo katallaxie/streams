@@ -22,7 +22,7 @@ func TestMap(t *testing.T) {
 			name:     "string to string",
 			in:       []string{"a", "b", "c"},
 			expected: []string{"A", "B", "C"},
-			recv:     streams.NewMap(strings.ToUpper),
+			recv:     streams.Map(strings.ToUpper),
 		},
 	}
 

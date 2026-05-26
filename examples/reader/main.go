@@ -27,5 +27,5 @@ func main() {
 	s, err := sources.NewReaderSource(r, read)
 	errorx.Panic(err)
 
-	s.Pipe(streams.DefaultPassThrough).Pipe(streams.NewMap(conv.String)).To(sinks.DefaultStdout)
+	s.Pipe(streams.PassThrough()).Pipe(streams.Map(conv.String)).To(sinks.DefaultStdout)
 }

@@ -5,20 +5,25 @@ import (
 )
 
 var (
-	_ Streamable = (*Log)(nil)
-	_ Receivable = (*Log)(nil)
+	_ Streamable = (*LogImpl)(nil)
+	_ Receivable = (*LogImpl)(nil)
 )
 
-// Log passes through an incoming element.
-type Log struct {
+// LogImpl passes through an incoming element.
+type LogImpl struct {
 	fn  logx.LogFunc
 	in  chan any
 	out chan any
 }
 
+// Log returns a new operator to log elements.
+func Log(fn logx.LogFunc) *LogImpl {
+	return NewLog(fn)
+}
+
 // NewLog returns a new operator to log elements.
-func NewLog(fn logx.LogFunc) *Log {
-	l := &Log{
+func NewLog(fn logx.LogFunc) *LogImpl {
+	l := &LogImpl{
 		fn:  fn,
 		in:  make(chan any),
 		out: make(chan any),
@@ -30,28 +35,28 @@ func NewLog(fn logx.LogFunc) *Log {
 }
 
 // To streams data to the sink and waits for it to complete.
-func (l *Log) To(sink Sinkable) {
+func (l *LogImpl) To(sink Sinkable) {
 	l.stream(sink)
 	sink.Wait()
 }
 
 // In returns the input channel.
-func (l *Log) In() chan<- any {
+func (l *LogImpl) In() chan<- any {
 	return l.in
 }
 
 // Out returns the output channel.
-func (l *Log) Out() <-chan any {
+func (l *LogImpl) Out() <-chan any {
 	return l.out
 }
 
 // Pipe pipes the output channel to the input channel.
-func (l *Log) Pipe(c Operatable) Operatable {
+func (l *LogImpl) Pipe(c Operatable) Operatable {
 	go l.stream(c)
 	return c
 }
 
-func (l *Log) stream(r Receivable) {
+func (l *LogImpl) stream(r Receivable) {
 	go func() {
 		for x := range l.in {
 			l.fn.Printf("%v", x)
@@ -62,7 +67,7 @@ func (l *Log) stream(r Receivable) {
 	}()
 }
 
-func (l *Log) attach() {
+func (l *LogImpl) attach() {
 	go func() {
 		for x := range l.in {
 			l.out <- x

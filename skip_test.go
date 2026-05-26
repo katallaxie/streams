@@ -21,7 +21,7 @@ func TestSkip(t *testing.T) {
 			name:     "skip 2",
 			in:       []int{1, 2, 3, 4, 5},
 			expected: []int{3, 4, 5},
-			recv:     streams.NewSkip(2),
+			recv:     streams.Skip(2),
 		},
 	}
 

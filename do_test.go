@@ -31,7 +31,7 @@ func TestDo(t *testing.T) {
 			channels.Channel(tt.in, in)
 
 			s := make([]string, 0)
-			recv := streams.NewDo(func(x string) error { s = append(s, x); return nil })
+			recv := streams.Do(func(x string) error { s = append(s, x); return nil })
 
 			source := sources.NewChanSource(in)
 			sink := sinks.NewChanSink(out)

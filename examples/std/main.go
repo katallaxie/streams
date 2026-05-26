@@ -19,7 +19,7 @@ func (msg *message) String() string {
 
 func main() {
 	source := sources.NewChanSource(tickerChan(time.Second))
-	source.Pipe(streams.DefaultPassThrough).Pipe(streams.Timeout(5 * time.Second)).To(sinks.DefaultStdout)
+	source.Pipe(streams.PassThrough()).Pipe(streams.Timeout(5 * time.Second)).To(sinks.DefaultStdout)
 
 	if err := source.Error(); err != nil {
 		panic(err)
